@@ -1,0 +1,16 @@
+cloudimg>=1.2.1  # FIXME: pin the proper release with Azure implementation
+pubtools>=0.3.0
+pubtools-pulplib>=2.33.0
+more_executors>=2.7.0
+pushcollector>=1.2.0
+pushsource>=2.23.5  # FIXME: pin the proper release with VMIPushItems + KojiSource for it implemented
+
+#####################
+# Internal packages #
+#####################
+
+# starmap-client
+starmap-client @ git+https://gitlab.cee.redhat.com/stratosphere/starmap-client.git#egg=starmap-client-0.1.0
+
+# cloudpub
+cloudpub @ git+https://gitlab.cee.redhat.com/stratosphere/cloudpub.git#egg=cloudpub-0.1.0

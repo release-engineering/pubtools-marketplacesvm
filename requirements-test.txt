@@ -1,0 +1,7 @@
+-r requirements.txt
+coverage
+mypy
+pytest
+pytest-cov
+mock
+requests_mock
