@@ -25,9 +25,7 @@ class MarketplacesVMPush(MarketplacesVMTask):
 
         self.parser.add_argument(
             "--pre-push",
-            "--nochannel",
             action="store_true",
-            dest="pre-push",
             help=(
                 "Pre-push mode: do as much as possible without making content "
                 "available to end-users, then stop. May be used to improve the "
