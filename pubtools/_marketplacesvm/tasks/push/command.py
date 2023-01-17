@@ -2,13 +2,13 @@
 import logging
 
 from ...arguments import SplitAndExtend
-from ...services import CloudService, StarmapService
+from ...services import CloudService, CollectorService, StarmapService
 from ...task import MarketplacesVMTask
 
 LOG = logging.getLogger("pubtools.marketplacesvm")
 
 
-class MarketplacesVMPush(MarketplacesVMTask, CloudService, StarmapService):
+class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, StarmapService):
     """Push and publish content to various cloud marketplaces."""
 
     def add_args(self):
