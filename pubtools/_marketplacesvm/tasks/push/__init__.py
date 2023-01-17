@@ -3,9 +3,11 @@ from .command import MarketplacesVMPush
 
 
 def entry_point(cls=MarketplacesVMPush):
+    """Define the CLI entrypoint for the ``push`` command."""
     with cls() as instance:
         instance.main()
 
 
 def doc_parser():
+    """Define the doc_parser for the ``push`` command."""
     return MarketplacesVMPush().parser

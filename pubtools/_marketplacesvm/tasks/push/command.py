@@ -11,6 +11,7 @@ class MarketplacesVMPush(MarketplacesVMTask):
     """Push and publish content to various cloud marketplaces."""
 
     def add_args(self):
+        """Include the required CLI arguments for MarketplacesVMPush."""
         super(MarketplacesVMPush, self).add_args()
 
         self.add_publisher_args(self.parser)
@@ -41,6 +42,7 @@ class MarketplacesVMPush(MarketplacesVMTask):
         )
 
     def run(self):
+        """Execute the push command workflow."""
         # Push workflow.
         # TODO: Implement the whole workflow as described below:
         #

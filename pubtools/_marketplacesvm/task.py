@@ -12,7 +12,8 @@ LOG_FORMAT = "%(asctime)s [%(levelname)-8s] %(message)s"
 
 
 class MarketplacesVMTask(object):
-    """Base class for MarketplacesVM CLI tasks
+    """
+    Base class for MarketplacesVM CLI tasks.
 
     Instances for MarketplacesVMTask subclass may be obtained to request
     tasks like push, scan, etc.
@@ -22,6 +23,7 @@ class MarketplacesVMTask(object):
     """
 
     def __init__(self) -> None:
+        """Instantiate the MarketplacesVMTask."""
         super(MarketplacesVMTask, self).__init__()
 
         self._args = None
@@ -34,10 +36,11 @@ class MarketplacesVMTask(object):
 
     @property
     def description(self) -> str:
-        """Description for argument parser; shows up in generated docs.
+        """
+        Define the description for argument parser; shows up in generated docs.
 
-        Defaults to the class doc string with some whitespace fixes."""
-
+        Defaults to the class doc string with some whitespace fixes.
+        """
         # Doc strings are typically written having the first line starting
         # without whitespace, and all other lines starting with whitespace.
         # That would be formatted oddly when copied into RST verbatim,
@@ -56,10 +59,11 @@ class MarketplacesVMTask(object):
 
     @property
     def args(self) -> Namespace:
-        """Parsed args from the cli
+        """
+        Store the parsed args from the cli.
 
         returns the args if avaialble from previous parse
-        else parses with defined options and return the args
+        else parses with defined options and return the args.
         """
         if not self._args:
             self._args = self.parser.parse_args()
@@ -67,7 +71,8 @@ class MarketplacesVMTask(object):
 
     @classmethod
     def step(cls, name) -> StepDecorator:
-        """A decorator to mark an instance method as a discrete workflow step.
+        """
+        Implement a decorator to mark an instance method as a discrete workflow step.
 
         Marking a method as a step has effects:
 
@@ -101,10 +106,7 @@ class MarketplacesVMTask(object):
             "-d",
             action="count",
             default=0,
-            help=(
-                "Show debug logs; can be provided up to three times "
-                "to enable more logs"
-            ),
+            help=("Show debug logs; can be provided up to three times " "to enable more logs"),
         )
 
     def _setup_logging(self):
@@ -129,7 +131,8 @@ class MarketplacesVMTask(object):
             logging.getLogger(logger_name).setLevel(logging.DEBUG)
 
     def add_args(self):
-        """Add parser options/arguments for a task
+        """
+        Add parser options/arguments for a task.
 
         e.g. self.parser.add_argument("option", help="help text")
         """
@@ -139,13 +142,11 @@ class MarketplacesVMTask(object):
         from_super()
 
     def run(self):
-        """Implement a specific task"""
-
+        """Implement a specific task."""
         raise NotImplementedError()
 
     def main(self):
-        """Main method called by the entrypoint of the task."""
-
+        """Define the main method to be called by the entrypoint of the task."""
         with task_context():
             # setup the logging as required
             self._setup_logging()

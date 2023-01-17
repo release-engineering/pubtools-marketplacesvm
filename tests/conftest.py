@@ -13,7 +13,8 @@ from .command import CommandTester
 
 @pytest.fixture(autouse=True)
 def save_argv():
-    """Saves and restores sys.argv around each test.
+    """
+    Save and restore sys.argv around each test.
 
     This is an autouse fixture, so tests can freely modify
     sys.argv without concern.
@@ -25,7 +26,8 @@ def save_argv():
 
 @pytest.fixture(autouse=True)
 def pushsource_reset():
-    """Resets pushsource library after each test.
+    """
+    Reset pushsource library after each test.
 
     Allows tests to adjust pushsource backends without interfering
     with each other.
@@ -36,8 +38,8 @@ def pushsource_reset():
 
 @pytest.fixture(autouse=True)
 def home_tmpdir(tmpdir, monkeypatch):
-    """Points HOME environment variable underneath tmpdir
-    for the duration of tests.
+    """
+    Point HOME environment variable underneath tmpdir for the duration of tests.
 
     This is an autouse fixture because certain used libraries
     and our own pulp fake are influenced by files under $HOME,
@@ -62,7 +64,9 @@ def requests_mocker():
 
 @pytest.fixture(autouse=True)
 def fake_collector():
-    """Install fake in-memory backend for pushcollector library.
+    """
+    Install fake in-memory backend for pushcollector library.
+
     Recorded push items can be tested via this instance.
 
     This is an autouse fixture so that all tests will automatically
@@ -80,13 +84,11 @@ def fake_collector():
 
 @pytest.fixture
 def data_path():
-    """Returns path to the tests/data dir used to store extra files for testing."""
+    """Return the path to the tests/data dir used to store extra files for testing."""
     return os.path.join(os.path.dirname(__file__), "data")
 
 
 @pytest.fixture
 def command_tester(request, tmpdir, caplog):
-    """Yields a configured instance of CommandTester class for
-    running commands and testing output against expected.
-    """
+    """Yield a configured instance of CommandTester to test command's output against expected."""
     yield CommandTester(request.node, tmpdir, caplog)

@@ -13,8 +13,8 @@ LOGS_DIR = os.path.join(os.path.dirname(__file__), "logs")
 
 
 class CommandTester(object):
-    """CommandTester is a helper class to run a command, capture its output and
-    compare against expected.
+    """
+    Define a helper class to run a command, capture its output and compare against expected.
 
     An instance may be obtained via command_tester fixture.
     """
@@ -33,7 +33,8 @@ class CommandTester(object):
         compare_extra=None,
         allow_raise=None,
     ):
-        """Put args into sys.argv, then test the given function.
+        """
+        Put args into sys.argv, then test the given function.
 
         Logs at INFO level and higher will be captured and compared against
         test data under "test/logs" directory. 'extra' metadata in logs will
@@ -121,7 +122,7 @@ class CommandTester(object):
         #   <logdir>/clear_repo/test_clear_repo/test_typical
         #
         if out.startswith("tests/"):
-            out = out[len("tests/") :]
+            out = out[len("tests/") :]  # noqa: E203
         out = out.replace(".py", "")
         out = out.replace("::", "/")
 
@@ -130,9 +131,7 @@ class CommandTester(object):
     def _get_actual_plaintext(self, records):
         out = ""
         for record in records:
-            out += self._normalize_plaintext(
-                "[%8s] %s\n" % (record.levelname, record.message)
-            )
+            out += self._normalize_plaintext("[%8s] %s\n" % (record.levelname, record.message))
         return out
 
     def _get_actual_jsonl(self, records):
@@ -165,10 +164,7 @@ class CommandTester(object):
             expected_content = open(filename, "rt").read()
 
         if expected_content != text:
-            if (
-                os.environ.get("UPDATE_BASELINES", "0") == "1"
-                or expected_content is None
-            ):
+            if os.environ.get("UPDATE_BASELINES", "0") == "1" or expected_content is None:
                 return self._update_baseline(filename, text)
 
             from_lines = expected_content.split("\n")
@@ -184,10 +180,7 @@ class CommandTester(object):
 
             exception_changed = diff[-2].startswith("+# Raised:")
             diff = "\n".join(diff)
-            message = (
-                "Output differs from expected (set UPDATE_BASELINES=1 if intended):\n"
-                + diff
-            )
+            message = "Output differs from expected (set UPDATE_BASELINES=1 if intended):\n" + diff
 
             if exception_changed and exception:
                 # if exception differs from expected, re-raise it for the sake of
@@ -197,9 +190,7 @@ class CommandTester(object):
 
             raise AssertionError(message)
 
-    def _compare_outcome(
-        self, records, exception, compare_plaintext, compare_jsonl, compare_extra
-    ):
+    def _compare_outcome(self, records, exception, compare_plaintext, compare_jsonl, compare_extra):
 
         if compare_plaintext:
             plaintext = self._get_actual_plaintext(records)

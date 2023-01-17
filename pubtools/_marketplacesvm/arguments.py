@@ -1,11 +1,12 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 import os
 from argparse import Action
+from typing import Callable
 
 
 def from_environ(key, delegate_converter=lambda x: x):
-    """A converter for use as an argparse "type" argument which supports
-    reading values from the environment.
+    """
+    Define a converter for argparse "type" which supports reading values from the environment.
 
     Expected usage is like this:
 
@@ -37,18 +38,39 @@ def from_environ(key, delegate_converter=lambda x: x):
 
 
 class FromEnvironmentConverter(object):
-    def __init__(self, key, delegate):
+    """Define the converter object to read values from environment."""
+
+    def __init__(self, key: str, delegate: Callable[[str], str]):
+        """
+        Instantiate the converter.
+
+        Args:
+            key (str)
+                Name of environment variable to look up.
+            delegate_converter (callable)
+                A converter for the looked up environment variable.
+        """
         self.key = key
         self.delegate = delegate
 
-    def __call__(self, value):
+    def __call__(self, value: str) -> str:
+        """
+        Execute the converter when called.
+
+        Args:
+            value (str)
+                The value to be converted.
+        Returns:
+            The converted value.
+        """
         if not value:
             value = os.environ.get(self.key)
         return self.delegate(value)
 
 
 class SplitAndExtend(Action):
-    """Argparse Action subclass for splitting string-type arguments.
+    """
+    Argparse Action subclass for splitting string-type arguments.
 
     This action is intended to be similar to the built-in action
     ``"extend"`` (Added in 3.8), which allows for multiple instances
@@ -113,10 +135,12 @@ class SplitAndExtend(Action):
     """
 
     def __init__(self, *args, **kwargs):
+        """Instantiate the SplitAndExtend action."""
         self.__split_on = kwargs.pop("split_on", ",")
         super(SplitAndExtend, self).__init__(*args, **kwargs)
 
     def __call__(self, _, namespace, values, options=None):
+        """Execute the split and extend action."""
         items = getattr(namespace, self.dest, None) or []
         # if values isn't a string, don't try to split it
         # just add it to the accumulated list.
@@ -130,4 +154,5 @@ class SplitAndExtend(Action):
 
     @property
     def split_on(self):
+        """Return the split delimiter."""
         return self.__split_on
