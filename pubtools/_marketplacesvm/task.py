@@ -2,6 +2,7 @@
 import logging
 import textwrap
 from argparse import ArgumentParser, Namespace, RawDescriptionHelpFormatter
+from typing import Optional
 
 from pubtools.pluggy import task_context
 
@@ -26,7 +27,7 @@ class MarketplacesVMTask(object):
         """Instantiate the MarketplacesVMTask."""
         super(MarketplacesVMTask, self).__init__()
 
-        self._args = None
+        self._args: Optional[Namespace] = None
 
         self.parser = ArgumentParser(
             description=self.description, formatter_class=RawDescriptionHelpFormatter

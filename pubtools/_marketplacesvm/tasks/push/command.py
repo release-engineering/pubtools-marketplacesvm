@@ -14,8 +14,6 @@ class MarketplacesVMPush(MarketplacesVMTask):
         """Include the required CLI arguments for MarketplacesVMPush."""
         super(MarketplacesVMPush, self).add_args()
 
-        self.add_publisher_args(self.parser)
-
         self.parser.add_argument(
             "--skip",
             help="skip given comma-separated sub-steps",

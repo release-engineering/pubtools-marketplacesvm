@@ -41,11 +41,9 @@ def home_tmpdir(tmpdir, monkeypatch):
     """
     Point HOME environment variable underneath tmpdir for the duration of tests.
 
-    This is an autouse fixture because certain used libraries
-    and our own pulp fake are influenced by files under $HOME,
-    and for tests which actually need it, we should explicitly
-    set up anything needed there instead of inheriting the
-    user's environment.
+    This is an autouse fixture because certain used libraries are influenced by files under $HOME,
+    and for tests which actually need it, we should explicitly set up anything needed there instead
+    of inheriting the user's environment.
     """
     homedir = str(tmpdir.mkdir("home"))
     monkeypatch.setenv("HOME", homedir)
@@ -74,8 +72,8 @@ def fake_collector():
     """
     collector = FakeCollector()
 
-    Collector.register_backend("pubtools-pulp-test", lambda: collector)
-    Collector.set_default_backend("pubtools-pulp-test")
+    Collector.register_backend("pubtools-marketplacesvm-test", lambda: collector)
+    Collector.set_default_backend("pubtools-marketplacesvm-test")
 
     yield collector
 

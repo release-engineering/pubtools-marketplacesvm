@@ -78,7 +78,7 @@ class StepDecorator(object):
 
         return new_fn
 
-    def should_skip(self, instance: Type[object]) -> bool:
+    def should_skip(self, instance: Any) -> bool:
         """
         Check whether the instance is marked as skippable.
 
@@ -106,7 +106,7 @@ def is_future(x: Type[object]) -> bool:
     return hasattr(x, "add_done_callback")
 
 
-def as_futures(args: List[Any]) -> Optional[List[Future]]:
+def as_futures(args: Optional[List[Any]]) -> Optional[List[Future]]:
     """
     Return a list of future from the arguments.
 
@@ -134,7 +134,7 @@ class StepLogger(object):
     and make sure exiting a step can't be logged before entering.
     """
 
-    def __init__(self, step: Type[object]):
+    def __init__(self, step: Any):
         """
         Instantiate the StepLogger.
 

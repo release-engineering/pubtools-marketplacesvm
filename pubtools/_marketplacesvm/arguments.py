@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 import os
 from argparse import Action
-from typing import Callable
+from typing import Callable, Optional
 
 
 def from_environ(key, delegate_converter=lambda x: x):
@@ -53,7 +53,7 @@ class FromEnvironmentConverter(object):
         self.key = key
         self.delegate = delegate
 
-    def __call__(self, value: str) -> str:
+    def __call__(self, value: Optional[str]) -> str:
         """
         Execute the converter when called.
 
@@ -64,7 +64,7 @@ class FromEnvironmentConverter(object):
             The converted value.
         """
         if not value:
-            value = os.environ.get(self.key)
+            value = os.environ.get(self.key) or ""
         return self.delegate(value)
 
 

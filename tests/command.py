@@ -191,7 +191,6 @@ class CommandTester(object):
             raise AssertionError(message)
 
     def _compare_outcome(self, records, exception, compare_plaintext, compare_jsonl, compare_extra):
-
         if compare_plaintext:
             plaintext = self._get_actual_plaintext(records)
             if exception:
