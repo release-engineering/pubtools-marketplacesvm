@@ -37,30 +37,30 @@ security:
   script:
     - tox -e security
 
-# FIXME: Uncomment when tests are ready
-# python3.7:
-#   <<: *common
-#   stage: unit-tests
-#   script: 
-#     - tox -e py37
 
-# python3.8:
-#   <<: *common
-#   stage: unit-tests
-#   script: 
-#     - tox -e py38
+python3.7:
+  <<: *common
+  stage: unit-tests
+  script: 
+    - tox -e py37
 
-# python3.9:
-#   <<: *common
-#   stage: unit-tests
-#   script: 
-#     - tox -e py39
+python3.8:
+  <<: *common
+  stage: unit-tests
+  script: 
+    - tox -e py38
 
-# python3.10:
-#   <<: *common
-#   stage: unit-tests
-#   script:
-#     - tox -e py310
+python3.9:
+  <<: *common
+  stage: unit-tests
+  script: 
+    - tox -e py39
+
+python3.10:
+  <<: *common
+  stage: unit-tests
+  script:
+    - tox -e py310
 
 # FIXME: Uncomment when docs are ready
 # The stage below will deploy the documentation into GitLab pages whenever the main branch is updated
