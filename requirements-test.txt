@@ -1,7 +1,9 @@
 -r requirements.txt
+alabaster
 coverage
 mypy
 pytest
 pytest-cov
 mock
+sphinx
 requests_mock

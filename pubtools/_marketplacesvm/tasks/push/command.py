@@ -2,12 +2,13 @@
 import logging
 
 from ...arguments import SplitAndExtend
+from ...services import CloudService, CollectorService, StarmapService
 from ...task import MarketplacesVMTask
 
 LOG = logging.getLogger("pubtools.marketplacesvm")
 
 
-class MarketplacesVMPush(MarketplacesVMTask):
+class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, StarmapService):
     """Push and publish content to various cloud marketplaces."""
 
     def add_args(self):
@@ -25,9 +26,7 @@ class MarketplacesVMPush(MarketplacesVMTask):
 
         self.parser.add_argument(
             "--pre-push",
-            "--nochannel",
             action="store_true",
-            dest="pre-push",
             help=(
                 "Pre-push mode: do as much as possible without making content "
                 "available to end-users, then stop. May be used to improve the "

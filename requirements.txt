@@ -3,7 +3,7 @@ pubtools>=0.3.0
 pubtools-pulplib>=2.33.0
 more_executors>=2.7.0
 pushcollector>=1.2.0
-pushsource>=2.23.5  # FIXME: pin the proper release with VMIPushItems + KojiSource for it implemented
+pushsource>=2.25.0
 
 #####################
 # Internal packages #

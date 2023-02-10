@@ -1,0 +1,80 @@
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+  PIP_INDEX_URL: https://repository.engineering.redhat.com/nexus/repository/pypi.org/simple/
+  REQUESTS_CA_BUNDLE: /etc/pki/tls/cert.pem
+
+.common: &common
+  image: quay.io/redhat-aqe/tox:latest
+  tags: [docker]
+  cache:
+    paths:
+      - .cache/pip
+  before_script:
+    # Trust the IT Root CA.
+    - curl https://password.corp.redhat.com/RH-IT-Root-CA.crt > /etc/pki/ca-trust/source/anchors/RH-IT-Root-CA.crt
+    - update-ca-trust
+
+stages:
+    - linting
+    - unit-tests
+    - docs
+
+lint:
+  <<: *common
+  stage: linting
+  script:
+    - tox -e lint
+
+mypy:
+  <<: *common
+  stage: linting
+  script:
+    - tox -e mypy
+
+security:
+  <<: *common
+  stage: linting
+  script:
+    - tox -e security
+
+# FIXME: Uncomment when tests are ready
+# python3.7:
+#   <<: *common
+#   stage: unit-tests
+#   script: 
+#     - tox -e py37
+
+# python3.8:
+#   <<: *common
+#   stage: unit-tests
+#   script: 
+#     - tox -e py38
+
+# python3.9:
+#   <<: *common
+#   stage: unit-tests
+#   script: 
+#     - tox -e py39
+
+# python3.10:
+#   <<: *common
+#   stage: unit-tests
+#   script:
+#     - tox -e py310
+
+# FIXME: Uncomment when docs are ready
+# The stage below will deploy the documentation into GitLab pages whenever the main branch is updated
+# pages:
+#   <<: *common
+#   stage: docs
+#   script:
+#     - echo "Generating the GitLab pages..."
+#     - tox -e docs
+#     - mkdir public
+#     - cp -rf docs/_build/html/* public/
+#     - echo "The site will be deployed to $CI_PAGES_URL"
+#   artifacts:
+#     paths:
+#       - public
+#   rules:
+#     - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
