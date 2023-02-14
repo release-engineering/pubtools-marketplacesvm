@@ -117,6 +117,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             log.info("Uploading the item %s to %s.", push_item.name, marketplace)
             pi, _ = self.cloud_instance(marketplace).upload(push_item)
             log.info("Upload finished for %s on %s", push_item.name, marketplace)
+            pi = evolve(push_item, state=State.NOTPUSHED)
         except Exception as exc:
             log.error("Failed to upload %s: %s", push_item.name, str(exc))
             pi = evolve(push_item, state=State.UPLOADFAILED)
