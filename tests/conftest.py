@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 import os
 import sys
+from typing import Any, Generator
 
 import pytest
 import requests_mock
@@ -9,6 +10,31 @@ from pushsource import Source
 
 from .collector import FakeCollector
 from .command import CommandTester
+
+TEMP_ENV_VARS = {"MARKETPLACESVM_PUSH_REQUEST_THREADS": "1"}
+
+
+@pytest.fixture(scope="session", autouse=True)
+def tests_setup_and_teardown() -> Generator[Any, Any, Any]:
+    """
+    Update the environmnet variables for testing.
+
+    Before tests run:
+    - Copy env to `old_emv`
+    - Update env with temporary values (for tests)
+
+    After tests run:
+    - Clean env
+    - Update env with `old_env` (restore env)
+    """
+    # Will be executed before the first test
+    old_environ = dict(os.environ)
+    os.environ.update(TEMP_ENV_VARS)
+
+    yield
+    # Will be executed after the last test
+    os.environ.clear()
+    os.environ.update(old_environ)
 
 
 @pytest.fixture(autouse=True)

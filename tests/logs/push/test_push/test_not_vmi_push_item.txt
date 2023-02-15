@@ -1,0 +1,29 @@
+[    INFO] Loading items from koji:https://fakekoji.com?vmi_build=unknown_build,azure_build
+[ WARNING] Push Item foo at bar is not a VMIPushItem, dropping it from the queue.
+[   DEBUG] Retrieving the mappings for ami_pushitem.
+[ WARNING] Missing information for the attribute ami_pushitem.src, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.build, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.description, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.type, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.region, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.virtualization, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.volume, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.root_device, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.sriov_net_support, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.ena_support, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.billing_codes, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.image_id, leaving it unset.
+[   DEBUG] Uploading the item ami_pushitem to aws-na.
+[   DEBUG] Upload finished for ami_pushitem on aws-na
+[   DEBUG] Pushing the item "ami_pushitem" (pre-push=True) to ffffffff-ffff-ffff-ffff-ffffffffffff.
+[   DEBUG] Pushing the item "ami_pushitem" (pre-push=True) to 00000000-0000-0000-0000-000000000000.
+[   DEBUG] Pushing the item "ami_pushitem" (pre-push=False) to ffffffff-ffff-ffff-ffff-ffffffffffff.
+[   DEBUG] Pushing the item "ami_pushitem" (pre-push=False) to 00000000-0000-0000-0000-000000000000.
+[   DEBUG] Uploading the item ami_pushitem to aws-emea.
+[   DEBUG] Upload finished for ami_pushitem on aws-emea
+[   DEBUG] Pushing the item "ami_pushitem" (pre-push=True) to ffffffff-ffff-ffff-ffff-ffffffffffff.
+[   DEBUG] Pushing the item "ami_pushitem" (pre-push=True) to 00000000-0000-0000-0000-000000000000.
+[   DEBUG] Pushing the item "ami_pushitem" (pre-push=False) to ffffffff-ffff-ffff-ffff-ffffffffffff.
+[   DEBUG] Pushing the item "ami_pushitem" (pre-push=False) to 00000000-0000-0000-0000-000000000000.
+[    INFO] Collecting results
+[    INFO] Marketplace VM push completed

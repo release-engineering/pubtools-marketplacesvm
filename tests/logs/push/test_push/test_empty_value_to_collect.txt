@@ -1,0 +1,5 @@
+[    INFO] Loading items from koji:https://fakekoji.com?vmi_build=ami_build
+[   DEBUG] Retrieving the mappings for ami_pushitem.
+[    INFO] Collecting results
+[   ERROR] Marketplace VM push failed
+# Raised: 30

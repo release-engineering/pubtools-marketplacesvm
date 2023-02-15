@@ -1,0 +1,116 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+from datetime import datetime
+from typing import Any, Dict, Generator
+from unittest import mock
+
+import pytest
+from pushsource import AmiPushItem, AmiRelease, KojiBuildInfo, VHDPushItem, VMIRelease
+from starmap_client.models import QueryResponse
+
+from pubtools._marketplacesvm.tasks.push.command import MarketplacesVMPush
+
+
+@pytest.fixture(scope="session", autouse=True)
+def marketplaces_vm_push() -> Generator[int, None, None]:
+    """Set a single-thread for MarketplacesVMPush."""
+    with mock.patch.object(MarketplacesVMPush, '_REQUEST_THREADS', 1) as m:
+        yield m
+
+
+@pytest.fixture
+def release_params() -> Dict[str, Any]:
+    return {
+        "product": "sample-product",
+        "version": "7.0",
+        "arch": "",
+        "respin": 1,
+        "date": datetime.now(),
+    }
+
+
+@pytest.fixture
+def push_item_params() -> Dict[str, str]:
+    return {
+        "name": "name",
+        "description": "",
+        "build_info": KojiBuildInfo(name="test-build", version="7.0", release="20230101"),
+    }
+
+
+@pytest.fixture
+def vhd_push_item(release_params: Dict[str, Any], push_item_params: Dict[str, str]) -> VHDPushItem:
+    """Return a minimal VHDPushItem."""
+    release = VMIRelease(**release_params)
+    push_item_params.update({"name": "vhd_pushitem", "release": release})
+    return VHDPushItem(**push_item_params)
+
+
+@pytest.fixture
+def ami_push_item(release_params: Dict[str, Any], push_item_params: Dict[str, str]) -> AmiPushItem:
+    """Return a minimal AmiPushItem."""
+    release = AmiRelease(**release_params)
+    push_item_params.update({"name": "ami_pushitem", "release": release})
+    return AmiPushItem(**push_item_params)
+
+
+@pytest.fixture
+def starmap_response_aws() -> Dict[str, Any]:
+    return {
+        "mappings": {
+            "aws-na": [
+                {
+                    "architecture": "x86_64",
+                    "destination": "ffffffff-ffff-ffff-ffff-ffffffffffff",
+                    "overwrite": True,
+                    "meta": {"tag1": "aws-na-value1", "tag2": "aws-na-value2"},
+                }
+            ],
+            "aws-emea": [
+                {
+                    "architecture": "x86_64",
+                    "destination": "00000000-0000-0000-0000-000000000000",
+                    "overwrite": True,
+                    "meta": {"tag1": "aws-emea-value1", "tag2": "aws-emea-value2"},
+                }
+            ],
+        },
+        "name": "sample-product",
+    }
+
+
+@pytest.fixture
+def starmap_response_azure() -> Dict[str, Any]:
+    return {
+        "mappings": {
+            "azure-na": [
+                {
+                    "architecture": "x86_64",
+                    "destination": "destination_offer_main/plan1",
+                    "overwrite": True,
+                    "meta": {"tag1": "value1", "tag2": "value2"},
+                },
+                {
+                    "architecture": "x86_64",
+                    "destination": "destination_offer_main/plan2",
+                    "overwrite": False,
+                    "meta": {"tag3": "value3", "tag4": "value5"},
+                },
+                {
+                    "architecture": "x86_64",
+                    "destination": "destination_offer_main/plan3",
+                    "overwrite": False,
+                },
+            ]
+        },
+        "name": "sample-product",
+    }
+
+
+@pytest.fixture
+def starmap_query_aws(starmap_response_aws: Dict[str, Any]) -> QueryResponse:
+    return QueryResponse.from_json(starmap_response_aws)
+
+
+@pytest.fixture
+def starmap_query_azure(starmap_response_azure: Dict[str, Any]) -> QueryResponse:
+    return QueryResponse.from_json(starmap_response_azure)
