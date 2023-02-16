@@ -109,6 +109,7 @@ def test_upload(
     }
     meta_obj = MagicMock(**metadata)
     mock_metadata.return_value = meta_obj
+    fake_azure_provider.upload_svc.get_blob_sas_uri.return_value = "FAKE_SAS_URI"
 
     fake_azure_provider.upload(azure_push_item)
 

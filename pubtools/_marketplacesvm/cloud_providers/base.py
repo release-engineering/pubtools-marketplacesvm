@@ -3,7 +3,7 @@ import logging
 import os
 import sys
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Generic, NoReturn, Type, TypeVar
+from typing import Any, Dict, Generic, NoReturn, Tuple, Type, TypeVar
 
 if sys.version_info >= (3, 8):
     from typing import TypedDict  # pragma: no cover
@@ -85,7 +85,7 @@ class CloudProvider(ABC, Generic[T, C]):
         """
 
     @abstractmethod
-    def _upload(self, push_item: T) -> Any:
+    def _upload(self, push_item: T) -> Tuple[T, Any]:
         """
         Abstract method for uploading a VM image into a public cloud provider.
 
@@ -97,7 +97,7 @@ class CloudProvider(ABC, Generic[T, C]):
         """
 
     @abstractmethod
-    def _publish(self, push_item: T, nochannel: bool, overwrite: bool = False) -> Any:
+    def _publish(self, push_item: T, nochannel: bool, overwrite: bool = False) -> Tuple[T, Any]:
         """
         Abstract method for associating and publishing a VM image with a product.
 
@@ -115,7 +115,7 @@ class CloudProvider(ABC, Generic[T, C]):
     # Subclasses can implement
     #
 
-    def _post_upload(self, push_item: T, upload_result: Any) -> Any:
+    def _post_upload(self, push_item: T, upload_result: Any) -> Tuple[T, Any]:
         """
         Define the default method for post upload actions.
 
@@ -127,9 +127,9 @@ class CloudProvider(ABC, Generic[T, C]):
         Returns:
             The upload result data.
         """
-        return upload_result
+        return push_item, upload_result
 
-    def _post_publish(self, push_item: T, publish_result: Any) -> Any:
+    def _post_publish(self, push_item: T, publish_result: Any) -> Tuple[T, Any]:
         """
         Define the default method for post publishing actions.
 
@@ -139,7 +139,7 @@ class CloudProvider(ABC, Generic[T, C]):
         Returns:
             The publish result data.
         """
-        return publish_result
+        return push_item, publish_result
 
     #
     # Public interfaces - not intended to be changed by subclasses
@@ -160,7 +160,7 @@ class CloudProvider(ABC, Generic[T, C]):
         log.error(message)
         raise exception(message)
 
-    def upload(self, push_item: T) -> Any:
+    def upload(self, push_item: T) -> Tuple[T, Any]:
         """
         Upload the VM image into a pulic cloud provider.
 
@@ -170,10 +170,10 @@ class CloudProvider(ABC, Generic[T, C]):
         Returns:
             object: The upload result data.
         """
-        res = self._upload(push_item)
-        return self._post_upload(push_item, res)
+        pi, res = self._upload(push_item)
+        return self._post_upload(pi, res)
 
-    def publish(self, push_item: T, nochannel: bool, overwrite: bool = False) -> Any:
+    def publish(self, push_item: T, nochannel: bool, overwrite: bool = False) -> Tuple[T, Any]:
         """
         Associate an existing VM image with a product and publish the changes.
 
@@ -188,8 +188,8 @@ class CloudProvider(ABC, Generic[T, C]):
         Returns:
             object: The publish result data.
         """
-        res = self._publish(push_item, nochannel, overwrite)
-        return self._post_publish(push_item, res)
+        pi, res = self._publish(push_item, nochannel, overwrite)
+        return self._post_publish(pi, res)
 
 
 P = TypeVar('P', bound=CloudProvider)

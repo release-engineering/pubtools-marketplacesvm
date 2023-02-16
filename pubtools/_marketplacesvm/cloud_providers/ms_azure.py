@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Tuple
 
-from attrs import asdict, field, frozen
+from attrs import asdict, evolve, field, frozen
 from attrs.validators import instance_of
 from cloudimg.ms_azure import AzurePublishingMetadata as AzureUploadMetadata
 from cloudimg.ms_azure import AzureService as AzureUploadService
@@ -113,7 +113,7 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
         creds = AzureCredentials(**auth_data)
         return cls(creds)
 
-    def _upload(self, push_item: VHDPushItem) -> Any:
+    def _upload(self, push_item: VHDPushItem) -> Tuple[VHDPushItem, Any]:
         """
         Upload a VHD image into Azure.
 
@@ -140,10 +140,10 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
             "tags": tags,
         }
         metadata = AzureUploadMetadata(**upload_metadata_kwargs)
+        res = self.upload_svc.publish(metadata)
+        return push_item, res
 
-        return self.upload_svc.publish(metadata)
-
-    def _post_upload(self, push_item: VHDPushItem, upload_result: Any) -> Any:
+    def _post_upload(self, push_item: VHDPushItem, upload_result: Any) -> Tuple[VHDPushItem, Any]:
         """
         Export the SAS URI for the uploaded image.
 
@@ -156,9 +156,13 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
         Returns:
             The SAS URI for the uploaded image.
         """
-        return self.upload_svc.get_blob_sas_uri(upload_result)
+        sas_uri = self.upload_svc.get_blob_sas_uri(upload_result)
+        push_item_with_sas = evolve(push_item, sas_uri=sas_uri)
+        return push_item_with_sas, upload_result
 
-    def _publish(self, push_item: VHDPushItem, nochannel: bool, overwrite: bool = False) -> Any:
+    def _publish(
+        self, push_item: VHDPushItem, nochannel: bool, overwrite: bool = False
+    ) -> Tuple[VHDPushItem, Any]:
         """
         Associate and publish a VHD image into an Azure product.
 
@@ -185,7 +189,8 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
             "overwrite": overwrite,
         }
         metadata = AzurePublishMetadata(**publish_metadata_kwargs)
-        return self.publish_svc.publish(metadata)
+        res = self.publish_svc.publish(metadata)
+        return push_item, res
 
 
 register_provider(AzureProvider, "azure-na", "azure-emea")
