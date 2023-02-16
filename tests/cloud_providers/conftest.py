@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-from typing import Any, TypeVar
+from typing import Any, Dict, Tuple, TypeVar
 
 import pytest
 
@@ -9,16 +9,20 @@ T = TypeVar('T')
 
 
 class FakeProvider(CloudProvider):
-    def from_credentials(self):
+    def __init__(self, creds) -> None:
         pass
 
-    def _upload(self, push_item: T) -> Any:
-        pass
+    @classmethod
+    def from_credentials(cls, fake_creds: Dict[str, Any]) -> 'FakeProvider':
+        return cls(fake_creds)
 
-    def _publish(self, push_item: T, nochannel: bool, overwrite: bool = False) -> Any:
-        pass
+    def _upload(self, push_item: T) -> Tuple[T, Any]:
+        return push_item, True
+
+    def _publish(self, push_item: T, nochannel: bool, overwrite: bool = False) -> Tuple[T, Any]:
+        return push_item, True
 
 
 @pytest.fixture
 def fake_provider():
-    yield FakeProvider()
+    yield FakeProvider.from_credentials({})

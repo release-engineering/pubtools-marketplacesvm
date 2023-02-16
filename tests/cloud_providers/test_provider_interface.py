@@ -1,12 +1,11 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 import logging
-from unittest.mock import create_autospec
 
 import pytest
 from _pytest.logging import LogCaptureFixture
+from pushsource import PushItem
 
 from pubtools._marketplacesvm.cloud_providers import CloudCredentials, CloudProvider, get_provider
-from pubtools._marketplacesvm.cloud_providers.base import VMIPushItem
 
 from .conftest import FakeProvider
 
@@ -50,7 +49,7 @@ class TestCloudProvider:
 
     def test_default_post_actions(self, fake_provider: FakeProvider) -> None:
         """Test the default behavior for `_post_upload` and `_post_publish`."""
-        push_item = create_autospec(VMIPushItem)
+        push_item = PushItem(name="test")
 
-        assert "Upload" == fake_provider._post_upload(push_item, "Upload")
-        assert "Publish" == fake_provider._post_publish(push_item, "Publish")
+        assert (push_item, "Upload") == fake_provider._post_upload(push_item, "Upload")
+        assert (push_item, "Publish") == fake_provider._post_publish(push_item, "Publish")
