@@ -1,4 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
+from datetime import datetime
 from typing import Any, Dict, Optional, Tuple
 
 from attrs import asdict, evolve, field, frozen
@@ -99,6 +100,39 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
 
         return "-".join(parts)
 
+    def _generate_disk_version(self, push_item: VHDPushItem) -> str:
+        """
+        Generate a version number for DiskVersion based on existing information.
+
+        The version number should be in the format "{int}.{int}.{int}"
+
+        In our workflow the version number is generated as:
+
+            x.y.YYYYMMDDHHmm
+
+        Where:
+            - ``x`` is the product major version
+            - ``y`` is the product minor version
+            - ``YYYYMMDDHHmm`` is the current date
+
+        Args:
+            metadata
+                The incoming push item to calculate the version number.
+        Returns:
+            The automatically generated version number.
+        """
+        current_date = datetime.now().strftime("%Y%m%d%H%M")
+
+        # Get the version from PushItem's build_info
+        version = push_item.build_info.version
+        major, minor = version.split(".", maxsplit=1)
+
+        # we don't want an additional "." to break the format thus lets sanitize the minor version
+        minor.replace(".", "-")
+
+        # Return the new disk_version
+        return f"{major}.{minor}.{current_date}"
+
     @classmethod
     def from_credentials(cls, auth_data: Dict[str, Any]) -> 'AzureProvider':
         """
@@ -175,6 +209,9 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
                 Whether to replace every image in the product with the given one or not.
                 Defaults to ``False``
         """
+        if not push_item.disk_version:
+            push_item = evolve(push_item, disk_version=self._generate_disk_version(push_item))
+
         publish_metadata_kwargs = {
             "disk_version": push_item.disk_version,
             "sku_id": push_item.sku_id,

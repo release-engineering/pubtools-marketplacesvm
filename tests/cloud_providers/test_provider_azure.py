@@ -1,8 +1,10 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
+from copy import copy
 from unittest.mock import MagicMock, patch
 
 import pytest
-from pushsource import VHDPushItem, VMIRelease
+from attrs import evolve
+from pushsource import KojiBuildInfo, VHDPushItem, VMIRelease
 
 from pubtools._marketplacesvm.cloud_providers import AzureCredentials, AzureProvider, get_provider
 from pubtools._marketplacesvm.cloud_providers.base import UPLOAD_CONTAINER_NAME
@@ -120,10 +122,14 @@ def test_upload(
 
 @patch("pubtools._marketplacesvm.cloud_providers.ms_azure.AzurePublishMetadata")
 def test_publish(
-    mock_metadata: MagicMock, azure_push_item: VHDPushItem, fake_azure_provider: AzureProvider
+    mock_metadata: MagicMock,
+    azure_push_item: VHDPushItem,
+    fake_azure_provider: AzureProvider,
 ) -> None:
+    azure_push_item = evolve(azure_push_item, disk_version=None)
+    mock_generate_dv = MagicMock()
+    mock_generate_dv.return_value = "7.0.202301010000"
     metadata = {
-        "disk_version": azure_push_item.disk_version,
         "sku_id": azure_push_item.sku_id,
         "generation": azure_push_item.generation or "V2",
         "support_legacy": azure_push_item.support_legacy or False,
@@ -137,9 +143,27 @@ def test_publish(
     }
     meta_obj = MagicMock(**metadata)
     mock_metadata.return_value = meta_obj
+    expected_metadata = copy(metadata)
+    expected_metadata.update({"disk_version": "7.0.202301010000"})
 
-    fake_azure_provider.publish(azure_push_item, nochannel=False, overwrite=False)
+    with patch.object(fake_azure_provider, '_generate_disk_version', mock_generate_dv):
+        fake_azure_provider.publish(azure_push_item, nochannel=False, overwrite=False)
 
-    mock_metadata.assert_called_once_with(**metadata)
+    mock_metadata.assert_called_once_with(**expected_metadata)
     fake_azure_provider.publish_svc.publish.assert_called_once_with(meta_obj)
     fake_azure_provider.upload_svc.publish.assert_not_called()
+
+
+@patch("pubtools._marketplacesvm.cloud_providers.ms_azure.datetime")
+def test_generate_disk_version(
+    mock_date: MagicMock, azure_push_item: VHDPushItem, fake_azure_provider: AzureProvider
+) -> None:
+    mock_strftime = MagicMock()
+    mock_strftime.strftime.return_value = "202301010000"
+    mock_date.now.return_value = mock_strftime
+    b_info = KojiBuildInfo(name=azure_push_item.name, version="7.0", release="0")
+    push_item = evolve(azure_push_item, build_info=b_info)
+
+    res = fake_azure_provider._generate_disk_version(push_item)
+
+    assert res == "7.0.202301010000"
