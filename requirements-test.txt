@@ -6,4 +6,5 @@ pytest
 pytest-cov
 mock
 sphinx
+sphinx-argparse
 requests_mock
