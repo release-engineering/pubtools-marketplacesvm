@@ -78,6 +78,7 @@ class CommandTester(object):
 
         """
         self._caplog.set_level(logging.INFO)
+        self._caplog.set_level(logging.DEBUG, logger="pubtools.marketplacesvm")
 
         if allow_raise is None:
             allow_raise = not compare_plaintext

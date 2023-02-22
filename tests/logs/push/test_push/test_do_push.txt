@@ -1,0 +1,46 @@
+[    INFO] Loading items from koji:https://fakekoji.com?vmi_build=ami_build,azure_build
+[   DEBUG] Retrieving the mappings for ami_pushitem.
+[   DEBUG] Retrieving the mappings for vhd_pushitem.
+[ WARNING] Missing information for the attribute ami_pushitem.src, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.build, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.description, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.type, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.region, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.virtualization, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.volume, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.root_device, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.sriov_net_support, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.ena_support, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.billing_codes, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.image_id, leaving it unset.
+[   DEBUG] Uploading the item ami_pushitem to aws-na.
+[   DEBUG] Upload finished for ami_pushitem on aws-na
+[   DEBUG] Pushing the item "ami_pushitem" (pre-push=True) to ffffffff-ffff-ffff-ffff-ffffffffffff.
+[   DEBUG] Pushing the item "ami_pushitem" (pre-push=True) to 00000000-0000-0000-0000-000000000000.
+[   DEBUG] Pushing the item "ami_pushitem" (pre-push=False) to ffffffff-ffff-ffff-ffff-ffffffffffff.
+[   DEBUG] Pushing the item "ami_pushitem" (pre-push=False) to 00000000-0000-0000-0000-000000000000.
+[   DEBUG] Uploading the item ami_pushitem to aws-emea.
+[   DEBUG] Upload finished for ami_pushitem on aws-emea
+[   DEBUG] Pushing the item "ami_pushitem" (pre-push=True) to ffffffff-ffff-ffff-ffff-ffffffffffff.
+[   DEBUG] Pushing the item "ami_pushitem" (pre-push=True) to 00000000-0000-0000-0000-000000000000.
+[   DEBUG] Pushing the item "ami_pushitem" (pre-push=False) to ffffffff-ffff-ffff-ffff-ffffffffffff.
+[   DEBUG] Pushing the item "ami_pushitem" (pre-push=False) to 00000000-0000-0000-0000-000000000000.
+[ WARNING] Missing information for the attribute vhd_pushitem.src, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.build, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.description, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.sku_id, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.support_legacy, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.legacy_sku_id, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.disk_version, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.recommended_sizes, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.sas_uri, leaving it unset.
+[   DEBUG] Uploading the item vhd_pushitem to azure-na.
+[   DEBUG] Upload finished for vhd_pushitem on azure-na
+[   DEBUG] Pushing the item "vhd_pushitem" (pre-push=True) to destination_offer_main/plan1.
+[   DEBUG] Pushing the item "vhd_pushitem" (pre-push=True) to destination_offer_main/plan2.
+[   DEBUG] Pushing the item "vhd_pushitem" (pre-push=True) to destination_offer_main/plan3.
+[   DEBUG] Pushing the item "vhd_pushitem" (pre-push=False) to destination_offer_main/plan1.
+[   DEBUG] Pushing the item "vhd_pushitem" (pre-push=False) to destination_offer_main/plan2.
+[   DEBUG] Pushing the item "vhd_pushitem" (pre-push=False) to destination_offer_main/plan3.
+[    INFO] Collecting results
+[    INFO] Marketplace VM push completed
