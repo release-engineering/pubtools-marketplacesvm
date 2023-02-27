@@ -60,7 +60,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             mapped_items.append(MappedVMIPushItem(item, query.clouds))
         return mapped_items
 
-    def _upload(self, marketplace: str, push_item: VMIPushItem) -> str:
+    def _upload(self, marketplace: str, push_item: VMIPushItem) -> VMIPushItem:
         """
         Upload a single push item to the cloud marketplace and update the status.
 
@@ -70,18 +70,20 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             push_item
                 The item to upload
         Returns:
-            The state of the push item after uploading.
+            The push item after the upload.
         """
         try:
             log.debug("Uploading the item %s to %s.", push_item.name, marketplace)
-            self.cloud_instance(marketplace).upload(push_item)
+            pi, _ = self.cloud_instance(marketplace).upload(push_item)
             log.debug("Upload finished for %s on %s", push_item.name, marketplace)
         except Exception as exc:
             log.error("Failed to upload %s: %s", push_item.name, str(exc))
-            return "UPLOADFAILED"
-        return push_item.state
+            pi = evolve(push_item, state="UPLOADFAILED")
+        return pi
 
-    def _publish(self, marketplace: str, push_item: VMIPushItem, pre_push: bool = True) -> str:
+    def _publish(
+        self, marketplace: str, push_item: VMIPushItem, pre_push: bool = True
+    ) -> VMIPushItem:
         """
         Publish the VM image to all required marketplace listings.
 
@@ -94,7 +96,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                 If True it will only associate the images without publishing, if possible.
                 This defaults to True
         Returns:
-            The state of the push item after publishing.
+            The push item after publishing.
         """
         try:
             for dest in push_item.dest:
@@ -106,14 +108,15 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                 )
                 single_dest_item = evolve(push_item, dest=dest.destination)
 
-                self.cloud_instance(marketplace).publish(
+                pi, _ = self.cloud_instance(marketplace).publish(
                     single_dest_item, nochannel=pre_push, overwrite=dest.overwrite
                 )
-            # Once we process all destinations
+            # Once we process all destinations we set back the list of destinations
+            pi = evolve(pi, dest=push_item.dest, state="PUSHED")
         except Exception as exc:
             log.error("Failed to publish %s: %s", push_item.name, str(exc))
-            return "NOTPUSHED"
-        return "PUSHED"
+            pi = evolve(push_item, state="NOTPUSHED")
+        return pi
 
     def _push_to_cloud(self, mapped_item: MappedVMIPushItem) -> List[Dict[str, Any]]:
         """
@@ -128,7 +131,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
         res = []
         for marketplace in mapped_item.marketplaces:
             # Upload the VM image to the marketplace
-            mapped_item.state = self._upload(marketplace, mapped_item.push_item)
+            mapped_item.push_item = self._upload(marketplace, mapped_item.push_item)
 
             # Associate image with Product/Offer/Plan and publish
             if mapped_item.state != "UPLOADFAILED":
@@ -139,14 +142,14 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                 #
                 # Then this first `_publish` call is intended to only associate the image with
                 # all the offers/plans but not change it to live, when this is applicable.
-                mapped_item.state = self._publish(marketplace, mapped_item.push_item)
+                mapped_item.push_item = self._publish(marketplace, mapped_item.push_item)
 
                 # Once we associated all the images with their offer/plans it's now safe to call
                 # again the publish if and only if `pre_push == False`.
                 # The indepondent operation will guarantee that the images are already associated
                 # with the Product/Offer/Plan and just the go-live part is called.
                 if not self.args.pre_push:
-                    mapped_item.state = self._publish(
+                    mapped_item.push_item = self._publish(
                         marketplace, mapped_item.push_item, pre_push=False
                     )
 
