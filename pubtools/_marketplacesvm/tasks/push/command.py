@@ -4,11 +4,13 @@ import json
 import logging
 import os
 import sys
+from copy import copy
 from typing import Any, Dict, Iterator, List
 
 from attrs import asdict, evolve
 from more_executors import Executors
 from pushsource import Source, VMIPushItem
+from starmap_client.models import Destination, QueryResponse
 
 from ...arguments import SplitAndExtend
 from ...services import CloudService, CollectorService, StarmapService
@@ -57,8 +59,43 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             log.info("Retrieving the mappings for %s from %s", item.name, self.args.starmap_url)
             binfo = item.build_info
             query = self.starmap.query_image_by_name(name=binfo.name, version=binfo.version)
+            query = self._apply_starmap_overrides(query)
             mapped_items.append(MappedVMIPushItem(item, query.clouds))
         return mapped_items
+
+    def _apply_starmap_overrides(self, query: QueryResponse) -> QueryResponse:
+        """
+        Override the StArMap destinations when they're given by command line args.
+
+        Args:
+            query
+                The original StArMap response
+
+        Returns:
+            The original response if no destinations are provided by command line or
+            a new response with the changed destinations.
+        """
+        if not self.args.repo:  # No destinations given by command line args
+            return query
+
+        # Helper function to deserialize the JSON destinations
+        def make_destination(json: Dict[str, Any]) -> Destination:
+            data = copy(json)  # to prevent messing with the original dict
+            data.setdefault("overwrite", False)
+            data.setdefault("architecture", "x86_64")
+            return Destination.from_json(data)
+
+        # For each cloud convert the destinations into Destination object
+        mapping = self.args.repo
+        for cloud_name in mapping:
+            if isinstance(mapping[cloud_name], list):  # List of destinations
+                destinations = mapping[cloud_name]
+            else:  # Single destination
+                destinations = [mapping[cloud_name]]
+
+            # NOTE: dictionary is mutable thus we can do this even though QueryResponse is frozen.
+            query.clouds[cloud_name] = [make_destination(d) for d in destinations]
+        return query
 
     def _upload(self, marketplace: str, push_item: VMIPushItem) -> VMIPushItem:
         """
@@ -238,6 +275,14 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                 "available to end-users, then stop. May be used to improve the "
                 "performance of a subsequent full push."
             ),
+        )
+
+        self.parser.add_argument(
+            "--repo",
+            help="Override the destinations of a cloud marketplace account for all push items. "
+            "e.g: {'aws-na': [{'destination': 'c39fd...', overwrite: true}, ...]}",
+            type=json.loads,
+            default={},
         )
 
         self.parser.add_argument(
