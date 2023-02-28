@@ -5,7 +5,7 @@ import pytest
 from pushsource import AmiPushItem, VHDPushItem
 from starmap_client.models import Destination, QueryResponse
 
-from pubtools._marketplacesvm.tasks.push.items import MappedVMIPushItem
+from pubtools._marketplacesvm.tasks.push.items import MappedVMIPushItem, State
 
 
 def test_mapped_item_properties(
@@ -24,11 +24,11 @@ def test_mapped_item_properties(
         mapped_item = MappedVMIPushItem(push_item, starmap_response.clouds)
 
         # -- Test Property: state
-        assert mapped_item.state == "PENDING"  # Default from Source
+        assert mapped_item.state == State.PENDING  # Default from Source
 
         # Test updating the state
-        mapped_item.state = "TEST"
-        assert mapped_item._push_item.state == "TEST"
+        mapped_item.state = State.PUSHED
+        assert mapped_item._push_item.state == State.PUSHED
 
         # Test invalid state
         expected_err = "Expected to receive a string for state, got: <class 'list'>"

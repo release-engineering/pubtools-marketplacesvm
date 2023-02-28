@@ -13,7 +13,7 @@ from pushsource import Source, VMIPushItem
 from ...arguments import SplitAndExtend
 from ...services import CloudService, CollectorService, StarmapService
 from ...task import MarketplacesVMTask
-from ..push.items import MappedVMIPushItem
+from ..push.items import MappedVMIPushItem, State
 
 log = logging.getLogger("pubtools.marketplacesvm")
 
@@ -78,7 +78,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             log.debug("Upload finished for %s on %s", push_item.name, marketplace)
         except Exception as exc:
             log.error("Failed to upload %s: %s", push_item.name, str(exc))
-            pi = evolve(push_item, state="UPLOADFAILED")
+            pi = evolve(push_item, state=State.UPLOADFAILED)
         return pi
 
     def _publish(
@@ -112,10 +112,10 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                     single_dest_item, nochannel=pre_push, overwrite=dest.overwrite
                 )
             # Once we process all destinations we set back the list of destinations
-            pi = evolve(pi, dest=push_item.dest, state="PUSHED")
+            pi = evolve(pi, dest=push_item.dest, state=State.PUSHED)
         except Exception as exc:
             log.error("Failed to publish %s: %s", push_item.name, str(exc))
-            pi = evolve(push_item, state="NOTPUSHED")
+            pi = evolve(push_item, state=State.NOTPUSHED)
         return pi
 
     def _push_to_cloud(self, mapped_item: MappedVMIPushItem) -> List[Dict[str, Any]]:
@@ -134,7 +134,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             mapped_item.push_item = self._upload(marketplace, mapped_item.push_item)
 
             # Associate image with Product/Offer/Plan and publish
-            if mapped_item.state != "UPLOADFAILED":
+            if mapped_item.state != State.UPLOADFAILED:
                 # The first publish should always be with `pre_push` set True because it might
                 # happen that one offer with multiple plans would receive the same image and
                 # we can't `publish` the offer with just the first plan changed and try to change
@@ -253,7 +253,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
         # process result for failures
         failed = False
         for r in result:
-            if r.get("state", "") != "PUSHED":
+            if r.get("state", "") != State.PUSHED:
                 failed = True
 
         # send to collector
