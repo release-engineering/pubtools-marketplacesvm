@@ -119,6 +119,14 @@ class MappedVMIPushItem:
         self._push_item = evolve(pi, **new_attrs)
         return self._push_item
 
+    @push_item.setter
+    def push_item(self, x: Any) -> None:
+        if not isinstance(x, VMIPushItem):
+            raise ValueError(
+                f"Expected push_item to be an instance of \"VMIPushItem\", got: {type(x)}"
+            )
+        self._push_item = x
+
     def get_metadata_for_mapped_item(self, destination: Destination) -> Dict[str, Any]:
         """
         Return all metadata related to a push item containing a single destination.

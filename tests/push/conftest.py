@@ -4,6 +4,7 @@ from typing import Any, Dict, Generator
 from unittest import mock
 
 import pytest
+from attrs import evolve
 from pushsource import AmiPushItem, AmiRelease, KojiBuildInfo, VHDPushItem, VMIRelease
 from starmap_client.models import QueryResponse
 
@@ -114,3 +115,25 @@ def starmap_query_aws(starmap_response_aws: Dict[str, Any]) -> QueryResponse:
 @pytest.fixture
 def starmap_query_azure(starmap_response_azure: Dict[str, Any]) -> QueryResponse:
     return QueryResponse.from_json(starmap_response_azure)
+
+
+@pytest.fixture
+def mapped_ami_push_item(
+    ami_push_item: AmiPushItem, starmap_query_aws: QueryResponse
+) -> AmiPushItem:
+    destinations = []
+    for _, dest_list in starmap_query_aws.clouds.items():
+        for dest in dest_list:
+            destinations.append(dest)
+    return evolve(ami_push_item, dest=destinations)
+
+
+@pytest.fixture
+def mapped_vhd_push_item(
+    vhd_push_item: VHDPushItem, starmap_query_azure: QueryResponse
+) -> VHDPushItem:
+    destinations = []
+    for _, dest_list in starmap_query_azure.clouds.items():
+        for dest in dest_list:
+            destinations.append(dest)
+    return evolve(vhd_push_item, dest=destinations)
