@@ -27,31 +27,7 @@ class MappedVMIPushItem:
 
     @property
     def state(self) -> str:
-        """
-        Get the wrapped push item state.
-
-        The expected states are:
-
-        +--------------+-----------+------------------------------------------+
-        | State        | Exit type | Description                              |
-        +==============+===========+==========================================+
-        | PENDING      | Success   | The image is waiting for one of these    |
-        |              |           | operations:                              |
-        |              |           |                                          |
-        |              |           | - Upload to the cloud marketplace        |
-        |              |           | - Vulnerability scan result (AWS only)   |
-        |              |           | - Product listing go live                |
-        +--------------+-----------+------------------------------------------+
-        | PUSHED       | Success   | The image was successfully uploaded and  |
-        |              |           | associated with a product listing.       |
-        +--------------+-----------+------------------------------------------+
-        | UPLOADFAILED | Failure   | Failed to upload this content to the     |
-        |              |           | remote server.                           |
-        +--------------+-----------+------------------------------------------+
-        | NOTPUSHED    | Failure   | An error occurred while publishing       |
-        |              |           | the push item to a product listing.      |
-        +--------------+-----------+------------------------------------------+
-        """
+        """Get the wrapped push item state."""
         return self._push_item.state
 
     @state.setter
@@ -120,11 +96,7 @@ class MappedVMIPushItem:
         return self._push_item
 
     @push_item.setter
-    def push_item(self, x: Any) -> None:
-        if not isinstance(x, VMIPushItem):
-            raise ValueError(
-                f"Expected push_item to be an instance of \"VMIPushItem\", got: {type(x)}"
-            )
+    def push_item(self, x: VMIPushItem) -> None:
         self._push_item = x
 
     def get_metadata_for_mapped_item(self, destination: Destination) -> Dict[str, Any]:
