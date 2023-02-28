@@ -105,12 +105,3 @@ def test_get_metadata_for_mapped_item(
         }
     )
     assert mapped_item.get_metadata_for_mapped_item(dest) == {}
-
-
-def test_set_invalid_push_item(
-    vhd_push_item: VHDPushItem, starmap_query_azure: QueryResponse
-) -> None:
-    mapped_item = MappedVMIPushItem(vhd_push_item, starmap_query_azure.clouds)
-    expected_err = 'Expected push_item to be an instance of "VMIPushItem", got: <class \'int\'>'
-    with pytest.raises(ValueError, match=expected_err):
-        mapped_item.push_item = 1

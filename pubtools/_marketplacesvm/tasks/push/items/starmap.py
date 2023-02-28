@@ -120,11 +120,7 @@ class MappedVMIPushItem:
         return self._push_item
 
     @push_item.setter
-    def push_item(self, x: Any) -> None:
-        if not isinstance(x, VMIPushItem):
-            raise ValueError(
-                f"Expected push_item to be an instance of \"VMIPushItem\", got: {type(x)}"
-            )
+    def push_item(self, x: VMIPushItem) -> None:
         self._push_item = x
 
     def get_metadata_for_mapped_item(self, destination: Destination) -> Dict[str, Any]:
