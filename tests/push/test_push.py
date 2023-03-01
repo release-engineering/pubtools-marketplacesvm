@@ -85,7 +85,7 @@ def test_do_push(
     starmap_calls = [mock.call(name="test-build", version="7.0") for _ in range(2)]
     fake_starmap.query_image_by_name.assert_has_calls(starmap_calls)
     # get_provider, upload and publish calls for "aws-na", "aws-emea", "azure-na"
-    assert fake_cloud_instance.call_count == 17
+    assert fake_cloud_instance.call_count == 15
 
 
 @mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.cloud_instance")
