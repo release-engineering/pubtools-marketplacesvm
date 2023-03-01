@@ -99,7 +99,14 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             The push item after publishing.
         """
         try:
+            last_destination = ""
             for dest in push_item.dest:
+                # We don't want to publish again the same offer when pre-push == False (go live)
+                curr_dest = dest.destination.split("/")[0]  # get just the offer name, if applicable
+                if not pre_push and curr_dest == last_destination:
+                    log.debug("Push already done for offer %s", curr_dest)
+                    continue
+
                 log.debug(
                     "Pushing the item \"%s\" (pre-push=%s) to %s.",
                     push_item.name,
@@ -111,6 +118,8 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                 pi, _ = self.cloud_instance(marketplace).publish(
                     single_dest_item, nochannel=pre_push, overwrite=dest.overwrite
                 )
+
+                last_destination = curr_dest
             # Once we process all destinations we set back the list of destinations
             pi = evolve(pi, dest=push_item.dest, state=State.PUSHED)
         except Exception as exc:
