@@ -1,6 +1,6 @@
 [    INFO] Loading items from koji:https://fakekoji.com?vmi_build=ami_build,azure_build
-[   DEBUG] Retrieving the mappings for ami_pushitem.
-[   DEBUG] Retrieving the mappings for vhd_pushitem.
+[    INFO] Retrieving the mappings for ami_pushitem from https://starmap-example.com
+[    INFO] Retrieving the mappings for vhd_pushitem from https://starmap-example.com
 [ WARNING] Missing information for the attribute ami_pushitem.src, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.build, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.description, leaving it unset.
@@ -13,17 +13,17 @@
 [ WARNING] Missing information for the attribute ami_pushitem.ena_support, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.billing_codes, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.image_id, leaving it unset.
-[   DEBUG] Uploading the item ami_pushitem to aws-na.
-[   DEBUG] Upload finished for ami_pushitem on aws-na
-[   DEBUG] Pushing the item "ami_pushitem" (pre-push=True) to ffffffff-ffff-ffff-ffff-ffffffffffff.
+[    INFO] Uploading the item ami_pushitem to aws-na.
+[    INFO] Upload finished for ami_pushitem on aws-na
+[    INFO] Pushing the item "ami_pushitem" (pre-push=True) to ffffffff-ffff-ffff-ffff-ffffffffffff on aws-na.
 [   ERROR] Failed to publish ami_pushitem: Random exception
-[   DEBUG] Pushing the item "ami_pushitem" (pre-push=False) to ffffffff-ffff-ffff-ffff-ffffffffffff.
+[    INFO] Pushing the item "ami_pushitem" (pre-push=False) to ffffffff-ffff-ffff-ffff-ffffffffffff on aws-na.
 [   ERROR] Failed to publish ami_pushitem: 
-[   DEBUG] Uploading the item ami_pushitem to aws-emea.
-[   DEBUG] Upload finished for ami_pushitem on aws-emea
-[   DEBUG] Pushing the item "ami_pushitem" (pre-push=True) to 00000000-0000-0000-0000-000000000000.
+[    INFO] Uploading the item ami_pushitem to aws-emea.
+[    INFO] Upload finished for ami_pushitem on aws-emea
+[    INFO] Pushing the item "ami_pushitem" (pre-push=True) to 00000000-0000-0000-0000-000000000000 on aws-emea.
 [   ERROR] Failed to publish ami_pushitem: 
-[   DEBUG] Pushing the item "ami_pushitem" (pre-push=False) to 00000000-0000-0000-0000-000000000000.
+[    INFO] Pushing the item "ami_pushitem" (pre-push=False) to 00000000-0000-0000-0000-000000000000 on aws-emea.
 [   ERROR] Failed to publish ami_pushitem: 
 [ WARNING] Missing information for the attribute vhd_pushitem.src, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.build, leaving it unset.
@@ -34,11 +34,11 @@
 [ WARNING] Missing information for the attribute vhd_pushitem.disk_version, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.recommended_sizes, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.sas_uri, leaving it unset.
-[   DEBUG] Uploading the item vhd_pushitem to azure-na.
-[   DEBUG] Upload finished for vhd_pushitem on azure-na
-[   DEBUG] Pushing the item "vhd_pushitem" (pre-push=True) to destination_offer_main/plan1.
+[    INFO] Uploading the item vhd_pushitem to azure-na.
+[    INFO] Upload finished for vhd_pushitem on azure-na
+[    INFO] Pushing the item "vhd_pushitem" (pre-push=True) to destination_offer_main/plan1 on azure-na.
 [   ERROR] Failed to publish vhd_pushitem: 
-[   DEBUG] Pushing the item "vhd_pushitem" (pre-push=False) to destination_offer_main/plan1.
+[    INFO] Pushing the item "vhd_pushitem" (pre-push=False) to destination_offer_main/plan1 on azure-na.
 [   ERROR] Failed to publish vhd_pushitem: 
 [    INFO] Collecting results
 [   ERROR] Marketplace VM push failed

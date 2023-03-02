@@ -54,7 +54,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
         """
         mapped_items = []
         for item in self.raw_items:
-            log.debug("Retrieving the mappings for %s." % item.name)
+            log.info("Retrieving the mappings for %s from %s", item.name, self.args.starmap_url)
             binfo = item.build_info
             query = self.starmap.query_image_by_name(name=binfo.name, version=binfo.version)
             mapped_items.append(MappedVMIPushItem(item, query.clouds))
@@ -73,9 +73,9 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             The push item after the upload.
         """
         try:
-            log.debug("Uploading the item %s to %s.", push_item.name, marketplace)
+            log.info("Uploading the item %s to %s.", push_item.name, marketplace)
             pi, _ = self.cloud_instance(marketplace).upload(push_item)
-            log.debug("Upload finished for %s on %s", push_item.name, marketplace)
+            log.info("Upload finished for %s on %s", push_item.name, marketplace)
         except Exception as exc:
             log.error("Failed to upload %s: %s", push_item.name, str(exc))
             pi = evolve(push_item, state=State.UPLOADFAILED)
@@ -104,14 +104,15 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                 # We don't want to publish again the same offer when pre-push == False (go live)
                 curr_dest = dest.destination.split("/")[0]  # get just the offer name, if applicable
                 if not pre_push and curr_dest == last_destination:
-                    log.debug("Push already done for offer %s", curr_dest)
+                    log.info("Push already done for offer %s", curr_dest)
                     continue
 
-                log.debug(
-                    "Pushing the item \"%s\" (pre-push=%s) to %s.",
+                log.info(
+                    "Pushing the item \"%s\" (pre-push=%s) to %s on %s.",
                     push_item.name,
                     pre_push,
                     dest.destination,
+                    marketplace,
                 )
                 single_dest_item = evolve(push_item, dest=dest.destination)
 

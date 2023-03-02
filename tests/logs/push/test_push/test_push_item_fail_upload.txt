@@ -1,6 +1,6 @@
 [    INFO] Loading items from koji:https://fakekoji.com?vmi_build=ami_build,azure_build
-[   DEBUG] Retrieving the mappings for ami_pushitem.
-[   DEBUG] Retrieving the mappings for vhd_pushitem.
+[    INFO] Retrieving the mappings for ami_pushitem from https://starmap-example.com
+[    INFO] Retrieving the mappings for vhd_pushitem from https://starmap-example.com
 [ WARNING] Missing information for the attribute ami_pushitem.src, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.build, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.description, leaving it unset.
@@ -13,9 +13,9 @@
 [ WARNING] Missing information for the attribute ami_pushitem.ena_support, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.billing_codes, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.image_id, leaving it unset.
-[   DEBUG] Uploading the item ami_pushitem to aws-na.
+[    INFO] Uploading the item ami_pushitem to aws-na.
 [   ERROR] Failed to upload ami_pushitem: Random exception
-[   DEBUG] Uploading the item ami_pushitem to aws-emea.
+[    INFO] Uploading the item ami_pushitem to aws-emea.
 [   ERROR] Failed to upload ami_pushitem: 
 [ WARNING] Missing information for the attribute vhd_pushitem.src, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.build, leaving it unset.
@@ -26,7 +26,7 @@
 [ WARNING] Missing information for the attribute vhd_pushitem.disk_version, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.recommended_sizes, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.sas_uri, leaving it unset.
-[   DEBUG] Uploading the item vhd_pushitem to azure-na.
+[    INFO] Uploading the item vhd_pushitem to azure-na.
 [   ERROR] Failed to upload vhd_pushitem: 
 [    INFO] Collecting results
 [   ERROR] Marketplace VM push failed

@@ -1,6 +1,6 @@
 [    INFO] Loading items from koji:https://fakekoji.com?vmi_build=unknown_build,azure_build
 [ WARNING] Push Item foo at bar is not a VMIPushItem, dropping it from the queue.
-[   DEBUG] Retrieving the mappings for ami_pushitem.
+[    INFO] Retrieving the mappings for ami_pushitem from https://starmap-example.com
 [ WARNING] Missing information for the attribute ami_pushitem.src, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.build, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.description, leaving it unset.
@@ -13,13 +13,13 @@
 [ WARNING] Missing information for the attribute ami_pushitem.ena_support, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.billing_codes, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.image_id, leaving it unset.
-[   DEBUG] Uploading the item ami_pushitem to aws-na.
-[   DEBUG] Upload finished for ami_pushitem on aws-na
-[   DEBUG] Pushing the item "ami_pushitem" (pre-push=True) to ffffffff-ffff-ffff-ffff-ffffffffffff.
-[   DEBUG] Pushing the item "ami_pushitem" (pre-push=False) to ffffffff-ffff-ffff-ffff-ffffffffffff.
-[   DEBUG] Uploading the item ami_pushitem to aws-emea.
-[   DEBUG] Upload finished for ami_pushitem on aws-emea
-[   DEBUG] Pushing the item "ami_pushitem" (pre-push=True) to 00000000-0000-0000-0000-000000000000.
-[   DEBUG] Pushing the item "ami_pushitem" (pre-push=False) to 00000000-0000-0000-0000-000000000000.
+[    INFO] Uploading the item ami_pushitem to aws-na.
+[    INFO] Upload finished for ami_pushitem on aws-na
+[    INFO] Pushing the item "ami_pushitem" (pre-push=True) to ffffffff-ffff-ffff-ffff-ffffffffffff on aws-na.
+[    INFO] Pushing the item "ami_pushitem" (pre-push=False) to ffffffff-ffff-ffff-ffff-ffffffffffff on aws-na.
+[    INFO] Uploading the item ami_pushitem to aws-emea.
+[    INFO] Upload finished for ami_pushitem on aws-emea
+[    INFO] Pushing the item "ami_pushitem" (pre-push=True) to 00000000-0000-0000-0000-000000000000 on aws-emea.
+[    INFO] Pushing the item "ami_pushitem" (pre-push=False) to 00000000-0000-0000-0000-000000000000 on aws-emea.
 [    INFO] Collecting results
 [    INFO] Marketplace VM push completed
