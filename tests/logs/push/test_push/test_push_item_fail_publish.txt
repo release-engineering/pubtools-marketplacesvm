@@ -18,13 +18,13 @@
 [    INFO] Pushing the item "ami_pushitem" (pre-push=True) to ffffffff-ffff-ffff-ffff-ffffffffffff on aws-na.
 [   ERROR] Failed to publish ami_pushitem: Random exception
 [    INFO] Pushing the item "ami_pushitem" (pre-push=False) to ffffffff-ffff-ffff-ffff-ffffffffffff on aws-na.
-[   ERROR] Failed to publish ami_pushitem: 
+[   ERROR] Failed to publish ami_pushitem: Random exception
 [    INFO] Uploading the item ami_pushitem to aws-emea.
 [    INFO] Upload finished for ami_pushitem on aws-emea
 [    INFO] Pushing the item "ami_pushitem" (pre-push=True) to 00000000-0000-0000-0000-000000000000 on aws-emea.
-[   ERROR] Failed to publish ami_pushitem: 
+[   ERROR] Failed to publish ami_pushitem: Random exception
 [    INFO] Pushing the item "ami_pushitem" (pre-push=False) to 00000000-0000-0000-0000-000000000000 on aws-emea.
-[   ERROR] Failed to publish ami_pushitem: 
+[   ERROR] Failed to publish ami_pushitem: Random exception
 [ WARNING] Missing information for the attribute vhd_pushitem.src, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.build, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.description, leaving it unset.
@@ -37,9 +37,9 @@
 [    INFO] Uploading the item vhd_pushitem to azure-na.
 [    INFO] Upload finished for vhd_pushitem on azure-na
 [    INFO] Pushing the item "vhd_pushitem" (pre-push=True) to destination_offer_main/plan1 on azure-na.
-[   ERROR] Failed to publish vhd_pushitem: 
+[   ERROR] Failed to publish vhd_pushitem: Random exception
 [    INFO] Pushing the item "vhd_pushitem" (pre-push=False) to destination_offer_main/plan1 on azure-na.
-[   ERROR] Failed to publish vhd_pushitem: 
+[   ERROR] Failed to publish vhd_pushitem: Random exception
 [    INFO] Collecting results
 [   ERROR] Marketplace VM push failed
 # Raised: 30

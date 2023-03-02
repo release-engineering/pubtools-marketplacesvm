@@ -7,9 +7,24 @@ from _pytest.capture import CaptureFixture
 from pushsource import AmiPushItem, PushItem, VHDPushItem
 from starmap_client.models import QueryResponse
 
+from pubtools._marketplacesvm.cloud_providers.base import CloudProvider
 from pubtools._marketplacesvm.tasks.push import MarketplacesVMPush, entry_point
 
 from ..command import CommandTester
+
+
+class FakeCloudProvider(CloudProvider):
+    """Define a fake cloud provider for testing."""
+
+    @classmethod
+    def from_credentials(cls, _):
+        return cls()
+
+    def _upload(self, push_item):
+        return push_item, True
+
+    def _publish(self, push_item, nochannel, _):
+        return push_item, nochannel
 
 
 @pytest.fixture()
@@ -31,32 +46,9 @@ def fake_starmap(
 
 
 @pytest.fixture()
-def fake_cloud_instance_calls(
-    mapped_ami_push_item: AmiPushItem, mapped_vhd_push_item: VHDPushItem
-) -> mock.MagicMock:
-    """Provide the return tuples for "upload" and "publish" methods."""
-    fake_instance = mock.MagicMock()
-    fake_instance.upload.side_effect = [
-        (mapped_ami_push_item, True),  # aws-na
-        (mapped_ami_push_item, True),  # aws-emea
-        (mapped_vhd_push_item, True),  # azure-na
-    ]
-    # Note: [len(dest) * 2] as "publish" runs 2 times: when keepdraft is False and then True
-    ami_items = [(mapped_ami_push_item, True) for _ in range(len(mapped_ami_push_item.dest) * 2)]
-    vhd_items = [(mapped_vhd_push_item, True) for _ in range(len(mapped_vhd_push_item.dest) * 2)]
-    publish_side_effect = []
-    publish_side_effect.extend(ami_items)
-    publish_side_effect.extend(vhd_items)
-    fake_instance.publish.side_effect = publish_side_effect
-    return fake_instance
-
-
-@pytest.fixture()
-def fake_cloud_instance(
-    fake_cloud_instance_calls: mock.MagicMock,
-) -> Generator[mock.MagicMock, None, None]:
+def fake_cloud_instance() -> Generator[mock.MagicMock, None, None]:
     with mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.cloud_instance") as m:
-        m.return_value = fake_cloud_instance_calls
+        m.return_value = FakeCloudProvider()
         yield m
 
 
@@ -87,18 +79,15 @@ def test_do_push(
     assert fake_cloud_instance.call_count == 11
 
 
-@mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.cloud_instance")
 @mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
 def test_not_vmi_push_item(
     mock_source: mock.MagicMock,
     fake_cloud_instance: mock.MagicMock,
-    fake_cloud_instance_calls: mock.MagicMock,
     fake_starmap: mock.MagicMock,
     ami_push_item: AmiPushItem,
     command_tester: CommandTester,
 ) -> None:
     """Ensure non VMI pushitem is skipped from inclusion in push list."""
-    fake_cloud_instance.return_value = fake_cloud_instance_calls
     mock_source.get.return_value.__enter__.return_value = [
         PushItem(name="foo", src="bar"),
         ami_push_item,
@@ -113,7 +102,7 @@ def test_not_vmi_push_item(
             "--credentials",
             "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
             "--debug",
-            "koji:https://fakekoji.com?vmi_build=unknown_build,azure_build",
+            "koji:https://fakekoji.com?vmi_build=unknown_build,ami_build",
         ],
     )
 
@@ -155,7 +144,6 @@ def test_push_item_fail_upload(
 @mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.cloud_instance")
 def test_push_item_fail_publish(
     mock_cloud_instance: mock.MagicMock,
-    fake_cloud_instance_calls: mock.MagicMock,
     fake_source: mock.MagicMock,
     fake_starmap: mock.MagicMock,
     ami_push_item: AmiPushItem,
@@ -163,8 +151,12 @@ def test_push_item_fail_publish(
     command_tester: CommandTester,
 ) -> None:
     """Test a push which fails on publish for AWS."""
-    fake_cloud_instance_calls.publish.side_effect = [Exception("Random exception")]
-    mock_cloud_instance.return_value = fake_cloud_instance_calls
+
+    class FakePublish(FakeCloudProvider):
+        def _publish(self, push_item, nochannel, _):
+            raise Exception("Random exception")
+
+    mock_cloud_instance.return_value = FakePublish()
 
     command_tester.test(
         lambda: entry_point(MarketplacesVMPush),
