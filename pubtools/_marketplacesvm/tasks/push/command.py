@@ -114,7 +114,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                     dest.destination,
                     marketplace,
                 )
-                single_dest_item = evolve(push_item, dest=dest.destination)
+                single_dest_item = evolve(push_item, dest=[dest.destination])
 
                 pi, _ = self.cloud_instance(marketplace).publish(
                     single_dest_item, nochannel=pre_push, overwrite=dest.overwrite
