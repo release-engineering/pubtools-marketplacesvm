@@ -16,14 +16,10 @@
 [   DEBUG] Uploading the item ami_pushitem to aws-na.
 [   DEBUG] Upload finished for ami_pushitem on aws-na
 [   DEBUG] Pushing the item "ami_pushitem" (pre-push=True) to ffffffff-ffff-ffff-ffff-ffffffffffff.
-[   DEBUG] Pushing the item "ami_pushitem" (pre-push=True) to 00000000-0000-0000-0000-000000000000.
 [   DEBUG] Pushing the item "ami_pushitem" (pre-push=False) to ffffffff-ffff-ffff-ffff-ffffffffffff.
-[   DEBUG] Pushing the item "ami_pushitem" (pre-push=False) to 00000000-0000-0000-0000-000000000000.
 [   DEBUG] Uploading the item ami_pushitem to aws-emea.
 [   DEBUG] Upload finished for ami_pushitem on aws-emea
-[   DEBUG] Pushing the item "ami_pushitem" (pre-push=True) to ffffffff-ffff-ffff-ffff-ffffffffffff.
 [   DEBUG] Pushing the item "ami_pushitem" (pre-push=True) to 00000000-0000-0000-0000-000000000000.
-[   DEBUG] Pushing the item "ami_pushitem" (pre-push=False) to ffffffff-ffff-ffff-ffff-ffffffffffff.
 [   DEBUG] Pushing the item "ami_pushitem" (pre-push=False) to 00000000-0000-0000-0000-000000000000.
 [    INFO] Collecting results
 [    INFO] Marketplace VM push completed

@@ -21,9 +21,9 @@
 [   ERROR] Failed to publish ami_pushitem: 
 [   DEBUG] Uploading the item ami_pushitem to aws-emea.
 [   DEBUG] Upload finished for ami_pushitem on aws-emea
-[   DEBUG] Pushing the item "ami_pushitem" (pre-push=True) to ffffffff-ffff-ffff-ffff-ffffffffffff.
+[   DEBUG] Pushing the item "ami_pushitem" (pre-push=True) to 00000000-0000-0000-0000-000000000000.
 [   ERROR] Failed to publish ami_pushitem: 
-[   DEBUG] Pushing the item "ami_pushitem" (pre-push=False) to ffffffff-ffff-ffff-ffff-ffffffffffff.
+[   DEBUG] Pushing the item "ami_pushitem" (pre-push=False) to 00000000-0000-0000-0000-000000000000.
 [   ERROR] Failed to publish ami_pushitem: 
 [ WARNING] Missing information for the attribute vhd_pushitem.src, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.build, leaving it unset.

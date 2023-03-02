@@ -45,8 +45,7 @@ def fake_cloud_instance_calls(
     ami_items = [(mapped_ami_push_item, True) for _ in range(len(mapped_ami_push_item.dest) * 2)]
     vhd_items = [(mapped_vhd_push_item, True) for _ in range(len(mapped_vhd_push_item.dest) * 2)]
     publish_side_effect = []
-    for _ in range(2):  # aws-na + aws-emea
-        publish_side_effect.extend(ami_items)
+    publish_side_effect.extend(ami_items)
     publish_side_effect.extend(vhd_items)
     fake_instance.publish.side_effect = publish_side_effect
     return fake_instance
@@ -85,7 +84,7 @@ def test_do_push(
     starmap_calls = [mock.call(name="test-build", version="7.0") for _ in range(2)]
     fake_starmap.query_image_by_name.assert_has_calls(starmap_calls)
     # get_provider, upload and publish calls for "aws-na", "aws-emea", "azure-na"
-    assert fake_cloud_instance.call_count == 15
+    assert fake_cloud_instance.call_count == 11
 
 
 @mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.cloud_instance")
@@ -120,7 +119,7 @@ def test_not_vmi_push_item(
 
     fake_starmap.query_image_by_name.assert_called_once()
     # get_provider, upload and publish calls for "aws-na", "aws-emea"
-    assert fake_cloud_instance.call_count == 10
+    assert fake_cloud_instance.call_count == 6
 
 
 @mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.cloud_instance")

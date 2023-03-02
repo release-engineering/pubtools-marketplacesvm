@@ -59,6 +59,10 @@ def test_mapped_item_properties(
         # -- Test wrapped _push_item changes
         assert mapped_item._push_item == mapped_item.push_item
 
+        # -- Test invalid marketplace
+        with pytest.raises(ValueError, match="No such marketplace foo"):
+            mapped_item.get_push_item_for_marketplace("foo")
+
 
 def test_mapped_item_fills_missing_attributes(
     ami_push_item: AmiPushItem, starmap_response_aws: Dict[str, Any]

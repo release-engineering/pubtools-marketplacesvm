@@ -99,6 +99,23 @@ class MappedVMIPushItem:
     def push_item(self, x: VMIPushItem) -> None:
         self._push_item = x
 
+    def get_push_item_for_marketplace(self, account: str) -> VMIPushItem:
+        """
+        Return a VMIPushItem with the destinations for just a given marketplace acconut.
+
+        Args:
+            account:
+                The account alias to retrieve the specific destinations from
+        Returns:
+            The VMIPushItem with the destinations for the given marketplace account.
+        """
+        if account not in self.marketplaces:
+            raise ValueError(f"No such marketplace {account}")
+
+        destinations = self.clouds[account]
+        push_item = self.push_item
+        return evolve(push_item, dest=destinations)
+
     def get_metadata_for_mapped_item(self, destination: Destination) -> Dict[str, Any]:
         """
         Return all metadata related to a push item containing a single destination.

@@ -140,7 +140,9 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
         res = []
         for marketplace in mapped_item.marketplaces:
             # Upload the VM image to the marketplace
-            mapped_item.push_item = self._upload(marketplace, mapped_item.push_item)
+            mapped_item.push_item = self._upload(
+                marketplace, mapped_item.get_push_item_for_marketplace(marketplace)
+            )
 
             # Associate image with Product/Offer/Plan and publish
             if mapped_item.state != State.UPLOADFAILED:
@@ -151,7 +153,9 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                 #
                 # Then this first `_publish` call is intended to only associate the image with
                 # all the offers/plans but not change it to live, when this is applicable.
-                mapped_item.push_item = self._publish(marketplace, mapped_item.push_item)
+                mapped_item.push_item = self._publish(
+                    marketplace, mapped_item.get_push_item_for_marketplace(marketplace)
+                )
 
                 # Once we associated all the images with their offer/plans it's now safe to call
                 # again the publish if and only if `pre_push == False`.
@@ -159,7 +163,9 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                 # with the Product/Offer/Plan and just the go-live part is called.
                 if not self.args.pre_push:
                     mapped_item.push_item = self._publish(
-                        marketplace, mapped_item.push_item, pre_push=False
+                        marketplace,
+                        mapped_item.get_push_item_for_marketplace(marketplace),
+                        pre_push=False,
                     )
 
             # Update the destinations from List[Destination] to List[str] for collection
