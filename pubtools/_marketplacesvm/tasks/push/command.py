@@ -54,7 +54,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
         """
         mapped_items = []
         for item in self.raw_items:
-            log.debug("Retrieving the mappings for %s." % item.name)
+            log.info("Retrieving the mappings for %s from %s", item.name, self.args.starmap_url)
             binfo = item.build_info
             query = self.starmap.query_image_by_name(name=binfo.name, version=binfo.version)
             mapped_items.append(MappedVMIPushItem(item, query.clouds))
@@ -73,9 +73,9 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             The push item after the upload.
         """
         try:
-            log.debug("Uploading the item %s to %s.", push_item.name, marketplace)
+            log.info("Uploading the item %s to %s.", push_item.name, marketplace)
             pi, _ = self.cloud_instance(marketplace).upload(push_item)
-            log.debug("Upload finished for %s on %s", push_item.name, marketplace)
+            log.info("Upload finished for %s on %s", push_item.name, marketplace)
         except Exception as exc:
             log.error("Failed to upload %s: %s", push_item.name, str(exc))
             pi = evolve(push_item, state=State.UPLOADFAILED)
@@ -104,14 +104,15 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                 # We don't want to publish again the same offer when pre-push == False (go live)
                 curr_dest = dest.destination.split("/")[0]  # get just the offer name, if applicable
                 if not pre_push and curr_dest == last_destination:
-                    log.debug("Push already done for offer %s", curr_dest)
+                    log.info("Push already done for offer %s", curr_dest)
                     continue
 
-                log.debug(
-                    "Pushing the item \"%s\" (pre-push=%s) to %s.",
+                log.info(
+                    "Pushing the item \"%s\" (pre-push=%s) to %s on %s.",
                     push_item.name,
                     pre_push,
                     dest.destination,
+                    marketplace,
                 )
                 single_dest_item = evolve(push_item, dest=dest.destination)
 
@@ -140,7 +141,9 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
         res = []
         for marketplace in mapped_item.marketplaces:
             # Upload the VM image to the marketplace
-            mapped_item.push_item = self._upload(marketplace, mapped_item.push_item)
+            mapped_item.push_item = self._upload(
+                marketplace, mapped_item.get_push_item_for_marketplace(marketplace)
+            )
 
             # Associate image with Product/Offer/Plan and publish
             if mapped_item.state != State.UPLOADFAILED:
@@ -151,7 +154,9 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                 #
                 # Then this first `_publish` call is intended to only associate the image with
                 # all the offers/plans but not change it to live, when this is applicable.
-                mapped_item.push_item = self._publish(marketplace, mapped_item.push_item)
+                mapped_item.push_item = self._publish(
+                    marketplace, mapped_item.get_push_item_for_marketplace(marketplace)
+                )
 
                 # Once we associated all the images with their offer/plans it's now safe to call
                 # again the publish if and only if `pre_push == False`.
@@ -159,7 +164,9 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                 # with the Product/Offer/Plan and just the go-live part is called.
                 if not self.args.pre_push:
                     mapped_item.push_item = self._publish(
-                        marketplace, mapped_item.push_item, pre_push=False
+                        marketplace,
+                        mapped_item.get_push_item_for_marketplace(marketplace),
+                        pre_push=False,
                     )
 
             # Update the destinations from List[Destination] to List[str] for collection
