@@ -18,7 +18,7 @@ log = logging.getLogger("pubtools.marketplacesvm")
 
 T = TypeVar("T", bound=VMIPushItem)
 
-UPLOAD_CONTAINER_NAME = os.getenv("UPLOAD_CONTAINER_NAME", "pubtools_upload")
+UPLOAD_CONTAINER_NAME = os.getenv("UPLOAD_CONTAINER_NAME", "pubupload")
 
 __CLOUD_PROVIDERS = {}
 

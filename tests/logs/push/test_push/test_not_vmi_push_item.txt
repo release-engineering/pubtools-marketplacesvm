@@ -1,4 +1,4 @@
-[    INFO] Loading items from koji:https://fakekoji.com?vmi_build=unknown_build,azure_build
+[    INFO] Loading items from koji:https://fakekoji.com?vmi_build=unknown_build,ami_build
 [ WARNING] Push Item foo at bar is not a VMIPushItem, dropping it from the queue.
 [    INFO] Retrieving the mappings for ami_pushitem from https://starmap-example.com
 [ WARNING] Missing information for the attribute ami_pushitem.src, leaving it unset.

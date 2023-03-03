@@ -221,7 +221,7 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
             "legacy_sku_id": push_item.legacy_sku_id,
             "image_path": push_item.sas_uri,
             "architecture": push_item.release.arch,
-            "destination": push_item.dest,
+            "destination": push_item.dest[0],
             "keepdraft": nochannel,
             "overwrite": overwrite,
         }

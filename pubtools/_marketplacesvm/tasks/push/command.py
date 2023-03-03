@@ -114,7 +114,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                     dest.destination,
                     marketplace,
                 )
-                single_dest_item = evolve(push_item, dest=dest.destination)
+                single_dest_item = evolve(push_item, dest=[dest.destination])
 
                 pi, _ = self.cloud_instance(marketplace).publish(
                     single_dest_item, nochannel=pre_push, overwrite=dest.overwrite
@@ -141,6 +141,8 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
         res = []
         for marketplace in mapped_item.marketplaces:
             # Upload the VM image to the marketplace
+            # In order to get the correct destinations we need to first pass the result of
+            # get_push_item_from_marketplace.
             mapped_item.push_item = self._upload(
                 marketplace, mapped_item.get_push_item_for_marketplace(marketplace)
             )
@@ -154,9 +156,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                 #
                 # Then this first `_publish` call is intended to only associate the image with
                 # all the offers/plans but not change it to live, when this is applicable.
-                mapped_item.push_item = self._publish(
-                    marketplace, mapped_item.get_push_item_for_marketplace(marketplace)
-                )
+                mapped_item.push_item = self._publish(marketplace, mapped_item.push_item)
 
                 # Once we associated all the images with their offer/plans it's now safe to call
                 # again the publish if and only if `pre_push == False`.
@@ -165,7 +165,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                 if not self.args.pre_push:
                     mapped_item.push_item = self._publish(
                         marketplace,
-                        mapped_item.get_push_item_for_marketplace(marketplace),
+                        mapped_item.push_item,
                         pre_push=False,
                     )
 

@@ -54,7 +54,7 @@ def azure_push_item(vmi_release: VMIRelease) -> VHDPushItem:
         "name": "sample_product-1.0-0-x86_64.vhd",
         "description": "foo",
         "src": "/foo/bar/image.vhd",
-        "dest": "product-name/plan-name",
+        "dest": ["product-name/plan-name"],
         "build": "sample_product-1.0-0-x86_64",
         "generation": "V2",
         "sku_id": "plan-name",
@@ -137,7 +137,7 @@ def test_publish(
         "legacy_sku_id": azure_push_item.legacy_sku_id,
         "image_path": azure_push_item.sas_uri,
         "architecture": azure_push_item.release.arch,
-        "destination": azure_push_item.dest,
+        "destination": azure_push_item.dest[0],
         "keepdraft": False,
         "overwrite": False,
     }
