@@ -177,6 +177,47 @@ def test_push_item_fail_publish(
     assert mock_cloud_instance.call_count == 9
 
 
+@mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.cloud_instance")
+def test_push_overridden_destination(
+    fake_cloud_instance: mock.MagicMock,
+    fake_source: mock.MagicMock,
+    fake_starmap: mock.MagicMock,
+    command_tester: CommandTester,
+) -> None:
+    """Test a push success with the destinations overriden from command line."""
+
+    class FakeCloudInstance:
+        def upload(self, push_item):
+            return push_item, True
+
+        def publish(self, push_item, nochannel, overwrite):
+            return push_item, True
+
+    fake_cloud_instance.return_value = FakeCloudInstance()
+
+    command_tester.test(
+        lambda: entry_point(MarketplacesVMPush),
+        [
+            "test-push",
+            "--starmap-url",
+            "https://starmap-example.com",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--repo",
+            "{"
+            "    \"aws-na\": {\"destination\": \"new_aws_na_destination\"},"
+            "    \"aws-emea\": {\"destination\": \"new_aws_emea_destination\", \"overwrite\": true},"  # noqa: E501
+            "    \"azure-na\": [ "
+            "    {\"destination\": \"new_azure_destination1\", \"overwrite\": true},"
+            "    {\"destination\": \"new_azure_destination2\"}"
+            "]"
+            "}",
+            "--debug",
+            "koji:https://fakekoji.com?vmi_build=ami_build,azure_build",
+        ],
+    )
+
+
 def test_no_credentials(
     fake_source: mock.MagicMock,
     fake_starmap: mock.MagicMock,
