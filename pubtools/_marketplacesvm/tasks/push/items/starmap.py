@@ -46,7 +46,13 @@ class MappedVMIPushItem:
         """Return a list with all destinations associated with the stored push item."""
         dest = []
         for mkt in self.marketplaces:
-            dest.extend([dst for dst in self.clouds[mkt]])
+            dest.extend(
+                [
+                    dst
+                    for dst in self.clouds[mkt]
+                    if not dst.architecture or dst.architecture == self._push_item.release.arch
+                ]
+            )
         return dest
 
     @property
@@ -66,12 +72,6 @@ class MappedVMIPushItem:
 
         # Update the missing fields for push item and its release
         pi = self._push_item
-        release = pi.release
-
-        # Try to update the release.arch info
-        if not release.arch:
-            release = evolve(release, arch=self.destinations[0].architecture)
-            pi = evolve(pi, release=release)
 
         # Update the destinations
         pi = evolve(pi, dest=self.destinations)
