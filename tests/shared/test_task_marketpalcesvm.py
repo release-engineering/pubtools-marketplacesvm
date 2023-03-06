@@ -11,6 +11,8 @@ step = MarketplacesVMTask.step
 
 
 class TestMarketplacesVMTask(MarketplacesVMTask):
+    __test__ = False
+
     def add_args(self) -> None:
         super(TestMarketplacesVMTask, self).add_args()
         self.parser.add_argument("--skip", help="skip a step")

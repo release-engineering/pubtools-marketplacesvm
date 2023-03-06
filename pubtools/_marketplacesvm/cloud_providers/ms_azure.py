@@ -157,8 +157,9 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
         Returns:
             The BlobProperties with the data from uploaded image.
         """
+        binfo = push_item.build_info
         tags = {
-            "nvra": push_item.name,
+            "nvra": f"{binfo.name}-{binfo.version}-{binfo.release}.{push_item.release.arch}",
             "name": push_item.build_info.name,
             "version": push_item.build_info.version,
             "release": push_item.build_info.release,

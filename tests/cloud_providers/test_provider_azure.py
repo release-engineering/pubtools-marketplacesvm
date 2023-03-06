@@ -93,11 +93,12 @@ def test_name_from_push_item(
 def test_upload(
     mock_metadata: MagicMock, azure_push_item: VHDPushItem, fake_azure_provider: AzureProvider
 ) -> None:
+    binfo = azure_push_item.build_info
     tags = {
         "arch": azure_push_item.release.arch,
         "buildid": azure_push_item.build,
         "name": azure_push_item.build_info.name,
-        "nvra": azure_push_item.name,
+        "nvra": f"{binfo.name}-{binfo.version}-{binfo.release}.{azure_push_item.release.arch}",
         "release": azure_push_item.build_info.release,
         "version": azure_push_item.build_info.version,
     }
