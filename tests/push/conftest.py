@@ -23,7 +23,7 @@ def release_params() -> Dict[str, Any]:
     return {
         "product": "sample-product",
         "version": "7.0",
-        "arch": "",
+        "arch": "x86_64",
         "respin": 1,
         "date": datetime.now(),
     }

@@ -1,4 +1,4 @@
-[    INFO] Loading items from koji:https://fakekoji.com?vmi_build=ami_build,azure_build
+[    INFO] Loading items from koji:https://fakekoji.com?vmi_build=ami_build
 [    INFO] Retrieving the mappings for ami_pushitem from https://starmap-example.com
 [ WARNING] Missing information for the attribute ami_pushitem.src, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.build, leaving it unset.
@@ -23,11 +23,12 @@
 [ WARNING] Missing information for the attribute vhd_pushitem.recommended_sizes, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.sas_uri, leaving it unset.
 [    INFO] Uploading the item ami_pushitem to aws-na.
-[   ERROR] Failed to upload ami_pushitem: Random exception
-[    INFO] Uploading the item ami_pushitem to aws-emea.
-[   ERROR] Failed to upload ami_pushitem: 
-[    INFO] Uploading the item vhd_pushitem to azure-na.
-[   ERROR] Failed to upload vhd_pushitem: 
+[    INFO] Upload finished for ami_pushitem on aws-na
+[    INFO] Pushing the item "ami_pushitem" (pre-push=True) to ffffffff-ffff-ffff-ffff-ffffffffffff on aws-na.
+[    INFO] Pushing the item "ami_pushitem" (pre-push=False) to ffffffff-ffff-ffff-ffff-ffffffffffff on aws-na.
+[    INFO] Uploading the item vhd_pushitem to aws-na.
+[    INFO] Upload finished for vhd_pushitem on aws-na
+[    INFO] Pushing the item "vhd_pushitem" (pre-push=True) to ffffffff-ffff-ffff-ffff-ffffffffffff on aws-na.
+[    INFO] Pushing the item "vhd_pushitem" (pre-push=False) to ffffffff-ffff-ffff-ffff-ffffffffffff on aws-na.
 [    INFO] Collecting results
-[   ERROR] Marketplace VM push failed
-# Raised: 30
+[    INFO] Marketplace VM push completed

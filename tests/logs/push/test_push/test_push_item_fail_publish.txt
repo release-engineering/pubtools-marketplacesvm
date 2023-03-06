@@ -1,6 +1,5 @@
 [    INFO] Loading items from koji:https://fakekoji.com?vmi_build=ami_build,azure_build
 [    INFO] Retrieving the mappings for ami_pushitem from https://starmap-example.com
-[    INFO] Retrieving the mappings for vhd_pushitem from https://starmap-example.com
 [ WARNING] Missing information for the attribute ami_pushitem.src, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.build, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.description, leaving it unset.
@@ -13,6 +12,16 @@
 [ WARNING] Missing information for the attribute ami_pushitem.ena_support, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.billing_codes, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.image_id, leaving it unset.
+[    INFO] Retrieving the mappings for vhd_pushitem from https://starmap-example.com
+[ WARNING] Missing information for the attribute vhd_pushitem.src, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.build, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.description, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.sku_id, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.support_legacy, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.legacy_sku_id, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.disk_version, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.recommended_sizes, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.sas_uri, leaving it unset.
 [    INFO] Uploading the item ami_pushitem to aws-na.
 [    INFO] Upload finished for ami_pushitem on aws-na
 [    INFO] Pushing the item "ami_pushitem" (pre-push=True) to ffffffff-ffff-ffff-ffff-ffffffffffff on aws-na.
@@ -25,15 +34,6 @@
 [   ERROR] Failed to publish ami_pushitem: Random exception
 [    INFO] Pushing the item "ami_pushitem" (pre-push=False) to 00000000-0000-0000-0000-000000000000 on aws-emea.
 [   ERROR] Failed to publish ami_pushitem: Random exception
-[ WARNING] Missing information for the attribute vhd_pushitem.src, leaving it unset.
-[ WARNING] Missing information for the attribute vhd_pushitem.build, leaving it unset.
-[ WARNING] Missing information for the attribute vhd_pushitem.description, leaving it unset.
-[ WARNING] Missing information for the attribute vhd_pushitem.sku_id, leaving it unset.
-[ WARNING] Missing information for the attribute vhd_pushitem.support_legacy, leaving it unset.
-[ WARNING] Missing information for the attribute vhd_pushitem.legacy_sku_id, leaving it unset.
-[ WARNING] Missing information for the attribute vhd_pushitem.disk_version, leaving it unset.
-[ WARNING] Missing information for the attribute vhd_pushitem.recommended_sizes, leaving it unset.
-[ WARNING] Missing information for the attribute vhd_pushitem.sas_uri, leaving it unset.
 [    INFO] Uploading the item vhd_pushitem to azure-na.
 [    INFO] Upload finished for vhd_pushitem on azure-na
 [    INFO] Pushing the item "vhd_pushitem" (pre-push=True) to destination_offer_main/plan1 on azure-na.

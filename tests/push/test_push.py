@@ -4,6 +4,7 @@ from unittest import mock
 
 import pytest
 from _pytest.capture import CaptureFixture
+from attrs import evolve
 from pushsource import AmiPushItem, PushItem, VHDPushItem
 from starmap_client.models import QueryResponse
 
@@ -109,6 +110,76 @@ def test_not_vmi_push_item(
     fake_starmap.query_image_by_name.assert_called_once()
     # get_provider, upload and publish calls for "aws-na", "aws-emea"
     assert fake_cloud_instance.call_count == 6
+
+
+@mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
+def test_push_item_wrong_arch(
+    mock_source: mock.MagicMock,
+    fake_cloud_instance: mock.MagicMock,
+    fake_starmap: mock.MagicMock,
+    ami_push_item: AmiPushItem,
+    vhd_push_item: VHDPushItem,
+    command_tester: CommandTester,
+) -> None:
+    """Ensure the push item with no mappings for a given arch is filtered out."""
+    release = evolve(ami_push_item.release, arch="aarch64")
+    ami_push_item = evolve(ami_push_item, release=release)
+
+    mock_source.get.return_value.__enter__.return_value = [
+        ami_push_item,
+        vhd_push_item,
+    ]
+
+    command_tester.test(
+        lambda: entry_point(MarketplacesVMPush),
+        [
+            "test-push",
+            "--starmap-url",
+            "https://starmap-example.com",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--debug",
+            "koji:https://fakekoji.com?vmi_build=unknown_build,ami_build",
+        ],
+    )
+
+
+@mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.starmap")
+def test_push_item_no_mapped_arch(
+    mock_starmap: mock.MagicMock,
+    fake_source: mock.MagicMock,
+    fake_cloud_instance: mock.MagicMock,
+    ami_push_item: AmiPushItem,
+    command_tester: CommandTester,
+) -> None:
+    """Ensure the push item with no arch in mappings for is not filtered out."""
+    qr = QueryResponse.from_json(
+        {
+            "name": "fake-policy",
+            "mappings": {
+                "aws-na": [
+                    {
+                        "destination": "ffffffff-ffff-ffff-ffff-ffffffffffff",
+                        "overwrite": False,
+                    }
+                ]
+            },
+        }
+    )
+    mock_starmap.query_image_by_name.return_value = qr
+
+    command_tester.test(
+        lambda: entry_point(MarketplacesVMPush),
+        [
+            "test-push",
+            "--starmap-url",
+            "https://starmap-example.com",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--debug",
+            "koji:https://fakekoji.com?vmi_build=ami_build",
+        ],
+    )
 
 
 @mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.cloud_instance")

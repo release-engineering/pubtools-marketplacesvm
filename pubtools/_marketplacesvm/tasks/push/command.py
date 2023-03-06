@@ -60,7 +60,11 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             binfo = item.build_info
             query = self.starmap.query_image_by_name(name=binfo.name, version=binfo.version)
             query = self._apply_starmap_overrides(query)
-            mapped_items.append(MappedVMIPushItem(item, query.clouds))
+            item = MappedVMIPushItem(item, query.clouds)
+            if not item.push_item.dest:
+                log.info("Filtering out archive with no destinations: %s", item.push_item.src)
+                continue
+            mapped_items.append(item)
         return mapped_items
 
     def _apply_starmap_overrides(self, query: QueryResponse) -> QueryResponse:
