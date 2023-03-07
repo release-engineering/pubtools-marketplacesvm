@@ -111,7 +111,7 @@ class MarketplacesVMTask(object):
         )
 
     def _setup_logging(self):
-        logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)
+        logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)  # NOSONAR
 
         # All loggers will now log at INFO or higher.
         # If we were given --debug, enable DEBUG level from some loggers,

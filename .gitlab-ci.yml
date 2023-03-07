@@ -1,7 +1,24 @@
+
+workflow:
+  # The rules below prevent "code-scanning-container" to spawn duplicated pipelines on MR.
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+
+include :
+  - project: 'security-guild/code-scanning-container'
+    file: code_scanning-gitlab-ci.yml
+
+
 variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
   PIP_INDEX_URL: https://repository.engineering.redhat.com/nexus/repository/pypi.org/simple/
   REQUESTS_CA_BUNDLE: /etc/pki/tls/cert.pem
+
+  # -- Settings for code_scanning
+  PROJECT_NAME: "stratosphere-pubtools-marketplacesvm"
+  CODE_SCANNING_LANGUAGE: "Python"
+  CODE_SCANNING_EXCLUSIONS: ""
 
 .common: &common
   image: quay.io/redhat-aqe/tox:latest
@@ -17,6 +34,7 @@ variables:
 stages:
     - linting
     - unit-tests
+    - security
     - docs
 
 lint:
@@ -24,6 +42,9 @@ lint:
   stage: linting
   script:
     - tox -e lint
+
+code_scanning:
+  stage: security
 
 mypy:
   <<: *common
@@ -36,7 +57,6 @@ security:
   stage: linting
   script:
     - tox -e security
-
 
 python3.7:
   <<: *common
@@ -62,6 +82,23 @@ python3.10:
   script:
     - tox -e py310
 
+coverage:
+  <<: *common
+  coverage: /(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/
+  stage: unit-tests
+  script:
+    - tox -e coverage
+    - mkdir .coverage-reports
+    - cp coverage.xml .coverage-reports/
+  artifacts:
+    paths:
+      - .coverage-reports
+
+
+sonarqube-scan-sast:
+  variables: 
+    CODE_SCANNING_EXCLUSIONS: "tests/**,docs/**"
+    PROJECT_NAME: $SONAR_PROJECT_KEY
 
 # The stage below will deploy the documentation into GitLab pages whenever the main branch is updated
 pages:
