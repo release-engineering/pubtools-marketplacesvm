@@ -5,6 +5,7 @@ used by [release-engineering](https://github.com/release-engineering) publishing
 
 [![pipeline](https://gitlab.cee.redhat.com/stratosphere/pubtools-marketplacesvm/badges/main/pipeline.svg)](https://gitlab.cee.redhat.com/stratosphere/pubtools-marketplacesvm/-/pipelines)
 [![coverage](https://gitlab.cee.redhat.com/stratosphere/pubtools-marketplacesvm/badges/main/coverage.svg)](https://gitlab.cee.redhat.com/stratosphere/pubtools-marketplacesvm/-/jobs)
+[![Quality Gate Status](https://sonarqube.corp.redhat.com/api/project_badges/measure?project=stratosphere-pubtools-marketplacesvm&metric=alert_status&token=dad8e3b3da3d63d7e82e03cccbc7b28512771638)](https://sonarqube.corp.redhat.com/dashboard?id=stratosphere-pubtools-marketplacesvm)
 [![releases](https://gitlab.cee.redhat.com/stratosphere/pubtools-marketplacesvm/-/badges/release.svg)](https://gitlab.cee.redhat.com/stratosphere/pubtools-marketplacesvm/-/releases/)
 
 - [Source](https://gitlab.cee.redhat.com/stratosphere/pubtools-marketplacesvm)
