@@ -121,7 +121,7 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
         Returns:
             The automatically generated version number.
         """
-        current_date = datetime.now().strftime("%Y%m%d%H%M")
+        current_date = datetime.now().strftime("%Y%m%d%H")
 
         # Get the version from PushItem's build_info
         version = push_item.build_info.version
