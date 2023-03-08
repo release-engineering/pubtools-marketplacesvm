@@ -33,24 +33,24 @@ def test_service_args_success() -> None:
 
 def test_starmap_service() -> None:
     """Ensure the MarketplacesVMPush has a StarmapClient."""
-    with MarketplacesVMPush() as instance:
-        arg = ["", "-d", "fakesource"]
-        with patch.object(sys, "argv", arg):
-            client = instance.starmap
-            assert isinstance(client, StarmapClient)
-            # Single StarmapClient instance per thread
-            assert instance.starmap == client
+    instance = MarketplacesVMPush()
+    arg = ["", "-d", "fakesource"]
+    with patch.object(sys, "argv", arg):
+        client = instance.starmap
+        assert isinstance(client, StarmapClient)
+        # Single StarmapClient instance per thread
+        assert instance.starmap == client
 
 
 def test_collector_service() -> None:
     """Ensure the MarketplaceVMPush has a Collector service."""
-    with MarketplacesVMPush() as instance:
-        arg = ["", "-d", "fakesource"]
-        with patch.object(sys, "argv", arg):
-            collector = instance.collector
-            assert isinstance(collector, CollectorProxy)
-            # Single CollectorProxy instance per thread
-            assert instance.collector == collector
+    instance = MarketplacesVMPush()
+    arg = ["", "-d", "fakesource"]
+    with patch.object(sys, "argv", arg):
+        collector = instance.collector
+        assert isinstance(collector, CollectorProxy)
+        # Single CollectorProxy instance per thread
+        assert instance.collector == collector
 
 
 @patch("pubtools._marketplacesvm.cloud_providers.ms_azure.AzureUploadMetadata")
@@ -89,21 +89,21 @@ def test_azure_provider_service(
     # Test valid credentials (from file and base64)
     creds = [str(creds_file), b_data.decode('ascii')]
     for cred in creds:
-        with MarketplacesVMPush() as instance:
-            arg = ["", "--credentials", cred, "-d", "-d", "fakesource"]
-            with patch.object(sys, "argv", arg):
-                provider = instance.cloud_instance("azure-na")
-                assert isinstance(provider, AzureProvider)
-                # Single AzureProvider instance per thread
-                assert instance.cloud_instance("azure-na") == provider
+        instance = MarketplacesVMPush()
+        arg = ["", "--credentials", cred, "-d", "-d", "fakesource"]
+        with patch.object(sys, "argv", arg):
+            provider = instance.cloud_instance("azure-na")
+            assert isinstance(provider, AzureProvider)
+            # Single AzureProvider instance per thread
+            assert instance.cloud_instance("azure-na") == provider
 
     # Test non-existent cloud
     with caplog.at_level(logging.INFO):
         with pytest.raises(ValueError, match="The credentials for azure-emea were not found."):
-            with MarketplacesVMPush() as instance:
-                arg = ["", "--credentials", str(creds_file), "-d", "-d", "fakesource"]
-                with patch.object(sys, "argv", arg):
-                    instance.cloud_instance("azure-emea")
+            instance = MarketplacesVMPush()
+            arg = ["", "--credentials", str(creds_file), "-d", "-d", "fakesource"]
+            with patch.object(sys, "argv", arg):
+                instance.cloud_instance("azure-emea")
 
     # Test missing marketplace name
     fake_auth.pop("marketplace_account")
@@ -113,10 +113,10 @@ def test_azure_provider_service(
     expected_err = "Missing mandatory key \"marketplace_account\" in credentials."
     with caplog.at_level(logging.INFO):
         with pytest.raises(ValueError, match=expected_err):
-            with MarketplacesVMPush() as instance:
-                arg = ["", "--credentials", str(creds_file), "-d", "-d", "fakesource"]
-                with patch.object(sys, "argv", arg):
-                    instance.cloud_instance("azure-emea")
+            instance = MarketplacesVMPush()
+            arg = ["", "--credentials", str(creds_file), "-d", "-d", "fakesource"]
+            with patch.object(sys, "argv", arg):
+                instance.cloud_instance("azure-emea")
 
     mock_ps.assert_called()
     mock_us.from_connection_string.assert_called()

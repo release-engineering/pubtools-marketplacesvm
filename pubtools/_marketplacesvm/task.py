@@ -107,7 +107,7 @@ class MarketplacesVMTask(object):
             "-d",
             action="count",
             default=0,
-            help=("Show debug logs; can be provided up to three times " "to enable more logs"),
+            help=("Show debug logs; can be provided up to three times to enable more logs"),
         )
 
     def _setup_logging(self):
@@ -154,9 +154,3 @@ class MarketplacesVMTask(object):
 
             self.run()
             return 0
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, *exc_details):
-        pass

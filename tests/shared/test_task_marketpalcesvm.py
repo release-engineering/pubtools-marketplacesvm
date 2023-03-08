@@ -44,18 +44,18 @@ def test_skip(capsys: CaptureFixture) -> None:
 
 def test_task_run() -> None:
     """Exit with error if run() is not implemented."""
-    with MarketplacesVMTask() as task:
-        with pytest.raises(NotImplementedError):
-            task.run()
+    task = MarketplacesVMTask()
+    with pytest.raises(NotImplementedError):
+        task.run()
 
 
 def test_main() -> None:
     """Test the main entrypoint with contextmanager."""
-    with MarketplacesVMTask() as task:
-        arg = ["", "-d", "-d", "-d", "-d"]
-        with patch.object(sys, "argv", arg):
-            with patch("pubtools._marketplacesvm.task.MarketplacesVMTask.run"):
-                assert task.main() == 0
+    task = MarketplacesVMTask()
+    arg = ["", "-d", "-d", "-d", "-d"]
+    with patch.object(sys, "argv", arg):
+        with patch("pubtools._marketplacesvm.task.MarketplacesVMTask.run"):
+            assert task.main() == 0
 
 
 def test_description():

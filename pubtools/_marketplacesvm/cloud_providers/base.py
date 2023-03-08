@@ -45,7 +45,7 @@ class CloudCredentials:
     """The cloud name from StArMap."""
 
     @cloud_name.validator
-    def _validate_cloud_name(instance, attribute: Attribute, value: str):
+    def _validate_cloud_name(self, attribute: Attribute, value: str):
         """Validate whether the cloud name has `-na` or `-emea` in its suffix."""
         if not value.endswith("-na") and not value.endswith("-emea"):
             raise ValueError(f"Invalid value for {attribute.name}: missing region.")
@@ -222,7 +222,7 @@ def get_provider(auth_data: MarketplaceAuth) -> Any:
     """
     marketplace_account = auth_data.get("marketplace_account")
     auth = auth_data.get("auth")
-    if not marketplace_account or not auth or (auth and not isinstance(auth, dict)):
+    if not marketplace_account or not auth or not isinstance(auth, dict):
         message = "Missing or invalid credentials."
         log.error(message)
         raise RuntimeError(message)
