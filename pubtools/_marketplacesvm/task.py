@@ -128,6 +128,12 @@ class MarketplacesVMTask(object):
             # (potentially very, very verbose!)
             debug_loggers.append(None)
 
+        # Disable noisy logs from SDK
+        if self.args.debug < 4:
+            # Disable noisy Azure HTTPS requests debug/info logs
+            azure_logger = "azure.core.pipeline.policies.http_logging_policy"
+            logging.getLogger(azure_logger).setLevel(logging.WARNING)
+
         for logger_name in debug_loggers:
             logging.getLogger(logger_name).setLevel(logging.DEBUG)
 
