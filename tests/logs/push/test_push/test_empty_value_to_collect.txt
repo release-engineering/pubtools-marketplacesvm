@@ -12,6 +12,7 @@
 [ WARNING] Missing information for the attribute ami_pushitem.ena_support, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.billing_codes, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.image_id, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.public_image, leaving it unset.
 [    INFO] Collecting results
 [   ERROR] Marketplace VM push failed
 # Raised: 30

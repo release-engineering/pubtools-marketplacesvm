@@ -13,6 +13,7 @@
 [ WARNING] Missing information for the attribute ami_pushitem.ena_support, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.billing_codes, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.image_id, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.public_image, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.src, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.dest, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.build, leaving it unset.
@@ -26,6 +27,7 @@
 [ WARNING] Missing information for the attribute ami_pushitem.ena_support, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.billing_codes, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.image_id, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.public_image, leaving it unset.
 [    INFO] Filtering out archive with no destinations: None
 [    INFO] Retrieving the mappings for vhd_pushitem from https://starmap-example.com
 [ WARNING] Missing information for the attribute vhd_pushitem.src, leaving it unset.
