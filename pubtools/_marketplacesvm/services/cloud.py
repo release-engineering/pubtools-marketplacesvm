@@ -6,7 +6,7 @@ import threading
 from argparse import ArgumentParser
 from typing import Dict
 
-from ..arguments import SplitAndExtend, from_environ
+from ..arguments import from_environ
 from ..cloud_providers import CloudProvider, MarketplaceAuth, get_provider
 from .base import Service
 
@@ -45,15 +45,15 @@ class CloudService(Service):
             "base64 encoded credentials separated by comma "
             "(or set CLOUD_CREDENTIALS environment variable)",
             type=from_environ("CLOUD_CREDENTIALS"),
-            action=SplitAndExtend,
-            split_on=",",
-            default=[],
+            default="",
         )
 
     def _init_creds(self) -> None:
         """Load the credentials data to memory whenever required."""
         # Note: The credentials list can have a filename or a base64 encoded dict
-        for cred in self._service_args.credentials:
+        credentials = self._service_args.credentials
+        credentials = credentials.split(',') if credentials else []
+        for cred in credentials:
             if os.path.isfile(cred):  # If it's a filename we load it from JSON
                 with open(cred, 'r') as fp:
                     cred_data = json.load(fp)
