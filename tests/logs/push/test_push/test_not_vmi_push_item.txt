@@ -12,8 +12,16 @@
 [ WARNING] Missing information for the attribute ami_pushitem.sriov_net_support, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.ena_support, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.billing_codes, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.release_notes, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.usage_instructions, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.recommended_instance_type, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.marketplace_entity_type, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.image_id, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.public_image, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.scanning_port, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.user_name, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.version_title, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.security_groups, leaving it unset.
 [    INFO] Uploading the item ami_pushitem to aws-na.
 [    INFO] Upload finished for ami_pushitem on aws-na
 [    INFO] Pushing the item "ami_pushitem" (pre-push=True) to ffffffff-ffff-ffff-ffff-ffffffffffff on aws-na.
