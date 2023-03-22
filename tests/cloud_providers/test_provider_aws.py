@@ -58,7 +58,7 @@ def security_group() -> AmiSecurityGroup:
         "ip_ranges": ["22.22.22.22", "33.33.33.33"],
         "to_port": 22,
     }
-    return AmiSecurityGroup(**params)
+    return params
 
 
 @pytest.fixture
@@ -126,9 +126,9 @@ def test_upload(
         "container": UPLOAD_CONTAINER_NAME,
         "description": aws_push_item.description,
         "arch": aws_push_item.release.arch,
-        "virt_type": aws_push_item.virtualization.upper(),
+        "virt_type": aws_push_item.virtualization,
         "root_device_name": aws_push_item.root_device,
-        "volume_type": aws_push_item.volume.upper(),
+        "volume_type": aws_push_item.volume,
         "accounts": fake_aws_provider.aws_groups,
         "snapshot_account_ids": fake_aws_provider.aws_snapshot_accounts,
         "sriov_net_support": aws_push_item.sriov_net_support,

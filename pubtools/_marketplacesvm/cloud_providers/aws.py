@@ -152,13 +152,9 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         """
         security_groups = []
         for security_group in push_item.security_groups:
-            sg = {
-                "from_port": security_group.from_port,
-                "ip_protocol": security_group.ip_protocol,
-                "ip_ranges": security_group.ip_ranges.copy(),
-                "to_port": security_group.to_port,
-            }
-            security_groups.append(sg)
+            # TODO: Fix pushsource to convert security_groups
+            # Jira Issue: EXDSP-1966
+            security_groups.append(security_group)
         return security_groups
 
     def _format_release_notes(self, push_item: AmiPushItem) -> str:
@@ -235,9 +231,9 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
             "container": UPLOAD_CONTAINER_NAME,
             "description": push_item.description,
             "arch": push_item.release.arch,
-            "virt_type": push_item.virtualization.upper(),
+            "virt_type": push_item.virtualization,
             "root_device_name": push_item.root_device,
-            "volume_type": push_item.volume.upper(),
+            "volume_type": push_item.volume,
             "accounts": self.aws_groups or [],
             "snapshot_account_ids": self.aws_snapshot_accounts,
             "sriov_net_support": push_item.sriov_net_support,
