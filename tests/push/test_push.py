@@ -334,6 +334,7 @@ def test_empty_value_to_collect(
     fake_starmap: mock.MagicMock,
     ami_push_item: AmiPushItem,
     command_tester: CommandTester,
+    starmap_query_aws: QueryResponse,
 ) -> None:
     """Ensure the JSONL exclude missing fields."""
     mock_source.get.return_value.__enter__.return_value = [ami_push_item]
@@ -343,6 +344,7 @@ def test_empty_value_to_collect(
             "state": ami_push_item.state,
             "marketplace": None,
             "missing_key": None,
+            "starmap_query": starmap_query_aws,
         }
     ]
 

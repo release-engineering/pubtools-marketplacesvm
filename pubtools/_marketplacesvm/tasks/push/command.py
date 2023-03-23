@@ -5,7 +5,7 @@ import logging
 import os
 import sys
 from copy import copy
-from typing import Any, Dict, Iterator, List
+from typing import Any, Dict, Iterator, List, Union
 
 from attrs import asdict, evolve
 from more_executors import Executors
@@ -47,7 +47,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                     yield item
 
     @property
-    def mapped_items(self) -> List[MappedVMIPushItem]:
+    def mapped_items(self) -> List[Dict[str, Union[MappedVMIPushItem, QueryResponse]]]:
         """
         Return the mapped push item with destinations and metadata from StArMap.
 
@@ -59,12 +59,20 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             log.info("Retrieving the mappings for %s from %s", item.name, self.args.starmap_url)
             binfo = item.build_info
             query = self.starmap.query_image_by_name(name=binfo.name, version=binfo.version)
+            query_returned_from_starmap = query
+            log.info(
+                "starmap query returned for %s : %s ",
+                item.name,
+                json.dumps(
+                    {"name": binfo.name, "version": binfo.version, "query_response": asdict(query)}
+                ),
+            )
             query = self._apply_starmap_overrides(query)
             item = MappedVMIPushItem(item, query.clouds)
             if not item.push_item.dest:
                 log.info("Filtering out archive with no destinations: %s", item.push_item.src)
                 continue
-            mapped_items.append(item)
+            mapped_items.append({"item": item, "starmap_query": query_returned_from_starmap})
         return mapped_items
 
     def _apply_starmap_overrides(self, query: QueryResponse) -> QueryResponse:
@@ -170,7 +178,9 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             pi = evolve(push_item, state=State.NOTPUSHED)
         return pi
 
-    def _push_to_cloud(self, mapped_item: MappedVMIPushItem) -> List[Dict[str, Any]]:
+    def _push_to_cloud(
+        self, mapped_item: MappedVMIPushItem, starmap_query: QueryResponse
+    ) -> List[Dict[str, Any]]:
         """
         Perform the whole workflow to upload and publish the VM images in a single thread.
 
@@ -181,10 +191,12 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             Dictionary with the resulting operation for the Collector service.
         """
         res = []
+
         for marketplace in mapped_item.marketplaces:
             # Upload the VM image to the marketplace
             # In order to get the correct destinations we need to first pass the result of
             # get_push_item_from_marketplace.
+
             mapped_item.push_item = self._upload(
                 marketplace, mapped_item.get_push_item_for_marketplace(marketplace)
             )
@@ -222,6 +234,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                     "state": mapped_item.state,
                     "marketplace": marketplace,
                     "destinations": mapped_item.clouds[marketplace],
+                    "starmap_query": starmap_query,
                 }
             )
 
@@ -247,6 +260,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
         mod_result = []
         for result in results:
             res_dict = asdict(result["push_item"])
+            res_dict["starmap_query"] = asdict(result["starmap_query"])
             # dict can't be modified during iteration.
             # so iterate over list of keys.
             for key in list(res_dict):
@@ -301,7 +315,6 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
     def run(self):
         """Execute the push command workflow."""
         mapped_items = self.mapped_items
-
         executor = Executors.thread_pool(
             name="pubtools-marketplacesvm-push",
             max_workers=min(max(len(mapped_items), 1), self._REQUEST_THREADS),
@@ -310,7 +323,9 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
         to_await = []
         result = []
         for item in mapped_items:
-            to_await.append(executor.submit(self._push_to_cloud, item))
+            to_await.append(
+                executor.submit(self._push_to_cloud, item["item"], item["starmap_query"])
+            )
 
         # waiting for results
         for f_out in to_await:
