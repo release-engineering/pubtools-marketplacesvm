@@ -208,7 +208,7 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
 
         Args:
             push_item (AmiPushItem)
-                The push item with the required data to upload the VHD image into Azure.
+                The push item with the required data to upload the AMI image into Azure.
         Returns:
             The EC2 image with the data from uploaded image.
         """
@@ -249,16 +249,16 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
 
     def _post_upload(self, push_item: AmiPushItem, upload_result: Any) -> Tuple[AmiPushItem, Any]:
         """
-        Export the AMI Id for the uploaded image.
+        Post upload activities currently sets the image Id.
 
         Args:
             push_item (AmiPushItem)
-                The original push item for uploading the VHD image.
+                The original push item for uploading the AMI image.
             upload_result (str)
                 The AMI upload properties
 
         Returns:
-            The AMI Id for the uploaded image.
+            Tuple of PushItem and Upload results.
         """
         self.image_id = upload_result.id
         push_item_with_ami_id = evolve(push_item, image_id=upload_result.id)
@@ -268,7 +268,7 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         self, push_item: AmiPushItem, nochannel: bool, overwrite: bool = False
     ) -> Tuple[AmiPushItem, Any]:
         """
-        Associate and publish a VHD image into an AWS product.
+        Associate and publish a AMI image into an AWS product.
 
         Args:
             push_item (AmiPushItem)
@@ -313,20 +313,38 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
                 }
             ],
         }
-        dest_string = ''.join(push_item.dest)
         version_mapping = AWSVersionMapping.from_json(version_mapping_kwargs)
         publish_metadata_kwargs = {
             "version_mapping": version_mapping,
             "marketplace_entity_type": push_item.marketplace_entity_type,
             "image_path": push_item.image_id,
             "architecture": push_item.release.arch,
-            "destination": dest_string,
+            "destination": push_item.dest[0],
             "keepdraft": nochannel,
             "overwrite": overwrite,
         }
         metadata = AWSPublishMetadata(**publish_metadata_kwargs)
         res = self.publish_svc.publish(metadata)
         return push_item, res
+
+    def _post_publish(self, push_item: AmiPushItem, publish_result: Any) -> Tuple[AmiPushItem, Any]:
+        """
+        Post publishing activities currently restricts older versions.
+
+        Args:
+            push_item (AmiPushItem)
+                The original push item for uploading the AMI image.
+            publish_result (str)
+                The AMI publish properties
+
+        Returns:
+            Tuple of PushItem and Publish results.
+        """
+        version_split = push_item.release.version.split(".")
+        self.publish_svc.restrict_minor_versions(
+            push_item.dest[0], push_item.marketplace_entity_type, ".".join(version_split[:2])
+        )
+        return push_item, publish_result
 
 
 register_provider(AWSProvider, "aws-na", "aws-emea")

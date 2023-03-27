@@ -67,7 +67,7 @@ def aws_push_item(ami_release: AmiRelease, security_group: AmiSecurityGroup) -> 
         "name": "sample_product-1.0-0-x86_64.raw",
         "description": "foo",
         "src": "/foo/bar/image.raw",
-        "dest": "product-uuid",
+        "dest": ["product-uuid"],
         "build": "sample_product-1.0-0-x86_64",
         "build_info": KojiBuildInfo(name="test-build", version="7.0", release="20230101"),
         "virtualization": "virt",
@@ -75,7 +75,7 @@ def aws_push_item(ami_release: AmiRelease, security_group: AmiSecurityGroup) -> 
         "release": ami_release,
         "scanning_port": 22,
         "user_name": "fake-user",
-        "release_notes": "https://access.redhat.com/foo/bar",
+        "release_notes": "https://access.redhat.com/{major_version}/{major_minor}",
         "usage_instructions": "Example.",
         "recommended_instance_type": "m5.large",
         "marketplace_entity_type": "FakeProduct",
@@ -101,6 +101,17 @@ def test_name_from_push_item(aws_push_item: AmiPushItem, fake_aws_provider: AWSP
     expected_name = "base_product-1.1-sample_product-1.0_VIRT_GA-20230130-x86_64-0-GP2"
     res = fake_aws_provider._name_from_push_item(aws_push_item)
     assert res == expected_name
+
+
+def test_get_security_items(aws_push_item: AmiPushItem, fake_aws_provider: AWSProvider):
+    res = fake_aws_provider._get_security_items(aws_push_item)
+    assert res == aws_push_item.security_groups
+
+
+def test_format_release_notes(aws_push_item: AmiPushItem, fake_aws_provider: AWSProvider):
+    expected_output = "https://access.redhat.com/1/1.0"
+    res = fake_aws_provider._format_release_notes(aws_push_item)
+    assert res == expected_output
 
 
 @patch("pubtools._marketplacesvm.cloud_providers.aws.AWSUploadMetadata")
@@ -170,7 +181,7 @@ def test_publish(
 
     version = {
         "VersionTitle": f"{updated_aws_push_item.release.version} {release_date}-{respin}",
-        "ReleaseNotes": updated_aws_push_item.release_notes,
+        "ReleaseNotes": fake_aws_provider._format_release_notes(aws_push_item),
     }
     delivery_opt = [
         {
@@ -198,7 +209,7 @@ def test_publish(
     metadata = {
         "image_path": updated_aws_push_item.image_id,
         "architecture": updated_aws_push_item.release.arch,
-        "destination": ''.join(aws_push_item.dest),
+        "destination": aws_push_item.dest[0],
         "keepdraft": False,
         "overwrite": False,
         "version_mapping": version_mapping,
@@ -212,3 +223,21 @@ def test_publish(
     mock_metadata.assert_called_once_with(**metadata)
     fake_aws_provider.publish_svc.publish.assert_called_once_with(meta_obj)
     fake_aws_provider.upload_svc.upload.assert_not_called()
+
+
+@pytest.mark.parametrize("aws_fake_version", ["19.11.111", "19.11", "19.11.3333"])
+def test_post_publish(
+    aws_fake_version: str, aws_push_item: AmiPushItem, fake_aws_provider: AWSProvider
+):
+    release = aws_push_item.release
+    updated_release = evolve(release, version=aws_fake_version)
+    updated_aws_push_item = evolve(aws_push_item, release=updated_release)
+
+    fake_pi_return, fake_result_return = fake_aws_provider._post_publish(
+        updated_aws_push_item, None
+    )
+    fake_aws_provider.publish_svc.restrict_minor_versions.assert_called_once_with(
+        'product-uuid', 'FakeProduct', '19.11'
+    )
+    assert fake_pi_return == updated_aws_push_item
+    assert fake_result_return is None
