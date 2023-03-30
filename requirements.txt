@@ -13,4 +13,4 @@ strenum>=0.4.9; python_version < '3.11'
 starmap-client @ git+https://gitlab.cee.redhat.com/stratosphere/starmap-client.git@v0.1.1
 
 # cloudpub
-cloudpub @ git+https://gitlab.cee.redhat.com/stratosphere/cloudpub.git@v0.1.2
+cloudpub @ git+https://gitlab.cee.redhat.com/stratosphere/cloudpub.git@v0.1.3
