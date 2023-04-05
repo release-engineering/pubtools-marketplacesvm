@@ -2,10 +2,12 @@
 from typing import Any, Dict
 
 import pytest
-from pushsource import AmiPushItem, VHDPushItem
+from attrs import asdict
+from pushsource import AmiPushItem, AmiSecurityGroup, VHDPushItem
 from starmap_client.models import Destination, QueryResponse
 
 from pubtools._marketplacesvm.tasks.push.items import MappedVMIPushItem, State
+from pubtools._marketplacesvm.tasks.push.items.ami import aws_security_groups_converter
 
 
 def test_mapped_item_properties(
@@ -109,3 +111,28 @@ def test_get_metadata_for_mapped_item(
         }
     )
     assert mapped_item.get_metadata_for_mapped_item(dest) == {}
+
+
+def test_register_converter() -> None:
+    def func(x: Any) -> str:
+        return str(x)
+
+    assert not MappedVMIPushItem._CONVERTER_HANDLERS.get("test")
+
+    MappedVMIPushItem.register_converter("test", func)
+
+    assert MappedVMIPushItem._CONVERTER_HANDLERS.get("test") == func
+
+
+def test_converter_aws_securitygroups() -> None:
+    fake_sec_group = {
+        "from_port": 1234,
+        "ip_protocol": "tcp",
+        "ip_ranges": ["0.0.0.0"],
+        "to_port": 4321,
+    }
+
+    res = aws_security_groups_converter([fake_sec_group])
+
+    assert isinstance(res[0], AmiSecurityGroup)
+    assert asdict(res[0]) == fake_sec_group
