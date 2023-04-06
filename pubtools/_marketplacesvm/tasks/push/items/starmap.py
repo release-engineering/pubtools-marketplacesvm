@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict, List
+from typing import Any, Callable, ClassVar, Dict, List
 
 from attrs import define, evolve, field
 from attrs.validators import deep_mapping, instance_of
@@ -12,6 +12,8 @@ log = logging.getLogger("pubtools.marketplacesvm")
 @define
 class MappedVMIPushItem:
     """Wrap a VMIPushItem and its variations with additional information from StArMap."""
+
+    _CONVERTER_HANDLERS: ClassVar[Dict[str, Callable]] = {}
 
     _push_item: VMIPushItem = field(alias="_push_item", validator=instance_of(VMIPushItem))
     """The underlying pushsource.VMIPushItem."""
@@ -83,6 +85,7 @@ class MappedVMIPushItem:
             if not getattr(pi, attribute.name, None):  # If attribute is not set
                 value = self.meta.get(attribute.name, None)  # Get the value from "dst.meta"
                 if value:  # If the value is set in the metadata
+                    value = self._CONVERTER_HANDLERS.get(attribute.name, value)  # Value conversion
                     new_attrs.update({attribute.name: value})  # Set the new value
                 elif attribute.name not in ignore_unset_attributes:
                     log.warning(
@@ -98,6 +101,19 @@ class MappedVMIPushItem:
     @push_item.setter
     def push_item(self, x: VMIPushItem) -> None:
         self._push_item = x
+
+    @classmethod
+    def register_converter(cls, name: str, func: Callable) -> None:
+        """
+        Register a specialized attribute converter for the inner push item.
+
+        Args:
+            name
+                The attribute name to be processed by the callable.
+            func
+                The callable to be used as converter
+        """
+        cls._CONVERTER_HANDLERS.update({name: func})
 
     def get_push_item_for_marketplace(self, account: str) -> VMIPushItem:
         """

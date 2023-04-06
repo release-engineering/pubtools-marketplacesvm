@@ -58,7 +58,7 @@ def security_group() -> AmiSecurityGroup:
         "ip_ranges": ["22.22.22.22", "33.33.33.33"],
         "to_port": 22,
     }
-    return params
+    return AmiSecurityGroup._from_data(params)
 
 
 @pytest.fixture
@@ -105,7 +105,7 @@ def test_name_from_push_item(aws_push_item: AmiPushItem, fake_aws_provider: AWSP
 
 def test_get_security_items(aws_push_item: AmiPushItem, fake_aws_provider: AWSProvider):
     res = fake_aws_provider._get_security_items(aws_push_item)
-    assert res == aws_push_item.security_groups
+    assert [AmiSecurityGroup._from_data(x) for x in res] == aws_push_item.security_groups
 
 
 def test_format_release_notes(aws_push_item: AmiPushItem, fake_aws_provider: AWSProvider):

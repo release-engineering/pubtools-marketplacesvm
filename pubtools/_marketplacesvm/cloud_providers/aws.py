@@ -142,7 +142,7 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
 
     def _get_security_items(self, push_item: AmiPushItem) -> List[Dict[str, Any]]:
         """
-        Convert AmiSecurityGroup to a List.
+        Convert a list of AmiSecurityGroup to a list of dictionary.
 
         Args:
             push_item (AmiPushItem)
@@ -151,10 +151,10 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
             List[Dict[str, Any]]: List of security groups.
         """
         security_groups = []
-        for security_group in push_item.security_groups:
-            # TODO: Fix pushsource to convert security_groups
-            # Jira Issue: EXDSP-1966
-            security_groups.append(security_group)
+        for sg in push_item.security_groups:
+            data = asdict(sg)
+            data["ip_ranges"] = [ip for ip in sg.ip_ranges]
+            security_groups.append(data)
         return security_groups
 
     def _format_release_notes(self, push_item: AmiPushItem) -> str:
