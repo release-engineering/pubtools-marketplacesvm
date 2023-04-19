@@ -110,13 +110,18 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         Returns:
             str: The image name from push item.
         """
+
+        def get_2_digits(version: str) -> str:
+            v = version.split(".")[:2]
+            return ".".join(v)
+
         parts = []
         release = push_item.release
 
         if release.base_product is not None:
             parts.append(release.base_product)
             if release.base_version is not None:
-                parts.append(release.base_version)
+                parts.append(get_2_digits(release.base_version))
 
         parts.append(release.product)
 
@@ -124,7 +129,7 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         underscore_parts = []
 
         if release.version is not None:
-            underscore_parts.append(release.version)
+            underscore_parts.append(get_2_digits(release.version))
 
         underscore_parts.append(push_item.virtualization.upper())
 
@@ -136,7 +141,6 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         parts.append(release.date.strftime("%Y%m%d"))
         parts.append(release.arch)
         parts.append(str(release.respin))
-        parts.append(push_item.volume.upper())
 
         return "-".join(parts)
 
@@ -167,9 +171,11 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         Returns:
             str: The formatted release notes.
         """
-        major_version = push_item.release.version.split(".")[0]
+        splitted_version = push_item.release.version.split(".")
+        major_version = splitted_version[0]
+        major_minor = ".".join(splitted_version[0:2])
         release_notes_format = push_item.release_notes.format(
-            major_version=major_version, major_minor=push_item.release.version
+            major_version=major_version, major_minor=major_minor
         )
         return release_notes_format
 

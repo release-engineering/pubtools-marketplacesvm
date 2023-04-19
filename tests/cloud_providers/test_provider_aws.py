@@ -43,8 +43,8 @@ def ami_release() -> AmiRelease:
         "date": "2023-01-30",
         "arch": "x86_64",
         "respin": 0,
-        "version": "1.0",
-        "base_version": "1.1",
+        "version": "1.0.1",
+        "base_version": "1.1.1",
         "type": "GA",
     }
     return AmiRelease(**params)
@@ -64,12 +64,12 @@ def security_group() -> AmiSecurityGroup:
 @pytest.fixture
 def aws_push_item(ami_release: AmiRelease, security_group: AmiSecurityGroup) -> AmiPushItem:
     params = {
-        "name": "sample_product-1.0-0-x86_64.raw",
+        "name": "sample_product-1.0.1-1-x86_64.raw",
         "description": "foo",
         "src": "/foo/bar/image.raw",
         "dest": ["product-uuid"],
-        "build": "sample_product-1.0-0-x86_64",
-        "build_info": KojiBuildInfo(name="test-build", version="7.0", release="20230101"),
+        "build": "sample_product-1.0.1-1-x86_64",
+        "build_info": KojiBuildInfo(name="test-build", version="1.0.1", release="20230101"),
         "virtualization": "virt",
         "volume": "gp2",
         "release": ami_release,
@@ -98,7 +98,7 @@ def test_get_provider(marketplace_account: str, fake_credentials: AWSCredentials
 
 
 def test_name_from_push_item(aws_push_item: AmiPushItem, fake_aws_provider: AWSProvider):
-    expected_name = "base_product-1.1-sample_product-1.0_VIRT_GA-20230130-x86_64-0-GP2"
+    expected_name = "base_product-1.1-sample_product-1.0_VIRT_GA-20230130-x86_64-0"
     res = fake_aws_provider._name_from_push_item(aws_push_item)
     assert res == expected_name
 
