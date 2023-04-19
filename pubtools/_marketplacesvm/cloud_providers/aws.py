@@ -161,23 +161,23 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
             security_groups.append(data)
         return security_groups
 
-    def _format_release_notes(self, push_item: AmiPushItem) -> str:
+    def _format_version_info(self, str_to_format: str, version_str: str) -> str:
         """
-        Format release notes.
+        Format a string with versioning info.
 
         Args:
-            push_item (AmiPushItem)
-                The input push item.
+            str_to_format (str)
+                String to format with version information.
+            version_str (str)
+                String with version info ie 8.1.
         Returns:
-            str: The formatted release notes.
+            str: The formatted str.
         """
-        splitted_version = push_item.release.version.split(".")
+        splitted_version = version_str.split(".")
         major_version = splitted_version[0]
         major_minor = ".".join(splitted_version[0:2])
-        release_notes_format = push_item.release_notes.format(
-            major_version=major_version, major_minor=major_minor
-        )
-        return release_notes_format
+        formatted_str = str_to_format.format(major_version=major_version, major_minor=major_minor)
+        return formatted_str
 
     @classmethod
     def from_credentials(cls, auth_data: Dict[str, Any]) -> 'AWSProvider':
@@ -297,7 +297,9 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         version_mapping_kwargs = {
             "Version": {
                 "VersionTitle": f"{push_item.release.version} {release_date}-{respin}",
-                "ReleaseNotes": self._format_release_notes(push_item),
+                "ReleaseNotes": self._format_version_info(
+                    push_item.release_notes, push_item.release.version
+                ),
             },
             "DeliveryOptions": [
                 {
@@ -311,7 +313,9 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
                                 "OperatingSystemVersion": push_item.release.version,
                                 "ScanningPort": push_item.scanning_port,
                             },
-                            "UsageInstructions": push_item.usage_instructions,
+                            "UsageInstructions": self._format_version_info(
+                                push_item.usage_instructions, push_item.release.version
+                            ),
                             "RecommendedInstanceType": push_item.recommended_instance_type,
                             "SecurityGroups": self._get_security_items(push_item),
                         }
