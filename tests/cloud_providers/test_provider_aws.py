@@ -76,7 +76,7 @@ def aws_push_item(ami_release: AmiRelease, security_group: AmiSecurityGroup) -> 
         "scanning_port": 22,
         "user_name": "fake-user",
         "release_notes": "https://access.redhat.com/{major_version}/{major_minor}",
-        "usage_instructions": "Example.",
+        "usage_instructions": "Example. {major_version} - {major_minor}",
         "recommended_instance_type": "m5.large",
         "marketplace_entity_type": "FakeProduct",
         "security_groups": [security_group],
@@ -108,9 +108,11 @@ def test_get_security_items(aws_push_item: AmiPushItem, fake_aws_provider: AWSPr
     assert [AmiSecurityGroup._from_data(x) for x in res] == aws_push_item.security_groups
 
 
-def test_format_release_notes(aws_push_item: AmiPushItem, fake_aws_provider: AWSProvider):
+def test_format_version_info(aws_push_item: AmiPushItem, fake_aws_provider: AWSProvider):
     expected_output = "https://access.redhat.com/1/1.0"
-    res = fake_aws_provider._format_release_notes(aws_push_item)
+    res = fake_aws_provider._format_version_info(
+        aws_push_item.release_notes, aws_push_item.release.version
+    )
     assert res == expected_output
 
 
@@ -181,7 +183,9 @@ def test_publish(
 
     version = {
         "VersionTitle": f"{updated_aws_push_item.release.version} {release_date}-{respin}",
-        "ReleaseNotes": fake_aws_provider._format_release_notes(aws_push_item),
+        "ReleaseNotes": fake_aws_provider._format_version_info(
+            aws_push_item.release_notes, aws_push_item.release.version
+        ),
     }
     delivery_opt = [
         {
@@ -197,7 +201,9 @@ def test_publish(
                         "OperatingSystemVersion": updated_aws_push_item.release.version,
                         "ScanningPort": updated_aws_push_item.scanning_port,
                     },
-                    "UsageInstructions": updated_aws_push_item.usage_instructions,
+                    "UsageInstructions": fake_aws_provider._format_version_info(
+                        aws_push_item.usage_instructions, aws_push_item.release.version
+                    ),
                     "RecommendedInstanceType": updated_aws_push_item.recommended_instance_type,
                     "SecurityGroups": fake_aws_provider._get_security_items(aws_push_item),
                 }
