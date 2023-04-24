@@ -97,6 +97,14 @@ def test_azure_provider_service(
             # Single AzureProvider instance per thread
             assert instance.cloud_instance("azure-na") == provider
 
+    # Test invalidcredentials
+    with caplog.at_level(logging.INFO):
+        with pytest.raises(ValueError, match="Invalid credentials"):
+            instance = MarketplacesVMPush()
+            arg = ["", "--credentials", "invalid_credentials", "-d", "-d", "fakesource"]
+            with patch.object(sys, "argv", arg):
+                instance.cloud_instance("azure-emea")
+
     # Test non-existent cloud
     with caplog.at_level(logging.INFO):
         with pytest.raises(ValueError, match="The credentials for azure-emea were not found."):

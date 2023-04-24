@@ -58,8 +58,13 @@ class CloudService(Service):
                 with open(cred, 'r') as fp:
                     cred_data = json.load(fp)
             else:  # we decode it from base64
-                b_data = base64.b64decode(cred.encode("ascii"))
-                cred_data = json.loads(b_data.decode("ascii"))
+                try:
+                    b_data = base64.b64decode(cred.encode("ascii"))
+                    cred_data = json.loads(b_data.decode("ascii"))
+                except Exception as e:
+                    message = "Invalid credentials"
+                    log.error(f"{message} : {e}")
+                    raise ValueError(message) from e
 
             name = cred_data.get("marketplace_account")
             if not name:
