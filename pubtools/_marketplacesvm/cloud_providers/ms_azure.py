@@ -10,7 +10,7 @@ from cloudpub.ms_azure import AzurePublishingMetadata as AzurePublishMetadata
 from cloudpub.ms_azure import AzureService as AzurePublishService
 from pushsource import VHDPushItem
 
-from .base import UPLOAD_CONTAINER_NAME, CloudCredentials, CloudProvider, register_provider
+from .base import CloudCredentials, CloudProvider, register_provider
 
 
 @frozen
@@ -147,13 +147,15 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
         creds = AzureCredentials(**auth_data)
         return cls(creds)
 
-    def _upload(self, push_item: VHDPushItem) -> Tuple[VHDPushItem, Any]:
+    def _upload(self, push_item: VHDPushItem, container: str) -> Tuple[VHDPushItem, Any]:
         """
         Upload a VHD image into Azure.
 
         Args:
             push_item (VHDPushItem)
                 The push item with the required data to upload the VHD image into Azure.
+            container:
+                The container to upload the image into.
         Returns:
             The BlobProperties with the data from uploaded image.
         """
@@ -169,7 +171,7 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
         upload_metadata_kwargs = {
             "image_path": push_item.src,
             "image_name": self._name_from_push_item(push_item),
-            "container": UPLOAD_CONTAINER_NAME,
+            "container": container,
             "description": push_item.description,
             "arch": push_item.release.arch,
             "tags": tags,
@@ -178,7 +180,9 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
         res = self.upload_svc.publish(metadata)
         return push_item, res
 
-    def _post_upload(self, push_item: VHDPushItem, upload_result: Any) -> Tuple[VHDPushItem, Any]:
+    def _post_upload(
+        self, push_item: VHDPushItem, upload_result: Any, container: str
+    ) -> Tuple[VHDPushItem, Any]:
         """
         Export the SAS URI for the uploaded image.
 
@@ -187,6 +191,8 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
                 The original push item for uploading the VHD image.
             upload_result (BlobProperties)
                 The uploaded blob properties
+            container:
+                The container where the image has been uploaded.
 
         Returns:
             The SAS URI for the uploaded image.
