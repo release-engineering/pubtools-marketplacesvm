@@ -85,15 +85,13 @@ class CloudProvider(ABC, Generic[T, C]):
         """
 
     @abstractmethod
-    def _upload(self, push_item: T, container: str) -> Tuple[T, Any]:
+    def _upload(self, push_item: T) -> Tuple[T, Any]:
         """
         Abstract method for uploading a VM image into a public cloud provider.
 
         Args:
             push_item (VMIPushItem)
                 The push item to upload the image into a cloud provider.
-            container:
-                The container to upload the image into.
         Returns:
             The resulting data from upload.
         """
@@ -117,7 +115,7 @@ class CloudProvider(ABC, Generic[T, C]):
     # Subclasses can implement
     #
 
-    def _post_upload(self, push_item: T, upload_result: Any, container: str) -> Tuple[T, Any]:
+    def _post_upload(self, push_item: T, upload_result: Any) -> Tuple[T, Any]:
         """
         Define the default method for post upload actions.
 
@@ -126,8 +124,6 @@ class CloudProvider(ABC, Generic[T, C]):
                 The push item for post upload actions.
             upload_result (object)
                 The result data from upload.
-            container:
-                The container where the image has been uploaded.
         Returns:
             The upload result data.
         """
@@ -164,21 +160,18 @@ class CloudProvider(ABC, Generic[T, C]):
         log.error(message)
         raise exception(message)
 
-    def upload(self, push_item: T, container: str = UPLOAD_CONTAINER_NAME) -> Tuple[T, Any]:
+    def upload(self, push_item: T) -> Tuple[T, Any]:
         """
         Upload the VM image into a pulic cloud provider.
 
         Args:
             push_item (VMIPushItem)
                 The push item to upload the image into a cloud provider.
-            container
-                The name of the container to upload the image into.
-                It defaults to the value from UPLOAD_CONTAINER_NAME.
         Returns:
             object: The upload result data.
         """
-        pi, res = self._upload(push_item, container)
-        return self._post_upload(pi, res, container)
+        pi, res = self._upload(push_item)
+        return self._post_upload(pi, res)
 
     def publish(self, push_item: T, nochannel: bool, overwrite: bool = False) -> Tuple[T, Any]:
         """

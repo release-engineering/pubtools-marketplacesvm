@@ -21,7 +21,7 @@ class FakeCloudProvider(CloudProvider):
     def from_credentials(cls, _):
         return cls()
 
-    def _upload(self, push_item, container):
+    def _upload(self, push_item):
         return push_item, True
 
     def _publish(self, push_item, nochannel, _):
@@ -78,49 +78,6 @@ def test_do_push(
     fake_starmap.query_image_by_name.assert_has_calls(starmap_calls)
     # get_provider, upload and publish calls for "aws-na", "aws-emea", "azure-na"
     assert fake_cloud_instance.call_count == 11
-
-
-@mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.starmap")
-def test_do_push_custom_container(
-    mock_starmap: mock.MagicMock,
-    fake_source: mock.MagicMock,
-    fake_cloud_instance: mock.MagicMock,
-    command_tester: CommandTester,
-) -> None:
-    """Test a successfull push using a different upload container."""
-    qr = QueryResponse.from_json(
-        {
-            "name": "fake-policy",
-            "mappings": {
-                "aws-na": [
-                    {
-                        "destination": "ffffffff-ffff-ffff-ffff-ffffffffffff",
-                        "overwrite": False,
-                        "meta": {"upload_container": "custom_s3"},
-                    }
-                ]
-            },
-        }
-    )
-    mock_starmap.query_image_by_name.return_value = qr
-
-    command_tester.test(
-        lambda: entry_point(MarketplacesVMPush),
-        [
-            "test-push",
-            "--starmap-url",
-            "https://starmap-example.com",
-            "--credentials",
-            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
-            "--debug",
-            "koji:https://fakekoji.com?vmi_build=ami_build",
-        ],
-    )
-
-    fake_source.get.assert_called_once()
-    starmap_calls = [mock.call(name="test-build", version="7.0") for _ in range(2)]
-    mock_starmap.query_image_by_name.assert_has_calls(starmap_calls)
-    assert fake_cloud_instance.call_count == 6
 
 
 @mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")

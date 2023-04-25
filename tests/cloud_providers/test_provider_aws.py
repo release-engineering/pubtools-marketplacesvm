@@ -173,9 +173,9 @@ def test_publish(
     updated_release = evolve(release, base_product=new_base_product)
     updated_aws_push_item = evolve(aws_push_item, release=updated_release)
     updated_aws_push_item, _ = fake_aws_provider._post_upload(
-        updated_aws_push_item, FakeImageResp(), UPLOAD_CONTAINER_NAME
+        updated_aws_push_item, FakeImageResp()
     )
-    fake_aws_provider._post_upload(updated_aws_push_item, FakeImageResp(), UPLOAD_CONTAINER_NAME)
+    fake_aws_provider._post_upload(updated_aws_push_item, FakeImageResp())
 
     release = updated_aws_push_item.release
     release_date = release.date.strftime("%Y%m%d")
