@@ -160,6 +160,59 @@ def test_upload(
     fake_aws_provider.publish_svc.publish.assert_not_called()
 
 
+@patch("pubtools._marketplacesvm.cloud_providers.aws.AWSUploadMetadata")
+def test_upload_custom_s3(
+    mock_metadata: MagicMock,
+    aws_push_item: AmiPushItem,
+    fake_credentials: AWSCredentials,
+    monkeypatch: pytest.MonkeyPatch,
+):
+    bucket_name = "custom_s3_bucket"
+    creds = evolve(fake_credentials, AWS_S3_BUCKET=bucket_name)  # type: ignore
+    fake_aws_provider = AWSProvider(creds)
+    monkeypatch.setattr(fake_aws_provider, 'upload_svc', MagicMock())
+    monkeypatch.setattr(fake_aws_provider, 'publish_svc', MagicMock())
+
+    created_name = fake_aws_provider._name_from_push_item(aws_push_item)
+    binfo = aws_push_item.build_info
+
+    tags = {
+        "arch": aws_push_item.release.arch,
+        "buildid": aws_push_item.build,
+        "name": aws_push_item.build_info.name,
+        "nvra": f"{binfo.name}-{binfo.version}-{binfo.release}.{aws_push_item.release.arch}",
+        "release": aws_push_item.build_info.release,
+        "version": aws_push_item.build_info.version,
+    }
+    metadata = {
+        "billing_products": [],
+        "image_path": aws_push_item.src,
+        "image_name": created_name,
+        "snapshot_name": created_name,
+        "container": bucket_name,
+        "description": aws_push_item.description,
+        "arch": aws_push_item.release.arch,
+        "virt_type": aws_push_item.virtualization,
+        "root_device_name": aws_push_item.root_device,
+        "volume_type": aws_push_item.volume,
+        "accounts": fake_aws_provider.aws_groups,
+        "snapshot_account_ids": fake_aws_provider.aws_snapshot_accounts,
+        "sriov_net_support": aws_push_item.sriov_net_support,
+        "ena_support": aws_push_item.ena_support,
+        "tags": tags,
+    }
+    meta_obj = MagicMock(**metadata)
+    mock_metadata.return_value = meta_obj
+
+    fake_aws_provider.upload_svc.publish.return_value = FakeImageResp()
+
+    fake_aws_provider.upload(aws_push_item)
+
+    mock_metadata.assert_called_once_with(**metadata)
+    fake_aws_provider.upload_svc.publish.assert_called_once_with(meta_obj)
+    fake_aws_provider.publish_svc.publish.assert_not_called()
+
+
 @pytest.mark.parametrize("new_base_product", ["test-base", None])
 @patch("pubtools._marketplacesvm.cloud_providers.aws.AWSPublishMetadata")
 def test_publish(

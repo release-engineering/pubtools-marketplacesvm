@@ -65,6 +65,15 @@ class AWSCredentials(CloudCredentials):
     )
     """AWS Region. Defaults to 'us-east-1'."""
 
+    aws_s3_bucket: Optional[str] = field(
+        alias="AWS_S3_BUCKET",
+        validator=instance_of(str),
+        default=UPLOAD_CONTAINER_NAME,
+    )
+    """AWS S3 bucket to upload the VM image.
+       When not set it will use the value from ``UPLOAD_CONTAINER_NAME``.
+    """
+
     @property
     def credentials(self) -> Dict[str, str]:
         """Return the credentials as a dictionary."""
@@ -99,6 +108,7 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
             credentials.aws_region,
         )
         self.image_id = ""
+        self.s3_bucket = credentials.aws_s3_bucket or UPLOAD_CONTAINER_NAME
 
     def _name_from_push_item(self, push_item: AmiPushItem) -> str:
         """
@@ -234,7 +244,7 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
             "image_path": push_item.src,
             "image_name": name,
             "snapshot_name": name,
-            "container": UPLOAD_CONTAINER_NAME,
+            "container": self.s3_bucket,
             "description": push_item.description,
             "arch": push_item.release.arch,
             "virt_type": push_item.virtualization,
