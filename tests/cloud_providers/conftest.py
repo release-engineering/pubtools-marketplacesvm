@@ -4,7 +4,6 @@ from typing import Any, Dict, Tuple, TypeVar
 import pytest
 
 from pubtools._marketplacesvm.cloud_providers import CloudProvider
-from pubtools._marketplacesvm.cloud_providers.base import UPLOAD_CONTAINER_NAME
 
 T = TypeVar('T')
 
@@ -17,7 +16,7 @@ class FakeProvider(CloudProvider):
     def from_credentials(cls, fake_creds: Dict[str, Any]) -> 'FakeProvider':
         return cls(fake_creds)
 
-    def _upload(self, push_item: T, container: str = UPLOAD_CONTAINER_NAME) -> Tuple[T, Any]:
+    def _upload(self, push_item: T) -> Tuple[T, Any]:
         return push_item, True
 
     def _publish(self, push_item: T, nochannel: bool, overwrite: bool = False) -> Tuple[T, Any]:

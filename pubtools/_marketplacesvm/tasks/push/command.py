@@ -5,7 +5,7 @@ import logging
 import os
 import sys
 from copy import copy
-from typing import Any, Dict, Iterator, List, Optional, Union
+from typing import Any, Dict, Iterator, List, Union
 
 from attrs import asdict, evolve
 from more_executors import Executors
@@ -109,9 +109,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             query.clouds[cloud_name] = [make_destination(d) for d in destinations]
         return query
 
-    def _upload(
-        self, marketplace: str, push_item: VMIPushItem, container: Optional[str] = None
-    ) -> VMIPushItem:
+    def _upload(self, marketplace: str, push_item: VMIPushItem) -> VMIPushItem:
         """
         Upload a single push item to the cloud marketplace and update the status.
 
@@ -120,17 +118,12 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                 The account name (alias) for the marketplace to upload.
             push_item
                 The item to upload
-            container:
-                The upload container destination for the given push item.
         Returns:
             The push item after the upload.
         """
         try:
-            upload_args = [push_item]
-            if container:
-                upload_args.append(container)
             log.info("Uploading the item %s to %s.", push_item.name, marketplace)
-            pi, _ = self.cloud_instance(marketplace).upload(*upload_args)
+            pi, _ = self.cloud_instance(marketplace).upload(push_item)
             log.info("Upload finished for %s on %s", push_item.name, marketplace)
             pi = evolve(pi, state=State.NOTPUSHED)
         except Exception as exc:
@@ -203,10 +196,9 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             # Upload the VM image to the marketplace
             # In order to get the correct destinations we need to first pass the result of
             # get_push_item_from_marketplace.
+
             mapped_item.push_item = self._upload(
-                marketplace,
-                mapped_item.get_push_item_for_marketplace(marketplace),
-                mapped_item.meta.get("upload_container"),  # definition from StArMap, if any
+                marketplace, mapped_item.get_push_item_for_marketplace(marketplace)
             )
 
             # Associate image with Product/Offer/Plan and publish

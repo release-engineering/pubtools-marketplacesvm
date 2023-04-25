@@ -10,7 +10,7 @@ from cloudpub.aws import AWSVersionMetadata as AWSPublishMetadata
 from cloudpub.models.aws import VersionMapping as AWSVersionMapping
 from pushsource import AmiPushItem
 
-from .base import CloudCredentials, CloudProvider, register_provider
+from .base import UPLOAD_CONTAINER_NAME, CloudCredentials, CloudProvider, register_provider
 
 LOG = logging.getLogger("pubtools.marketplacesvm")
 
@@ -193,7 +193,7 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         creds = AWSCredentials(**auth_data)
         return cls(creds)
 
-    def _upload(self, push_item: AmiPushItem, container: str) -> Tuple[AmiPushItem, Any]:
+    def _upload(self, push_item: AmiPushItem) -> Tuple[AmiPushItem, Any]:
         """
         Upload and import a disk image to AWS.
 
@@ -215,8 +215,6 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         Args:
             push_item (AmiPushItem)
                 The push item with the required data to upload the AMI image into Azure.
-            container:
-                The container to upload the image into.
         Returns:
             The EC2 image with the data from uploaded image.
         """
@@ -236,7 +234,7 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
             "image_path": push_item.src,
             "image_name": name,
             "snapshot_name": name,
-            "container": container,
+            "container": UPLOAD_CONTAINER_NAME,
             "description": push_item.description,
             "arch": push_item.release.arch,
             "virt_type": push_item.virtualization,
@@ -255,9 +253,7 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         res = self.upload_svc.publish(metadata)
         return push_item, res
 
-    def _post_upload(
-        self, push_item: AmiPushItem, upload_result: Any, container: str
-    ) -> Tuple[AmiPushItem, Any]:
+    def _post_upload(self, push_item: AmiPushItem, upload_result: Any) -> Tuple[AmiPushItem, Any]:
         """
         Post upload activities currently sets the image Id.
 
@@ -266,8 +262,6 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
                 The original push item for uploading the AMI image.
             upload_result (str)
                 The AMI upload properties
-            container:
-                The container where the image has been uploaded.
 
         Returns:
             Tuple of PushItem and Upload results.
