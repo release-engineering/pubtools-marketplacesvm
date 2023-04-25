@@ -22,7 +22,7 @@ def get_requirements():
 
 setup(
     name="pubtools-marketplacesvm",
-    version="0.1.3",
+    version="0.1.4",
     packages=find_packages(exclude=["tests"]),
     url="https://gitlab.cee.redhat.com/stratosphere/pubtools-marketplacesvm",
     license="GPLv3+",
