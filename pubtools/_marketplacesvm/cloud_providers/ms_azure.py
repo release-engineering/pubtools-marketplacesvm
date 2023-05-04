@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 from datetime import datetime
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, Optional, Set, Tuple
 
 from attrs import asdict, evolve, field, frozen
 from attrs.validators import instance_of
@@ -43,6 +43,41 @@ class AzureCredentials(CloudCredentials):
         return {k.upper(): v for k, v in asdict(self).items() if k != "cloud_name"}
 
 
+class AzureDestinationBorg:
+    """
+    Borg to keep track of the Azure destinations which were changed.
+
+    Since we don't want to touch an offer which its original state is "draft" we need to keep
+    track of the visited offers to mark them as "safe".
+
+    This is required because whenever we touch a single plan to assign the VM image we're also
+    changing the offer status to "draft". Supposing the existence of "Offer-A", which has 2 or more
+    plans, whenever we change the first plan the offer state would be "draft" thus leaving it
+    impossible for the program to know, when adjusting the second offer, whether the "draft" state
+    comes from a change in the offer before we touch the first plan or not.
+
+    In order to solve this issue we check the offer before changing anything and mark it in the
+    Borg as "visited" to have a clear state of what "draft" may represent.
+
+    See also: https://baites.github.io/computer-science/patterns/singleton-series/2018/06/11/python-borg-and-the-new-metaborg.html
+    """  # noqa: E501
+
+    _shared_state: Dict[str, Any] = {}
+
+    def __new__(cls):
+        """Instantiate a new borg object with the shared state."""
+        inst = super().__new__(cls)
+        inst.__dict__ = cls._shared_state
+        return inst
+
+    @property
+    def destinations(self) -> Set[Any]:
+        """Provide a shared set of destinations."""
+        if not hasattr(self, "_destinations"):
+            self._destinations: Set[Any] = set()
+        return self._destinations
+
+
 class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
     """The Azure marketplace provider."""
 
@@ -58,6 +93,7 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
             credentials.azure_storage_connection_string
         )
         self.publish_svc = AzurePublishService(credentials.credentials)
+        self._borg = AzureDestinationBorg()
 
     def _name_from_push_item(self, push_item: VHDPushItem) -> str:
         """
@@ -213,6 +249,9 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
         if not push_item.disk_version:
             push_item = evolve(push_item, disk_version=self._generate_disk_version(push_item))
 
+        destination = push_item.dest[0]
+        self.ensure_offer_is_writable(destination, nochannel)
+
         publish_metadata_kwargs = {
             "disk_version": push_item.disk_version,
             "sku_id": push_item.sku_id,
@@ -222,13 +261,44 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
             "legacy_sku_id": push_item.legacy_sku_id,
             "image_path": push_item.sas_uri,
             "architecture": push_item.release.arch,
-            "destination": push_item.dest[0],
+            "destination": destination,
             "keepdraft": nochannel,
             "overwrite": overwrite,
         }
         metadata = AzurePublishMetadata(**publish_metadata_kwargs)
         res = self.publish_svc.publish(metadata)
         return push_item, res
+
+    def ensure_offer_is_writable(self, destination: str, nochannel: bool) -> None:
+        """
+        Ensure the offer can be modified and published by this tool.
+
+        If the offer's initial state is "draft" it means someone made manual changes in the webui
+        and we cannot proceed. However, this is just true if the offer hasn't being changed by this
+        tool, thus we use the Borg to inform us whether we're safe to proceed or not.
+
+        Since during the `publish` phase we need to call it two time (one with keep_draft as True to
+        associate the images to possible multiple plans of the same offer, the other to submit) we
+        will have a "draft" state that is caused by the tooling, hence the Borg to keep track of
+        what it touched to disconsider this "draft" as a signal of manual changes.
+        """
+        offer_name = destination.split("/")[0]
+        product = self.publish_svc.get_product_by_name(offer_name)
+
+        # Here we could have the state as: "draft", "preview" or "live"
+        state = product.target.targetType
+
+        # During pre-push mode we need to ensure the "draft" state is not the initial offer state.
+        # If the offer name is inside Borg's destination it means that the "draft" state was caused
+        # by this tool instead of manual changes.
+        # The only "draft" state that we should raise an error is when the offer name is not in
+        # the borg and the nochannel is True, meaning this state comes from a manual change.
+        if nochannel is True and offer_name not in self._borg.destinations:
+            self._borg.destinations.add(offer_name)
+            if state == "draft":
+                raise RuntimeError(
+                    f"Can't update the offer {offer_name} as it's already being changed."
+                )
 
 
 register_provider(AzureProvider, "azure-na", "azure-emea")
