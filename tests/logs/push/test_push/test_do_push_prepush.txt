@@ -1,0 +1,43 @@
+[    INFO] Loading items from koji:https://fakekoji.com?vmi_build=ami_build,azure_build
+[    INFO] Retrieving the mappings for ami_pushitem from https://starmap-example.com
+[    INFO] starmap query returned for ami_pushitem : {"name": "test-build", "version": "7.0", "query_response": {"name": "sample-product", "clouds": {"aws-na": [{"id": null, "meta": {"tag1": "aws-na-value1", "tag2": "aws-na-value2"}, "architecture": "x86_64", "destination": "ffffffff-ffff-ffff-ffff-ffffffffffff", "overwrite": true}], "aws-emea": [{"id": null, "meta": {"tag1": "aws-emea-value1", "tag2": "aws-emea-value2"}, "architecture": "x86_64", "destination": "00000000-0000-0000-0000-000000000000", "overwrite": true}]}}} 
+[ WARNING] Missing information for the attribute ami_pushitem.src, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.build, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.description, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.type, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.region, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.virtualization, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.volume, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.root_device, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.sriov_net_support, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.ena_support, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.billing_codes, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.release_notes, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.usage_instructions, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.recommended_instance_type, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.marketplace_entity_type, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.image_id, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.public_image, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.scanning_port, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.user_name, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.version_title, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.security_groups, leaving it unset.
+[    INFO] Retrieving the mappings for vhd_pushitem from https://starmap-example.com
+[    INFO] starmap query returned for vhd_pushitem : {"name": "test-build", "version": "7.0", "query_response": {"name": "sample-product", "clouds": {"azure-na": [{"id": null, "meta": {"tag1": "value1", "tag2": "value2"}, "architecture": "x86_64", "destination": "destination_offer_main/plan1", "overwrite": true}, {"id": null, "meta": {"tag3": "value3", "tag4": "value5"}, "architecture": "x86_64", "destination": "destination_offer_main/plan2", "overwrite": false}, {"id": null, "meta": null, "architecture": "x86_64", "destination": "destination_offer_main/plan3", "overwrite": false}]}}} 
+[ WARNING] Missing information for the attribute vhd_pushitem.src, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.build, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.description, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.sku_id, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.support_legacy, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.legacy_sku_id, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.disk_version, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.recommended_sizes, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.sas_uri, leaving it unset.
+[    INFO] Uploading the item ami_pushitem to aws-na.
+[    INFO] Upload finished for ami_pushitem on aws-na
+[    INFO] Uploading the item ami_pushitem to aws-emea.
+[    INFO] Upload finished for ami_pushitem on aws-emea
+[    INFO] Uploading the item vhd_pushitem to azure-na.
+[    INFO] Upload finished for vhd_pushitem on azure-na
+[    INFO] Collecting results
+[    INFO] Marketplace VM push completed
