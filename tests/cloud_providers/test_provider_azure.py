@@ -4,10 +4,12 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from attrs import evolve
+from cloudpub.models.ms_azure import Product
 from pushsource import KojiBuildInfo, VHDPushItem, VMIRelease
 
 from pubtools._marketplacesvm.cloud_providers import AzureCredentials, AzureProvider, get_provider
 from pubtools._marketplacesvm.cloud_providers.base import UPLOAD_CONTAINER_NAME
+from pubtools._marketplacesvm.cloud_providers.ms_azure import AzureDestinationBorg
 
 
 @pytest.fixture
@@ -155,6 +157,33 @@ def test_publish(
     fake_azure_provider.upload_svc.publish.assert_not_called()
 
 
+@patch("pubtools._marketplacesvm.cloud_providers.ms_azure.AzurePublishMetadata")
+def test_publish_fails_on_draft_state(
+    mock_metadata: MagicMock,
+    azure_push_item: VHDPushItem,
+    fake_azure_provider: AzureProvider,
+) -> None:
+    fake_product = Product.from_json(
+        {
+            "$schema": "https://product-ingestion.azureedge.net/schema/resource-tree/2022-03-01-preview2",  # noqa: E501
+            "root": "product/product/ffffffff-ffff-ffff-ffff-ffffffffffff",
+            "target": {"targetType": "draft"},  # this should prevent the offer to be published
+            "resources": [],
+        }
+    )
+    fake_azure_provider.publish_svc.get_product_by_name.return_value = fake_product
+    keep_draft = True
+    offer_name = azure_push_item.dest[0].split("/")[0]
+    expected_err = f"Can't update the offer {offer_name} as it's already being changed."
+
+    with pytest.raises(RuntimeError, match=expected_err):
+        fake_azure_provider.publish(azure_push_item, nochannel=keep_draft, overwrite=False)
+
+    mock_metadata.assert_not_called()
+    fake_azure_provider.publish_svc.publish.assert_not_called()
+    fake_azure_provider.upload_svc.publish.assert_not_called()
+
+
 @patch("pubtools._marketplacesvm.cloud_providers.ms_azure.datetime")
 def test_generate_disk_version(
     mock_date: MagicMock, azure_push_item: VHDPushItem, fake_azure_provider: AzureProvider
@@ -168,3 +197,14 @@ def test_generate_disk_version(
     res = fake_azure_provider._generate_disk_version(push_item)
 
     assert res == "7.0.202301010000"
+
+
+def test_borg() -> None:
+    a = AzureDestinationBorg()
+    b = AzureDestinationBorg()
+
+    a.destinations.add("test")
+
+    assert a != b
+    assert a.destinations == b.destinations
+    assert "test" in b.destinations

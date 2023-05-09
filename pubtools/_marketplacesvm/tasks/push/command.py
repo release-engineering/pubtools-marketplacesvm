@@ -201,8 +201,8 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                 marketplace, mapped_item.get_push_item_for_marketplace(marketplace)
             )
 
-            # Associate image with Product/Offer/Plan and publish
-            if mapped_item.state != State.UPLOADFAILED:
+            # Associate image with Product/Offer/Plan and publish only if it's not a pre-push
+            if mapped_item.state != State.UPLOADFAILED and not self.args.pre_push:
                 # The first publish should always be with `pre_push` set True because it might
                 # happen that one offer with multiple plans would receive the same image and
                 # we can't `publish` the offer with just the first plan changed and try to change
@@ -216,12 +216,11 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                 # again the publish if and only if `pre_push == False`.
                 # The indepondent operation will guarantee that the images are already associated
                 # with the Product/Offer/Plan and just the go-live part is called.
-                if not self.args.pre_push:
-                    mapped_item.push_item = self._publish(
-                        marketplace,
-                        mapped_item.push_item,
-                        pre_push=False,
-                    )
+                mapped_item.push_item = self._publish(
+                    marketplace,
+                    mapped_item.push_item,
+                    pre_push=False,
+                )
 
             # Update the destinations from List[Destination] to List[str] for collection
             dest_list_str = [d.destination for d in mapped_item.push_item.dest]
