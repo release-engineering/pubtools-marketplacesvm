@@ -80,6 +80,34 @@ def test_do_push(
     assert fake_cloud_instance.call_count == 11
 
 
+def test_do_push_prepush(
+    fake_source: mock.MagicMock,
+    fake_cloud_instance: mock.MagicMock,
+    fake_starmap: mock.MagicMock,
+    command_tester: CommandTester,
+) -> None:
+    """Test a successfull push."""
+    command_tester.test(
+        lambda: entry_point(MarketplacesVMPush),
+        [
+            "test-push",
+            "--starmap-url",
+            "https://starmap-example.com",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--debug",
+            "--pre-push",
+            "koji:https://fakekoji.com?vmi_build=ami_build,azure_build",
+        ],
+    )
+
+    fake_source.get.assert_called_once()
+    starmap_calls = [mock.call(name="test-build", version="7.0") for _ in range(2)]
+    fake_starmap.query_image_by_name.assert_has_calls(starmap_calls)
+    # get_provider and upload only calls for "aws-na", "aws-emea", "azure-na"
+    assert fake_cloud_instance.call_count == 3
+
+
 @mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
 def test_not_vmi_push_item(
     mock_source: mock.MagicMock,

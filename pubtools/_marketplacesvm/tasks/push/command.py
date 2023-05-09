@@ -221,6 +221,9 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                     mapped_item.push_item,
                     pre_push=False,
                 )
+            elif mapped_item.state != State.UPLOADFAILED and self.args.pre_push is True:
+                # Set the state as PUSHED when the operation is nochannel
+                mapped_item.push_item = evolve(mapped_item.push_item, state=State.PUSHED)
 
             # Update the destinations from List[Destination] to List[str] for collection
             dest_list_str = [d.destination for d in mapped_item.push_item.dest]
