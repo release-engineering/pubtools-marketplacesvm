@@ -1,8 +1,11 @@
+import logging
 from typing import Any, Dict, List
 
 from pushsource import AmiSecurityGroup
 
 from .starmap import MappedVMIPushItem
+
+log = logging.getLogger(__name__)
 
 
 def aws_security_groups_converter(value: List[Dict[str, Any]]) -> List[AmiSecurityGroup]:
@@ -15,6 +18,7 @@ def aws_security_groups_converter(value: List[Dict[str, Any]]) -> List[AmiSecuri
     Returns:
         List of converted dicionaries to ``AmiSecurityGroup``.
     """
+    log.debug("Converting data to AmiSecurityGroup: %s", value)
     return [AmiSecurityGroup._from_data(x) for x in value]
 
 

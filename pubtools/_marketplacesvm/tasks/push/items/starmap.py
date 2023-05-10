@@ -85,8 +85,8 @@ class MappedVMIPushItem:
             if not getattr(pi, attribute.name, None):  # If attribute is not set
                 value = self.meta.get(attribute.name, None)  # Get the value from "dst.meta"
                 if value:  # If the value is set in the metadata
-                    value = self._CONVERTER_HANDLERS.get(attribute.name, value)  # Value conversion
-                    new_attrs.update({attribute.name: value})  # Set the new value
+                    func = self._CONVERTER_HANDLERS.get(attribute.name, lambda x: x)  # Converter
+                    new_attrs.update({attribute.name: func(value)})  # Set the new value
                 elif attribute.name not in ignore_unset_attributes:
                     log.warning(
                         "Missing information for the attribute %s.%s, leaving it unset.",
