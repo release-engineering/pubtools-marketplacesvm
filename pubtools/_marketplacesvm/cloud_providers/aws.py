@@ -83,6 +83,9 @@ class AWSCredentials(CloudCredentials):
 class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
     """The AWS marketplace provider."""
 
+    ARCH_ALIASES: Dict[str, str] = {"aarch64": "arm64"}
+    """Dictionary of aliases for architecture names between brew and AWS."""
+
     def __init__(self, credentials: AWSCredentials) -> None:
         """
         Create an instance of AWSProvider.
@@ -246,7 +249,7 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
             "snapshot_name": name,
             "container": self.s3_bucket,
             "description": push_item.description,
-            "arch": push_item.release.arch,
+            "arch": self.ARCH_ALIASES.get(push_item.release.arch, push_item.release.arch),
             "virt_type": push_item.virtualization,
             "root_device_name": push_item.root_device,
             "volume_type": push_item.volume,
@@ -338,7 +341,7 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
             "version_mapping": version_mapping,
             "marketplace_entity_type": push_item.marketplace_entity_type,
             "image_path": push_item.image_id,
-            "architecture": push_item.release.arch,
+            "architecture": self.ARCH_ALIASES.get(push_item.release.arch, push_item.release.arch),
             "destination": push_item.dest[0],
             "keepdraft": nochannel,
             "overwrite": overwrite,
