@@ -241,7 +241,7 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
             "version": binfo.version,
             "release": binfo.release,
             "arch": push_item.release.arch,
-            "buildid": push_item.build,
+            "buildid": push_item.build_info.id,
         }
         upload_metadata_kwargs = {
             "image_path": push_item.src,

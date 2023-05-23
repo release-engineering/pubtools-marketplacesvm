@@ -58,6 +58,9 @@ def azure_push_item(vmi_release: VMIRelease) -> VHDPushItem:
         "src": "/foo/bar/image.vhd",
         "dest": ["product-name/plan-name"],
         "build": "sample_product-1.0-0-x86_64",
+        "build_info": KojiBuildInfo(
+            name="sample-product", version="1.0.1", release="20230101", id=1234
+        ),
         "generation": "V2",
         "sku_id": "plan-name",
         "support_legacy": True,
@@ -98,7 +101,7 @@ def test_upload(
     binfo = azure_push_item.build_info
     tags = {
         "arch": azure_push_item.release.arch,
-        "buildid": azure_push_item.build,
+        "buildid": azure_push_item.build_info.id,
         "name": azure_push_item.build_info.name,
         "nvra": f"{binfo.name}-{binfo.version}-{binfo.release}.{azure_push_item.release.arch}",
         "release": azure_push_item.build_info.release,

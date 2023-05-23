@@ -200,7 +200,7 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
             "version": push_item.build_info.version,
             "release": push_item.build_info.release,
             "arch": push_item.release.arch,
-            "buildid": push_item.build,
+            "buildid": push_item.build_info.id,
         }
         upload_metadata_kwargs = {
             "image_path": push_item.src,
