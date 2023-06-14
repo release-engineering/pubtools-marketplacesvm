@@ -127,7 +127,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             log.info("Upload finished for %s on %s", push_item.name, marketplace)
             pi = evolve(pi, state=State.NOTPUSHED)
         except Exception as exc:
-            log.error("Failed to upload %s: %s", push_item.name, str(exc))
+            log.exception("Failed to upload %s: %s", push_item.name, str(exc), stack_info=True)
             pi = evolve(push_item, state=State.UPLOADFAILED)
         return pi
 
@@ -174,7 +174,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             # Once we process all destinations we set back the list of destinations
             pi = evolve(pi, dest=push_item.dest, state=State.PUSHED)
         except Exception as exc:
-            log.error("Failed to publish %s: %s", push_item.name, str(exc))
+            log.exception("Failed to publish %s: %s", push_item.name, str(exc), stack_info=True)
             pi = evolve(push_item, state=State.NOTPUSHED)
         return pi
 
