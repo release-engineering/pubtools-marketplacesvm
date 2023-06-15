@@ -101,7 +101,7 @@ def test_upload(
     binfo = azure_push_item.build_info
     tags = {
         "arch": azure_push_item.release.arch,
-        "buildid": azure_push_item.build_info.id,
+        "buildid": str(azure_push_item.build_info.id),
         "name": azure_push_item.build_info.name,
         "nvra": f"{binfo.name}-{binfo.version}-{binfo.release}.{azure_push_item.release.arch}",
         "release": azure_push_item.build_info.release,

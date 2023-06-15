@@ -127,7 +127,7 @@ def test_upload(
 
     tags = {
         "arch": aws_push_item.release.arch,
-        "buildid": aws_push_item.build_info.id,
+        "buildid": str(aws_push_item.build_info.id),
         "name": aws_push_item.build_info.name,
         "nvra": f"{binfo.name}-{binfo.version}-{binfo.release}.{aws_push_item.release.arch}",
         "release": aws_push_item.build_info.release,
@@ -180,7 +180,7 @@ def test_upload_custom_s3(
 
     tags = {
         "arch": aws_push_item.release.arch,
-        "buildid": aws_push_item.build_info.id,
+        "buildid": str(aws_push_item.build_info.id),
         "name": aws_push_item.build_info.name,
         "nvra": f"{binfo.name}-{binfo.version}-{binfo.release}.{aws_push_item.release.arch}",
         "release": aws_push_item.build_info.release,
