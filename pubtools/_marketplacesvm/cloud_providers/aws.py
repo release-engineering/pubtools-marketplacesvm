@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
 
 from attrs import asdict, evolve, field, frozen
@@ -367,6 +368,11 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         self.publish_svc.restrict_minor_versions(
             push_item.dest[0], push_item.marketplace_entity_type, ".".join(version_split[:2])
         )
+
+        image = self.upload_svc.get_image_by_id(self.image_id)
+        release_date_tag = {"release_date": datetime.now().strftime("%Y%m%d%H::%M::%S")}
+        self.upload_svc.tag_image(image, release_date_tag)
+
         return push_item, publish_result
 
 

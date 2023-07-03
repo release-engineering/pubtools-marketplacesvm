@@ -1,4 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
+import os
 from copy import copy
 from unittest.mock import MagicMock, patch
 
@@ -211,3 +212,28 @@ def test_borg() -> None:
     assert a != b
     assert a.destinations == b.destinations
     assert "test" in b.destinations
+
+
+@patch("pubtools._marketplacesvm.cloud_providers.ms_azure.datetime")
+def test_post_publish(
+    mock_datetime: MagicMock,
+    azure_push_item: VHDPushItem,
+    fake_azure_provider: AzureProvider,
+) -> None:
+    mock_blob = MagicMock()
+    mock_blob.get_blob_tags.return_value = {}
+    mock_datetime.now.return_value.strftime.return_value = "20230623"
+
+    fake_azure_provider.upload_svc.get_object_by_name.return_value = mock_blob
+    name = os.path.basename(azure_push_item.src).rstrip(".xz")
+    container = UPLOAD_CONTAINER_NAME
+
+    fake_azure_provider._post_publish(azure_push_item, "publish_result")
+
+    fake_azure_provider.upload_svc.get_object_by_name.assert_called_once_with(container, name)
+
+    mock_blob.get_blob_tags.assert_called_once()
+    mock_datetime.now.return_value.strftime.assert_called_once_with("%Y%m%d%H::%M::%S")
+
+    test_dict = {"release_date": "20230623"}
+    mock_blob.set_blob_tags.assert_called_once_with(test_dict)
