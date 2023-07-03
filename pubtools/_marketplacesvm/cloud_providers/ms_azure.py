@@ -1,4 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
+import os
 from datetime import datetime
 from typing import Any, Dict, Optional, Set, Tuple
 
@@ -268,6 +269,30 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
         metadata = AzurePublishMetadata(**publish_metadata_kwargs)
         res = self.publish_svc.publish(metadata)
         return push_item, res
+
+    def _post_publish(self, push_item: VHDPushItem, publish_result: Any) -> Tuple[VHDPushItem, Any]:
+        """
+        Add release_date with after image is published.
+
+        Args:
+            push_item (VHDPushItem)
+                The original push item for uploading the image.
+            publish_result (Any)
+                The publish result.
+
+        Returns:
+            Tuple of PushItem and Publish results.
+        """
+        container = UPLOAD_CONTAINER_NAME
+        name = os.path.basename(push_item.src).rstrip(".xz")
+
+        blob = self.upload_svc.get_object_by_name(container, name)
+        blob_tags = blob.get_blob_tags()
+
+        blob_tags["release_date"] = datetime.now().strftime("%Y%m%d%H::%M::%S")
+        update_res = blob.set_blob_tags(blob_tags)
+
+        return push_item, update_res
 
     def ensure_offer_is_writable(self, destination: str, nochannel: bool) -> None:
         """

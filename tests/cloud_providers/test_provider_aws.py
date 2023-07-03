@@ -1,4 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
+from datetime import datetime
 from typing import Union
 from unittest.mock import MagicMock, patch
 
@@ -88,6 +89,12 @@ def aws_push_item(ami_release: AmiRelease, security_group: AmiSecurityGroup) -> 
 
 class FakeImageResp:
     id: str = "fake-image-id"
+
+
+class FakeImageTag:
+    resource_id: str = "ami-08db234c2221633a0"
+    key: str = "release_date"
+    value: str = "2023062113::16::33"
 
 
 @pytest.mark.parametrize("marketplace_account", ["aws-na", "aws-emea"])
@@ -294,6 +301,11 @@ def test_post_publish(
     updated_release = evolve(release, version=aws_fake_version)
     updated_aws_push_item = evolve(aws_push_item, release=updated_release)
 
+    fake_aws_provider.image_id = "ami-97969874573"
+    fake_image = FakeImageResp()
+    fake_aws_provider.upload_svc.get_image_by_id.return_value = fake_image
+    fake_aws_provider.upload_svc.tag_image.return_value = FakeImageTag()
+
     fake_pi_return, fake_result_return = fake_aws_provider._post_publish(
         updated_aws_push_item, None
     )
@@ -302,3 +314,8 @@ def test_post_publish(
     )
     assert fake_pi_return == updated_aws_push_item
     assert fake_result_return is None
+
+    release_date_tag = {"release_date": datetime.now().strftime("%Y%m%d%H::%M::%S")}
+
+    fake_aws_provider.upload_svc.get_image_by_id.assert_called_once_with("ami-97969874573")
+    fake_aws_provider.upload_svc.tag_image.assert_called_once_with(fake_image, release_date_tag)
