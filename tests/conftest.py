@@ -11,7 +11,10 @@ from pushsource import Source
 from .collector import FakeCollector
 from .command import CommandTester
 
-TEMP_ENV_VARS = {"MARKETPLACESVM_PUSH_REQUEST_THREADS": "1"}
+TEMP_ENV_VARS = {
+    "MARKETPLACESVM_PUSH_REQUEST_THREADS": "1",
+    "MARKETPLACESVM_PUSH_PROCESS_THREADS": "1",
+}
 
 
 @pytest.fixture(scope="session", autouse=True)

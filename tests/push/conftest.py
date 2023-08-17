@@ -1,7 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 from datetime import datetime
-from typing import Any, Dict, Generator
-from unittest import mock
+from typing import Any, Dict
 
 import pytest
 from attrs import evolve
@@ -11,11 +10,20 @@ from starmap_client.models import QueryResponse
 from pubtools._marketplacesvm.tasks.push.command import MarketplacesVMPush
 
 
+@pytest.fixture(scope="session")
+def monkeysession():
+    from _pytest.monkeypatch import MonkeyPatch
+
+    mpatch = MonkeyPatch()
+    yield mpatch
+    mpatch.undo()
+
+
 @pytest.fixture(scope="session", autouse=True)
-def marketplaces_vm_push() -> Generator[int, None, None]:
+def marketplaces_vm_push(monkeysession: pytest.MonkeyPatch) -> None:
     """Set a single-thread for MarketplacesVMPush."""
-    with mock.patch.object(MarketplacesVMPush, '_REQUEST_THREADS', 1) as m:
-        yield m
+    monkeysession.setattr(MarketplacesVMPush, '_REQUEST_THREADS', 1)
+    monkeysession.setattr(MarketplacesVMPush, '_PROCESS_THREADS', 1)
 
 
 @pytest.fixture

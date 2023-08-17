@@ -24,6 +24,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
     """Push and publish content to various cloud marketplaces."""
 
     _REQUEST_THREADS = int(os.environ.get("MARKETPLACESVM_PUSH_REQUEST_THREADS", "5"))
+    _PROCESS_THREADS = int(os.environ.get("MARKETPLACESVM_PUSH_PROCESS_THREADS", "2"))
 
     @property
     def raw_items(self) -> Iterator[VMIPushItem]:
@@ -190,9 +191,8 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
         Returns:
             Dictionary with the resulting operation for the Collector service.
         """
-        res = []
 
-        for marketplace in mapped_item.marketplaces:
+        def push_function(marketplace) -> Dict[str, Any]:
             # Upload the VM image to the marketplace
             # In order to get the correct destinations we need to first pass the result of
             # get_push_item_from_marketplace.
@@ -230,17 +230,28 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             push_item_for_collection = evolve(mapped_item.push_item, dest=dest_list_str)
 
             # Append the data for collection
-            res.append(
-                {
-                    "push_item": push_item_for_collection,
-                    "state": mapped_item.state,
-                    "marketplace": marketplace,
-                    "destinations": mapped_item.clouds[marketplace],
-                    "starmap_query": starmap_query,
-                }
-            )
+            return {
+                "push_item": push_item_for_collection,
+                "state": mapped_item.state,
+                "marketplace": marketplace,
+                "destinations": mapped_item.clouds[marketplace],
+                "starmap_query": starmap_query,
+            }
 
-        return res
+        res_output = []
+        to_await = []
+        executor = Executors.thread_pool(
+            name="pubtools-marketplacesvm-push-regions",
+            max_workers=min(max(len(mapped_item.marketplaces), 1), self._PROCESS_THREADS),
+        )
+
+        for marketplace in mapped_item.marketplaces:
+            to_await.append(executor.submit(push_function, marketplace))
+
+        for f_out in to_await:
+            res_output.append(f_out.result())
+
+        return res_output
 
     def collect_push_result(self, results: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
