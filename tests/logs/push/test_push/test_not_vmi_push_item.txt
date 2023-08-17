@@ -12,6 +12,7 @@
 [ WARNING] Missing information for the attribute ami_pushitem.root_device, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.sriov_net_support, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.ena_support, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.uefi_support, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.billing_codes, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.release_notes, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.usage_instructions, leaving it unset.
