@@ -34,35 +34,35 @@
 [ WARNING] Missing information for the attribute vhd_pushitem.disk_version, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.recommended_sizes, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.sas_uri, leaving it unset.
-[    INFO] Uploading the item ami_pushitem to aws-na.
-[    INFO] Upload finished for ami_pushitem on aws-na
-[    INFO] Uploading the item ami_pushitem to aws-emea.
-[    INFO] Upload finished for ami_pushitem on aws-emea
-[    INFO] Uploading the item ami_pushitem to azure-na.
-[    INFO] Upload finished for ami_pushitem on azure-na
-[    INFO] Pushing the item "ami_pushitem" (pre-push=True) to new_azure_destination1 on aws-na.
-[    INFO] Pushing the item "ami_pushitem" (pre-push=True) to new_azure_destination2 on aws-na.
-[    INFO] Pushing the item "ami_pushitem" (pre-push=False) to new_azure_destination1 on aws-na.
-[    INFO] Pushing the item "ami_pushitem" (pre-push=False) to new_azure_destination2 on aws-na.
-[    INFO] Pushing the item "ami_pushitem" (pre-push=True) to new_azure_destination1 on aws-emea.
-[    INFO] Pushing the item "ami_pushitem" (pre-push=True) to new_azure_destination2 on aws-emea.
-[    INFO] Pushing the item "ami_pushitem" (pre-push=False) to new_azure_destination1 on aws-emea.
-[    INFO] Pushing the item "ami_pushitem" (pre-push=False) to new_azure_destination2 on aws-emea.
-[    INFO] Pushing the item "ami_pushitem" (pre-push=True) to new_azure_destination1 on azure-na.
-[    INFO] Pushing the item "ami_pushitem" (pre-push=True) to new_azure_destination2 on azure-na.
-[    INFO] Pushing the item "ami_pushitem" (pre-push=False) to new_azure_destination1 on azure-na.
-[    INFO] Pushing the item "ami_pushitem" (pre-push=False) to new_azure_destination2 on azure-na.
-[    INFO] Uploading the item vhd_pushitem to azure-na.
-[    INFO] Upload finished for vhd_pushitem on azure-na
-[    INFO] Uploading the item vhd_pushitem to aws-na.
-[    INFO] Upload finished for vhd_pushitem on aws-na
-[    INFO] Uploading the item vhd_pushitem to aws-emea.
-[    INFO] Upload finished for vhd_pushitem on aws-emea
-[    INFO] Pushing the item "vhd_pushitem" (pre-push=True) to new_aws_emea_destination on azure-na.
-[    INFO] Pushing the item "vhd_pushitem" (pre-push=False) to new_aws_emea_destination on azure-na.
-[    INFO] Pushing the item "vhd_pushitem" (pre-push=True) to new_aws_emea_destination on aws-na.
-[    INFO] Pushing the item "vhd_pushitem" (pre-push=False) to new_aws_emea_destination on aws-na.
-[    INFO] Pushing the item "vhd_pushitem" (pre-push=True) to new_aws_emea_destination on aws-emea.
-[    INFO] Pushing the item "vhd_pushitem" (pre-push=False) to new_aws_emea_destination on aws-emea.
+[    INFO] Uploading the item ami_pushitem to AWS-NA.
+[    INFO] Upload finished for ami_pushitem on AWS-NA
+[    INFO] Uploading the item ami_pushitem to AWS-EMEA.
+[    INFO] Upload finished for ami_pushitem on AWS-EMEA
+[    INFO] Uploading the item ami_pushitem to AZURE-NA.
+[    INFO] Upload finished for ami_pushitem on AZURE-NA
+[    INFO] Pushing the item "ami_pushitem" (pre-push=True) to new_azure_destination1 on AWS-NA.
+[    INFO] Pushing the item "ami_pushitem" (pre-push=True) to new_azure_destination2 on AWS-NA.
+[    INFO] Pushing the item "ami_pushitem" (pre-push=False) to new_azure_destination1 on AWS-NA.
+[    INFO] Pushing the item "ami_pushitem" (pre-push=False) to new_azure_destination2 on AWS-NA.
+[    INFO] Pushing the item "ami_pushitem" (pre-push=True) to new_azure_destination1 on AWS-EMEA.
+[    INFO] Pushing the item "ami_pushitem" (pre-push=True) to new_azure_destination2 on AWS-EMEA.
+[    INFO] Pushing the item "ami_pushitem" (pre-push=False) to new_azure_destination1 on AWS-EMEA.
+[    INFO] Pushing the item "ami_pushitem" (pre-push=False) to new_azure_destination2 on AWS-EMEA.
+[    INFO] Pushing the item "ami_pushitem" (pre-push=True) to new_azure_destination1 on AZURE-NA.
+[    INFO] Pushing the item "ami_pushitem" (pre-push=True) to new_azure_destination2 on AZURE-NA.
+[    INFO] Pushing the item "ami_pushitem" (pre-push=False) to new_azure_destination1 on AZURE-NA.
+[    INFO] Pushing the item "ami_pushitem" (pre-push=False) to new_azure_destination2 on AZURE-NA.
+[    INFO] Uploading the item vhd_pushitem to AZURE-NA.
+[    INFO] Upload finished for vhd_pushitem on AZURE-NA
+[    INFO] Uploading the item vhd_pushitem to AWS-NA.
+[    INFO] Upload finished for vhd_pushitem on AWS-NA
+[    INFO] Uploading the item vhd_pushitem to AWS-EMEA.
+[    INFO] Upload finished for vhd_pushitem on AWS-EMEA
+[    INFO] Pushing the item "vhd_pushitem" (pre-push=True) to new_aws_emea_destination on AZURE-NA.
+[    INFO] Pushing the item "vhd_pushitem" (pre-push=False) to new_aws_emea_destination on AZURE-NA.
+[    INFO] Pushing the item "vhd_pushitem" (pre-push=True) to new_aws_emea_destination on AWS-NA.
+[    INFO] Pushing the item "vhd_pushitem" (pre-push=False) to new_aws_emea_destination on AWS-NA.
+[    INFO] Pushing the item "vhd_pushitem" (pre-push=True) to new_aws_emea_destination on AWS-EMEA.
+[    INFO] Pushing the item "vhd_pushitem" (pre-push=False) to new_aws_emea_destination on AWS-EMEA.
 [    INFO] Collecting results
 [    INFO] Marketplace VM push completed

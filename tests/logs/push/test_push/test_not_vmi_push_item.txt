@@ -24,13 +24,13 @@
 [ WARNING] Missing information for the attribute ami_pushitem.user_name, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.version_title, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.security_groups, leaving it unset.
-[    INFO] Uploading the item ami_pushitem to aws-na.
-[    INFO] Upload finished for ami_pushitem on aws-na
-[    INFO] Uploading the item ami_pushitem to aws-emea.
-[    INFO] Upload finished for ami_pushitem on aws-emea
-[    INFO] Pushing the item "ami_pushitem" (pre-push=True) to 00000000-0000-0000-0000-000000000000 on aws-na.
-[    INFO] Pushing the item "ami_pushitem" (pre-push=False) to 00000000-0000-0000-0000-000000000000 on aws-na.
-[    INFO] Pushing the item "ami_pushitem" (pre-push=True) to 00000000-0000-0000-0000-000000000000 on aws-emea.
-[    INFO] Pushing the item "ami_pushitem" (pre-push=False) to 00000000-0000-0000-0000-000000000000 on aws-emea.
+[    INFO] Uploading the item ami_pushitem to AWS-NA.
+[    INFO] Upload finished for ami_pushitem on AWS-NA
+[    INFO] Uploading the item ami_pushitem to AWS-EMEA.
+[    INFO] Upload finished for ami_pushitem on AWS-EMEA
+[    INFO] Pushing the item "ami_pushitem" (pre-push=True) to 00000000-0000-0000-0000-000000000000 on AWS-NA.
+[    INFO] Pushing the item "ami_pushitem" (pre-push=False) to 00000000-0000-0000-0000-000000000000 on AWS-NA.
+[    INFO] Pushing the item "ami_pushitem" (pre-push=True) to 00000000-0000-0000-0000-000000000000 on AWS-EMEA.
+[    INFO] Pushing the item "ami_pushitem" (pre-push=False) to 00000000-0000-0000-0000-000000000000 on AWS-EMEA.
 [    INFO] Collecting results
 [    INFO] Marketplace VM push completed
