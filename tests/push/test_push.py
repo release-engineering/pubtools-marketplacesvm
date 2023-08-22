@@ -1,4 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
+import time
 from typing import Generator
 from unittest import mock
 
@@ -22,6 +23,7 @@ class FakeCloudProvider(CloudProvider):
         return cls()
 
     def _upload(self, push_item):
+        time.sleep(2)
         return push_item, True
 
     def _publish(self, push_item, nochannel, _):
@@ -287,6 +289,7 @@ def test_push_overridden_destination(
 
     class FakeCloudInstance:
         def upload(self, push_item):
+            time.sleep(2)
             return push_item, True
 
         def publish(self, push_item, nochannel, overwrite):
