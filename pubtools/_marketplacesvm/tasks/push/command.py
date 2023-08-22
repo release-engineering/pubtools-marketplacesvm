@@ -193,14 +193,6 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
         """
 
         def push_function(marketplace) -> Dict[str, Any]:
-            # Upload the VM image to the marketplace
-            # In order to get the correct destinations we need to first pass the result of
-            # get_push_item_from_marketplace.
-
-            mapped_item.push_item = self._upload(
-                marketplace, mapped_item.get_push_item_for_marketplace(marketplace)
-            )
-
             # Associate image with Product/Offer/Plan and publish only if it's not a pre-push
             if mapped_item.state != State.UPLOADFAILED and not self.args.pre_push:
                 # The first publish should always be with `pre_push` set True because it might
@@ -246,6 +238,13 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
         )
 
         for marketplace in mapped_item.marketplaces:
+            # Upload the VM image to the marketplace
+            # In order to get the correct destinations we need to first pass the result of
+            # get_push_item_from_marketplace.
+
+            mapped_item.push_item = self._upload(
+                marketplace, mapped_item.get_push_item_for_marketplace(marketplace)
+            )
             to_await.append(executor.submit(push_function, marketplace))
 
         for f_out in to_await:
