@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 from datetime import datetime
-from typing import Union
+from typing import Any, Dict, Union
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -85,6 +85,27 @@ def aws_push_item(ami_release: AmiRelease, security_group: AmiSecurityGroup) -> 
         "security_groups": [security_group],
     }
     return AmiPushItem(**params)
+
+
+@pytest.fixture
+def aws_product_versions() -> Dict[str, Any]:
+    product_versions = {
+        "Fake-Version": {
+            "delivery_options": [
+                {"id": "fake-id1", "visibility": "Restricted"},
+                {"id": "fake-id2", "visibility": "Public"},
+            ],
+            "created_date": "2023-02-24T12:41:25.503Z",
+        },
+        "Fake-Version2": {
+            "delivery_options": [
+                {"id": "fake-id1", "visibility": "Limited"},
+                {"id": "fake-id2", "visibility": "Restricted"},
+            ],
+            "created_date": "2023-01-24T12:41:25.503Z",
+        },
+    }
+    return product_versions
 
 
 class FakeImageResp:
@@ -290,6 +311,94 @@ def test_publish(
 
     mock_metadata.assert_called_once_with(**metadata)
     fake_aws_provider.publish_svc.publish.assert_called_once_with(meta_obj)
+    fake_aws_provider.upload_svc.upload.assert_not_called()
+
+
+@pytest.mark.parametrize("new_base_product", ["test-base", None])
+@patch("pubtools._marketplacesvm.cloud_providers.aws.AWSPublishMetadata")
+def test_publish_version_exists(
+    mock_metadata: MagicMock,
+    new_base_product: Union[str, None],
+    aws_push_item: AmiPushItem,
+    fake_aws_provider: AWSProvider,
+    aws_product_versions: Dict[str, Any],
+):
+    # update base_product so we can test both naming conventions
+    release = aws_push_item.release
+    updated_release = evolve(release, base_product=new_base_product)
+    updated_aws_push_item = evolve(aws_push_item, release=updated_release)
+    updated_aws_push_item, _ = fake_aws_provider._post_upload(
+        updated_aws_push_item, FakeImageResp()
+    )
+    fake_aws_provider._post_upload(updated_aws_push_item, FakeImageResp())
+
+    release = updated_aws_push_item.release
+    release_date = release.date.strftime("%Y%m%d")
+    respin = str(release.respin)
+
+    version_title = f"{updated_aws_push_item.release.version} {release_date}-{respin}"
+
+    version = {
+        "VersionTitle": version_title,
+        "ReleaseNotes": fake_aws_provider._format_version_info(
+            aws_push_item.release_notes, aws_push_item.release.version
+        ),
+    }
+    delivery_opt = [
+        {
+            "Details": {
+                "AmiDeliveryOptionDetails": {
+                    "AmiSource": {
+                        "AmiId": updated_aws_push_item.image_id,
+                        "AccessRoleArn": fake_aws_provider.aws_access_role_arn,
+                        "UserName": updated_aws_push_item.user_name,
+                        "OperatingSystemName": updated_aws_push_item.build_info.name.split("-")[
+                            0
+                        ].upper(),
+                        "OperatingSystemVersion": updated_aws_push_item.release.version,
+                        "ScanningPort": updated_aws_push_item.scanning_port,
+                    },
+                    "UsageInstructions": fake_aws_provider._format_version_info(
+                        aws_push_item.usage_instructions, aws_push_item.release.version
+                    ),
+                    "RecommendedInstanceType": updated_aws_push_item.recommended_instance_type,
+                    "SecurityGroups": fake_aws_provider._get_security_items(aws_push_item),
+                }
+            }
+        }
+    ]
+    version_mapping = {"Version": version, "DeliveryOptions": delivery_opt}
+    version_mapping = AWSVersionMapping.from_json(version_mapping)
+    metadata = {
+        "image_path": updated_aws_push_item.image_id,
+        "architecture": updated_aws_push_item.release.arch,
+        "destination": aws_push_item.dest[0],
+        "keepdraft": False,
+        "overwrite": False,
+        "version_mapping": version_mapping,
+        "marketplace_entity_type": updated_aws_push_item.marketplace_entity_type,
+    }
+    meta_obj = MagicMock(**metadata)
+    mock_metadata.return_value = meta_obj
+
+    new_fake_version = {
+        "delivery_options": [
+            {"id": "fake-id1", "visibility": "Limited"},
+            {"id": "fake-id2", "visibility": "Restricted"},
+        ],
+        "created_date": "2023-01-24T12:41:25.503Z",
+    }
+
+    aws_product_versions[version_title] = new_fake_version
+
+    fake_aws_provider.publish_svc.get_product_versions.return_value = aws_product_versions
+
+    _, res = fake_aws_provider.publish(updated_aws_push_item, nochannel=False, overwrite=False)
+
+    assert res == {}
+
+    mock_metadata.assert_not_called()
+    fake_aws_provider.publish_svc.publish.assert_not_called()
     fake_aws_provider.upload_svc.upload.assert_not_called()
 
 

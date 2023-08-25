@@ -308,9 +308,15 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         release_date = release.date.strftime("%Y%m%d")
         respin = str(release.respin)
 
+        version_title = f"{push_item.release.version} {release_date}-{respin}"
+
+        if self._check_version_exists(version_title, push_item.dest[0]):
+            LOG.info("Version already exists in AWS: %s", version_title)
+            return push_item, {}
+
         version_mapping_kwargs = {
             "Version": {
-                "VersionTitle": f"{push_item.release.version} {release_date}-{respin}",
+                "VersionTitle": version_title,
                 "ReleaseNotes": self._format_version_info(
                     push_item.release_notes, push_item.release.version
                 ),
@@ -374,6 +380,25 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         self.upload_svc.tag_image(image, release_date_tag)
 
         return push_item, publish_result
+
+    def _check_version_exists(self, publishing_version: str, entity_id: str) -> bool:
+        """
+        Check if a version exists in a product already in AWS.
+
+        Args:
+            publishing_version (str)
+                Version to be checked against already published targets.
+            entity_id (str)
+                The entity id of the product to check against
+
+        Returns:
+            Bool of whether it exists or not.
+        """
+        current_versions = self.publish_svc.get_product_versions(entity_id)
+
+        matching_version_list = [v for t, v in current_versions.items() if publishing_version in t]
+
+        return len(matching_version_list) > 0
 
 
 register_provider(AWSProvider, "aws-na", "aws-emea")
