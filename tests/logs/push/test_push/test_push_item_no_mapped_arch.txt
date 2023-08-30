@@ -34,13 +34,13 @@
 [ WARNING] Missing information for the attribute vhd_pushitem.disk_version, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.recommended_sizes, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.sas_uri, leaving it unset.
-[    INFO] Uploading the item ami_pushitem to aws-na.
-[    INFO] Upload finished for ami_pushitem on aws-na
-[    INFO] Pushing the item "ami_pushitem" (pre-push=True) to ffffffff-ffff-ffff-ffff-ffffffffffff on aws-na.
-[    INFO] Pushing the item "ami_pushitem" (pre-push=False) to ffffffff-ffff-ffff-ffff-ffffffffffff on aws-na.
-[    INFO] Uploading the item vhd_pushitem to aws-na.
-[    INFO] Upload finished for vhd_pushitem on aws-na
-[    INFO] Pushing the item "vhd_pushitem" (pre-push=True) to ffffffff-ffff-ffff-ffff-ffffffffffff on aws-na.
-[    INFO] Pushing the item "vhd_pushitem" (pre-push=False) to ffffffff-ffff-ffff-ffff-ffffffffffff on aws-na.
+[    INFO] Uploading the item ami_pushitem to AWS-NA.
+[    INFO] Upload finished for ami_pushitem on AWS-NA
+[    INFO] Pushing the item "ami_pushitem" (pre-push=True) to ffffffff-ffff-ffff-ffff-ffffffffffff on AWS-NA.
+[    INFO] Pushing the item "ami_pushitem" (pre-push=False) to ffffffff-ffff-ffff-ffff-ffffffffffff on AWS-NA.
+[    INFO] Uploading the item vhd_pushitem to AWS-NA.
+[    INFO] Upload finished for vhd_pushitem on AWS-NA
+[    INFO] Pushing the item "vhd_pushitem" (pre-push=True) to ffffffff-ffff-ffff-ffff-ffffffffffff on AWS-NA.
+[    INFO] Pushing the item "vhd_pushitem" (pre-push=False) to ffffffff-ffff-ffff-ffff-ffffffffffff on AWS-NA.
 [    INFO] Collecting results
 [    INFO] Marketplace VM push completed

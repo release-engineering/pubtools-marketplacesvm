@@ -123,9 +123,9 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             The push item after the upload.
         """
         try:
-            log.info("Uploading the item %s to %s.", push_item.name, marketplace)
+            log.info("Uploading the item %s to %s.", push_item.name, marketplace.upper())
             pi, _ = self.cloud_instance(marketplace).upload(push_item)
-            log.info("Upload finished for %s on %s", push_item.name, marketplace)
+            log.info("Upload finished for %s on %s", push_item.name, marketplace.upper())
             pi = evolve(pi, state=State.NOTPUSHED)
         except Exception as exc:
             log.exception("Failed to upload %s: %s", push_item.name, str(exc), stack_info=True)
@@ -155,7 +155,9 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                 # We don't want to publish again the same offer when pre-push == False (go live)
                 curr_dest = dest.destination.split("/")[0]  # get just the offer name, if applicable
                 if not pre_push and curr_dest == last_destination:
-                    log.info("Push already done for offer %s", curr_dest)
+                    log.info(
+                        "Push already done for offer %s on %s.", curr_dest, marketplace.upper()
+                    )
                     continue
 
                 log.info(
@@ -163,7 +165,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                     push_item.name,
                     pre_push,
                     dest.destination,
-                    marketplace,
+                    marketplace.upper(),
                 )
                 single_dest_item = evolve(push_item, dest=[dest.destination])
 
@@ -175,7 +177,13 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             # Once we process all destinations we set back the list of destinations
             pi = evolve(pi, dest=push_item.dest, state=State.PUSHED)
         except Exception as exc:
-            log.exception("Failed to publish %s: %s", push_item.name, str(exc), stack_info=True)
+            log.exception(
+                "Failed to publish %s on %s: %s",
+                push_item.name,
+                str(exc),
+                marketplace.upper(),
+                stack_info=True,
+            )
             pi = evolve(push_item, state=State.NOTPUSHED)
         return pi
 
