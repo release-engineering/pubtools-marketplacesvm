@@ -230,13 +230,6 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                 "starmap_query": starmap_query,
             }
 
-        res_output = []
-        to_await = []
-        executor = Executors.thread_pool(
-            name="pubtools-marketplacesvm-push-regions",
-            max_workers=min(max(len(mapped_item.marketplaces), 1), self._PROCESS_THREADS),
-        )
-
         for marketplace in mapped_item.marketplaces:
             # Upload the VM image to the marketplace
             # In order to get the correct destinations we need to first pass the result of
@@ -245,6 +238,15 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             mapped_item.push_item = self._upload(
                 marketplace, mapped_item.get_push_item_for_marketplace(marketplace)
             )
+
+        res_output = []
+        to_await = []
+        executor = Executors.thread_pool(
+            name="pubtools-marketplacesvm-push-regions",
+            max_workers=min(max(len(mapped_item.marketplaces), 1), self._PROCESS_THREADS),
+        )
+
+        for marketplace in mapped_item.marketplaces:
             to_await.append(executor.submit(push_function, marketplace))
 
         for f_out in to_await:

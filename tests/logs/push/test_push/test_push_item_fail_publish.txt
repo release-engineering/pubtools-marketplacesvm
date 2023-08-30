@@ -36,12 +36,12 @@
 [ WARNING] Missing information for the attribute vhd_pushitem.sas_uri, leaving it unset.
 [    INFO] Uploading the item ami_pushitem to aws-na.
 [    INFO] Upload finished for ami_pushitem on aws-na
-[    INFO] Pushing the item "ami_pushitem" (pre-push=True) to ffffffff-ffff-ffff-ffff-ffffffffffff on aws-na.
 [    INFO] Uploading the item ami_pushitem to aws-emea.
-[   ERROR] Failed to publish ami_pushitem: Random exception
-[    INFO] Pushing the item "ami_pushitem" (pre-push=False) to ffffffff-ffff-ffff-ffff-ffffffffffff on aws-na.
-[   ERROR] Failed to publish ami_pushitem: Random exception
 [    INFO] Upload finished for ami_pushitem on aws-emea
+[    INFO] Pushing the item "ami_pushitem" (pre-push=True) to 00000000-0000-0000-0000-000000000000 on aws-na.
+[   ERROR] Failed to publish ami_pushitem: Random exception
+[    INFO] Pushing the item "ami_pushitem" (pre-push=False) to 00000000-0000-0000-0000-000000000000 on aws-na.
+[   ERROR] Failed to publish ami_pushitem: Random exception
 [    INFO] Pushing the item "ami_pushitem" (pre-push=True) to 00000000-0000-0000-0000-000000000000 on aws-emea.
 [   ERROR] Failed to publish ami_pushitem: Random exception
 [    INFO] Pushing the item "ami_pushitem" (pre-push=False) to 00000000-0000-0000-0000-000000000000 on aws-emea.
