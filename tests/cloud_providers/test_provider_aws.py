@@ -6,7 +6,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from attrs import evolve
 from cloudpub.models.aws import VersionMapping as AWSVersionMapping
-from pushsource import AmiPushItem, AmiRelease, AmiSecurityGroup, KojiBuildInfo
+from pushsource import AmiPushItem, AmiRelease, AmiSecurityGroup, BootMode, KojiBuildInfo
 
 from pubtools._marketplacesvm.cloud_providers import AWSCredentials, AWSProvider, get_provider
 from pubtools._marketplacesvm.cloud_providers.base import UPLOAD_CONTAINER_NAME
@@ -176,6 +176,56 @@ def test_upload(
         "snapshot_account_ids": fake_aws_provider.aws_snapshot_accounts,
         "sriov_net_support": aws_push_item.sriov_net_support,
         "ena_support": aws_push_item.ena_support,
+        "tags": tags,
+    }
+    meta_obj = MagicMock(**metadata)
+    mock_metadata.return_value = meta_obj
+
+    fake_aws_provider.upload_svc.publish.return_value = FakeImageResp()
+
+    fake_aws_provider.upload(aws_push_item)
+
+    mock_metadata.assert_called_once_with(**metadata)
+    fake_aws_provider.upload_svc.publish.assert_called_once_with(meta_obj)
+    fake_aws_provider.publish_svc.publish.assert_not_called()
+
+
+@pytest.mark.parametrize("boot_mode_str", ["legacy", "uefi", "hybrid"])
+@patch("pubtools._marketplacesvm.cloud_providers.aws.AWSUploadMetadata")
+def test_upload_boot_mode(
+    mock_metadata: MagicMock,
+    boot_mode_str: str,
+    aws_push_item: AmiPushItem,
+    fake_aws_provider: AWSProvider,
+):
+    aws_push_item = evolve(aws_push_item, boot_mode=BootMode(boot_mode_str))
+    created_name = fake_aws_provider._name_from_push_item(aws_push_item)
+    binfo = aws_push_item.build_info
+
+    tags = {
+        "arch": aws_push_item.release.arch,
+        "buildid": str(aws_push_item.build_info.id),
+        "name": aws_push_item.build_info.name,
+        "nvra": f"{binfo.name}-{binfo.version}-{binfo.release}.{aws_push_item.release.arch}",
+        "release": aws_push_item.build_info.release,
+        "version": aws_push_item.build_info.version,
+    }
+    metadata = {
+        "billing_products": [],
+        "image_path": aws_push_item.src,
+        "image_name": created_name,
+        "snapshot_name": created_name,
+        "container": UPLOAD_CONTAINER_NAME,
+        "description": aws_push_item.description,
+        "arch": aws_push_item.release.arch,
+        "virt_type": aws_push_item.virtualization,
+        "root_device_name": aws_push_item.root_device,
+        "volume_type": aws_push_item.volume,
+        "accounts": fake_aws_provider.aws_groups,
+        "snapshot_account_ids": fake_aws_provider.aws_snapshot_accounts,
+        "sriov_net_support": aws_push_item.sriov_net_support,
+        "ena_support": aws_push_item.ena_support,
+        "boot_mode": boot_mode_str,
         "tags": tags,
     }
     meta_obj = MagicMock(**metadata)

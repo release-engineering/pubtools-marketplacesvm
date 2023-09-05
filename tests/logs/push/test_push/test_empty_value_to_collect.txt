@@ -4,6 +4,7 @@
 [ WARNING] Missing information for the attribute ami_pushitem.src, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.build, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.description, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.boot_mode, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.type, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.region, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.virtualization, leaving it unset.
