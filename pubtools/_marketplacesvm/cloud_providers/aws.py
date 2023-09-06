@@ -261,6 +261,9 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
             "billing_products": [],
             "tags": tags,
         }
+        if push_item.boot_mode:
+            upload_metadata_kwargs.update({"boot_mode": push_item.boot_mode.value})
+
         LOG.debug("%s", upload_metadata_kwargs)
         metadata = AWSUploadMetadata(**upload_metadata_kwargs)
 
