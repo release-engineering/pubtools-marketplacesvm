@@ -225,7 +225,7 @@ def test_upload_boot_mode(
         "snapshot_account_ids": fake_aws_provider.aws_snapshot_accounts,
         "sriov_net_support": aws_push_item.sriov_net_support,
         "ena_support": aws_push_item.ena_support,
-        "boot_mode": boot_mode_str,
+        "boot_mode": boot_mode_str.replace("legacy", "bios"),
         "tags": tags,
     }
     meta_obj = MagicMock(**metadata)
