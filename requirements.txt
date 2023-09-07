@@ -1,4 +1,4 @@
-cloudimg>=1.9.0
+cloudimg>=1.10.0
 pubtools>=1.3.0
 more_executors>=2.11.4
 pushcollector>=1.3.0

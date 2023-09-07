@@ -262,8 +262,7 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
             "tags": tags,
         }
         if push_item.boot_mode:
-            str_value = push_item.boot_mode.value.replace("legacy", "bios")
-            upload_metadata_kwargs.update({"boot_mode": str_value})
+            upload_metadata_kwargs.update({"boot_mode": push_item.boot_mode.value})
 
         LOG.debug("%s", upload_metadata_kwargs)
         metadata = AWSUploadMetadata(**upload_metadata_kwargs)
