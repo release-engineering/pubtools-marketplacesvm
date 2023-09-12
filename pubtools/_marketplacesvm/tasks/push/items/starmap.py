@@ -67,6 +67,15 @@ class MappedVMIPushItem:
         return res
 
     @property
+    def tags(self) -> Dict[str, Any]:
+        """Return all tags associated with the stored push item."""
+        res = {}
+        for dest in self.destinations:
+            if dest.tags:
+                res.update(dest.tags)
+        return res
+
+    @property
     def push_item(self) -> VMIPushItem:
         """Return the wrapped push item with the missing attributes set."""
         if self._push_item.dest:  # If it has destinations it means we already mapped it
@@ -146,3 +155,37 @@ class MappedVMIPushItem:
             if dst == destination:
                 return dst.meta
         return {}
+
+    def get_tags_for_mapped_item(self, destination: Destination) -> Dict[str, str]:
+        """Return all custom tags related to a push item containing a single destination.
+
+        Args:
+            destination
+                A single Destination to obtain the related custom tags.
+        Returns:
+            The related custom tags for the given destination.
+        """
+        for dst in self.destinations:
+            if dst == destination:
+                return dst.tags
+        return {}
+
+    def get_tags_for_marketplace(self, account: str) -> Dict[str, str]:
+        """Return all custom tags for the destinations of a given marketplace account.
+
+        Args:
+            account (str): The account alias to retrieve the tags from
+
+        Returns:
+            Dict[str, str]: The custom tags for the destinations of the given marketplace account.
+        """
+        if account not in self.marketplaces:
+            raise ValueError(f"No such marketplace {account}")
+
+        res = {}
+        destinations = self.clouds[account]
+        for dst in destinations:
+            if dst.tags:
+                res.update(dst.tags)
+
+        return res
