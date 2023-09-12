@@ -5,7 +5,7 @@ import logging
 import os
 import sys
 from copy import copy
-from typing import Any, Dict, Iterator, List, Union
+from typing import Any, Dict, Iterator, List, Optional, Union
 
 from attrs import asdict, evolve
 from more_executors import Executors
@@ -110,7 +110,9 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             query.clouds[cloud_name] = [make_destination(d) for d in destinations]
         return query
 
-    def _upload(self, marketplace: str, push_item: VMIPushItem) -> VMIPushItem:
+    def _upload(
+        self, marketplace: str, push_item: VMIPushItem, custom_tags: Optional[Dict[str, str]] = None
+    ) -> VMIPushItem:
         """
         Upload a single push item to the cloud marketplace and update the status.
 
@@ -119,12 +121,14 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                 The account name (alias) for the marketplace to upload.
             push_item
                 The item to upload
+            custom_tags:
+                Optional tags to be applied alongside the default ones from upload.
         Returns:
             The push item after the upload.
         """
         try:
             log.info("Uploading the item %s to %s.", push_item.name, marketplace.upper())
-            pi, _ = self.cloud_instance(marketplace).upload(push_item)
+            pi, _ = self.cloud_instance(marketplace).upload(push_item, custom_tags=custom_tags)
             log.info("Upload finished for %s on %s", push_item.name, marketplace.upper())
             pi = evolve(pi, state=State.NOTPUSHED)
         except Exception as exc:
@@ -244,7 +248,9 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             # get_push_item_from_marketplace.
 
             mapped_item.push_item = self._upload(
-                marketplace, mapped_item.get_push_item_for_marketplace(marketplace)
+                marketplace,
+                mapped_item.get_push_item_for_marketplace(marketplace),
+                custom_tags=mapped_item.get_tags_for_marketplace(marketplace),
             )
 
         res_output = []

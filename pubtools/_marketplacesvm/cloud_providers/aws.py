@@ -207,7 +207,9 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         creds = AWSCredentials(**auth_data)
         return cls(creds)
 
-    def _upload(self, push_item: AmiPushItem) -> Tuple[AmiPushItem, Any]:
+    def _upload(
+        self, push_item: AmiPushItem, custom_tags: Optional[Dict[str, str]] = None
+    ) -> Tuple[AmiPushItem, Any]:
         """
         Upload and import a disk image to AWS.
 
@@ -229,6 +231,8 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         Args:
             push_item (AmiPushItem)
                 The push item with the required data to upload the AMI image into Azure.
+            custom_tags (dict, optional)
+                Dictionary with keyword values to be added as custom tags.
         Returns:
             The EC2 image with the data from uploaded image.
         """
@@ -244,6 +248,9 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
             "arch": push_item.release.arch,
             "buildid": str(push_item.build_info.id),
         }
+        if custom_tags:
+            LOG.debug(f"Setting up custom tags: {custom_tags}")
+            tags.update(custom_tags)
         upload_metadata_kwargs = {
             "image_path": push_item.src,
             "image_name": name,

@@ -127,6 +127,40 @@ def test_upload(
     fake_azure_provider.publish_svc.publish.assert_not_called()
 
 
+@patch("pubtools._marketplacesvm.cloud_providers.ms_azure.AzureUploadMetadata")
+def test_upload_custom_tags(
+    mock_metadata: MagicMock, azure_push_item: VHDPushItem, fake_azure_provider: AzureProvider
+) -> None:
+    binfo = azure_push_item.build_info
+    custom_tags = {"custom_key": "custom_value"}
+    tags = {
+        "arch": azure_push_item.release.arch,
+        "buildid": str(azure_push_item.build_info.id),
+        "name": azure_push_item.build_info.name,
+        "nvra": f"{binfo.name}-{binfo.version}-{binfo.release}.{azure_push_item.release.arch}",
+        "release": azure_push_item.build_info.release,
+        "version": azure_push_item.build_info.version,
+        **custom_tags,
+    }
+    metadata = {
+        "arch": azure_push_item.release.arch,
+        "container": UPLOAD_CONTAINER_NAME,
+        "description": azure_push_item.description,
+        "image_name": fake_azure_provider._name_from_push_item(azure_push_item),
+        "image_path": azure_push_item.src,
+        "tags": tags,
+    }
+    meta_obj = MagicMock(**metadata)
+    mock_metadata.return_value = meta_obj
+    fake_azure_provider.upload_svc.get_blob_sas_uri.return_value = "FAKE_SAS_URI"
+
+    fake_azure_provider.upload(azure_push_item, custom_tags=custom_tags)
+
+    mock_metadata.assert_called_once_with(**metadata)
+    fake_azure_provider.upload_svc.publish.assert_called_once_with(meta_obj)
+    fake_azure_provider.publish_svc.publish.assert_not_called()
+
+
 @patch("pubtools._marketplacesvm.cloud_providers.ms_azure.AzurePublishMetadata")
 def test_publish(
     mock_metadata: MagicMock,

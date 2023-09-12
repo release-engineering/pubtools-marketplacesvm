@@ -22,7 +22,7 @@ class FakeCloudProvider(CloudProvider):
     def from_credentials(cls, _):
         return cls()
 
-    def _upload(self, push_item):
+    def _upload(self, push_item, custom_tags=None):
         time.sleep(2)
         return push_item, True
 
@@ -288,7 +288,7 @@ def test_push_overridden_destination(
     """Test a push success with the destinations overriden from command line."""
 
     class FakeCloudInstance:
-        def upload(self, push_item):
+        def upload(self, push_item, custom_tags=None):
             time.sleep(2)
             return push_item, True
 
