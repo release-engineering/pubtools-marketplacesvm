@@ -1,4 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
+import logging
 import os
 from datetime import datetime
 from typing import Any, Dict, Optional, Set, Tuple
@@ -12,6 +13,8 @@ from cloudpub.ms_azure import AzureService as AzurePublishService
 from pushsource import VHDPushItem
 
 from .base import UPLOAD_CONTAINER_NAME, CloudCredentials, CloudProvider, register_provider
+
+LOG = logging.getLogger("pubtools.marketplacesvm")
 
 
 @frozen
@@ -184,13 +187,17 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
         creds = AzureCredentials(**auth_data)
         return cls(creds)
 
-    def _upload(self, push_item: VHDPushItem) -> Tuple[VHDPushItem, Any]:
+    def _upload(
+        self, push_item: VHDPushItem, custom_tags: Optional[Dict[str, str]] = None
+    ) -> Tuple[VHDPushItem, Any]:
         """
         Upload a VHD image into Azure.
 
         Args:
             push_item (VHDPushItem)
                 The push item with the required data to upload the VHD image into Azure.
+            custom_tags (dict, optional)
+                Dictionary with keyword values to be added as custom tags.
         Returns:
             The BlobProperties with the data from uploaded image.
         """
@@ -203,6 +210,9 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
             "arch": push_item.release.arch,
             "buildid": str(push_item.build_info.id),
         }
+        if custom_tags:
+            LOG.debug(f"Setting up custom tags: {custom_tags}")
+            tags.update(custom_tags)
         upload_metadata_kwargs = {
             "image_path": push_item.src,
             "image_name": self._name_from_push_item(push_item),

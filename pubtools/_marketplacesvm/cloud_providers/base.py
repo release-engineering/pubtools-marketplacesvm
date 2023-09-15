@@ -3,7 +3,7 @@ import logging
 import os
 import sys
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Generic, NoReturn, Tuple, Type, TypeVar
+from typing import Any, Dict, Generic, NoReturn, Optional, Tuple, Type, TypeVar
 
 if sys.version_info >= (3, 8):
     from typing import TypedDict  # pragma: no cover
@@ -85,13 +85,15 @@ class CloudProvider(ABC, Generic[T, C]):
         """
 
     @abstractmethod
-    def _upload(self, push_item: T) -> Tuple[T, Any]:
+    def _upload(self, push_item: T, custom_tags: Optional[Dict[str, str]] = None) -> Tuple[T, Any]:
         """
         Abstract method for uploading a VM image into a public cloud provider.
 
         Args:
             push_item (VMIPushItem)
                 The push item to upload the image into a cloud provider.
+            custom_tags (dict, optional)
+                Dictionary with keyword values to be added as custom tags.
         Returns:
             The resulting data from upload.
         """
@@ -160,17 +162,19 @@ class CloudProvider(ABC, Generic[T, C]):
         log.error(message)
         raise exception(message)
 
-    def upload(self, push_item: T) -> Tuple[T, Any]:
+    def upload(self, push_item: T, custom_tags: Optional[Dict[str, str]] = None) -> Tuple[T, Any]:
         """
         Upload the VM image into a pulic cloud provider.
 
         Args:
             push_item (VMIPushItem)
                 The push item to upload the image into a cloud provider.
+            custom_tags (dict, optional)
+                Dictionary with keyword values to be added as custom tags.
         Returns:
             object: The upload result data.
         """
-        pi, res = self._upload(push_item)
+        pi, res = self._upload(push_item, custom_tags=custom_tags)
         return self._post_upload(pi, res)
 
     def publish(self, push_item: T, nochannel: bool, overwrite: bool = False) -> Tuple[T, Any]:

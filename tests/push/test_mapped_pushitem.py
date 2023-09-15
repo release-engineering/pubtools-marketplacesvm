@@ -53,6 +53,13 @@ def test_mapped_item_properties(
                 expected_meta.update({k: v for k, v in dest.meta.items()})
         assert mapped_item.meta == expected_meta
 
+        # -- Test Property: tags
+        expected_tags = {}
+        for dest in mapped_item.destinations:
+            if dest.tags:
+                expected_tags.update(dest.tags)
+        assert mapped_item.tags == expected_tags
+
         # -- Test some attributes mapping
         push_item = mapped_item.push_item
         assert push_item.dest == mapped_item.destinations
@@ -64,6 +71,9 @@ def test_mapped_item_properties(
         # -- Test invalid marketplace
         with pytest.raises(ValueError, match="No such marketplace foo"):
             mapped_item.get_push_item_for_marketplace("foo")
+
+        with pytest.raises(ValueError, match="No such marketplace foo"):
+            mapped_item.get_tags_for_marketplace("foo")
 
 
 def test_mapped_item_fills_missing_attributes(
@@ -111,6 +121,35 @@ def test_get_metadata_for_mapped_item(
         }
     )
     assert mapped_item.get_metadata_for_mapped_item(dest) == {}
+
+
+def test_get_tags_for_mapped_item(
+    vhd_push_item: VHDPushItem, starmap_query_azure: QueryResponse
+) -> None:
+    mapped_item = MappedVMIPushItem(vhd_push_item, starmap_query_azure.clouds)
+
+    # Test existing destinations
+    for dest in starmap_query_azure.clouds["azure-na"]:
+        assert mapped_item.get_tags_for_mapped_item(dest) == dest.tags or {}
+
+    # Test unknown destination
+    dest = Destination.from_json(
+        {
+            "destination": "foo/bar",
+            "overwrite": True,
+            "architecture": "x86_64",
+        }
+    )
+    assert mapped_item.get_tags_for_mapped_item(dest) == {}
+
+
+def test_get_tags_for_marketplace(
+    vhd_push_item: VHDPushItem, starmap_query_azure: QueryResponse
+) -> None:
+    expected_tags = {"key1": "value1", "key2": "value2"}
+    mapped_item = MappedVMIPushItem(vhd_push_item, starmap_query_azure.clouds)
+
+    assert mapped_item.get_tags_for_marketplace("azure-na") == expected_tags
 
 
 def test_register_converter() -> None:
