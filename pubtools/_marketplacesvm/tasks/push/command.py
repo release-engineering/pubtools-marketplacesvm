@@ -15,7 +15,7 @@ from starmap_client.models import Destination, QueryResponse
 from ...arguments import SplitAndExtend
 from ...services import CloudService, CollectorService, StarmapService
 from ...task import MarketplacesVMTask
-from ..push.items import MappedVMIPushItem, State
+from ..push.items import MappedVMIPushItem, State, has_destination_stage_preview
 
 log = logging.getLogger("pubtools.marketplacesvm")
 
@@ -163,18 +163,31 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                         "Push already done for offer %s on %s.", curr_dest, marketplace.upper()
                     )
                     continue
+                # This condition prevents a "--nochannel" publish whenever `stage_preview` is False
+                # for some destination(s) which has True for other ones in the same marketplace.
+                elif has_destination_stage_preview(push_item.dest) and not dest.stage_preview:
+                    log.warning(
+                        "Ignoring push for offer %s on %s since it's not marked as `preview`.",
+                        curr_dest,
+                        marketplace.upper(),
+                    )
+                    continue
 
                 log.info(
-                    "Pushing the item \"%s\" (pre-push=%s) to %s on %s.",
+                    "Pushing the item \"%s\" (pre-push=%s, preview=%s) to %s on %s.",
                     push_item.name,
                     pre_push,
+                    dest.stage_preview,
                     dest.destination,
                     marketplace.upper(),
                 )
                 single_dest_item = evolve(push_item, dest=[dest.destination])
 
                 pi, _ = self.cloud_instance(marketplace).publish(
-                    single_dest_item, nochannel=pre_push, overwrite=dest.overwrite
+                    single_dest_item,
+                    nochannel=pre_push,
+                    overwrite=dest.overwrite,
+                    preview_only=dest.stage_preview,
                 )
 
                 last_destination = curr_dest
@@ -191,6 +204,22 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             pi = evolve(push_item, state=State.NOTPUSHED)
         return pi
 
+    def _allowed_to_publish(self, mapped_item: MappedVMIPushItem) -> bool:
+        """
+        Return True whenever the Marketplace publish is allowed, False otherwise.
+
+        It uses the combination of `--pre-push` and StArMap's `stage-preview` to determine
+        whether it's safe to proceed to publish or not.
+        """
+        # The pre_push should only allow publishing when stage_preview is True
+        if self.args.pre_push and has_destination_stage_preview(mapped_item.destinations):
+            return True
+        # We should allow pushing when it's not a pre_push
+        elif not self.args.pre_push:
+            return True
+        # For other cases we must not publish
+        return False
+
     def _push_to_cloud(
         self, mapped_item: MappedVMIPushItem, starmap_query: QueryResponse
     ) -> List[Dict[str, Any]]:
@@ -206,7 +235,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
 
         def push_function(marketplace) -> Dict[str, Any]:
             # Associate image with Product/Offer/Plan and publish only if it's not a pre-push
-            if mapped_item.state != State.UPLOADFAILED and not self.args.pre_push:
+            if mapped_item.state != State.UPLOADFAILED and self._allowed_to_publish(mapped_item):
                 # The first publish should always be with `pre_push` set True because it might
                 # happen that one offer with multiple plans would receive the same image and
                 # we can't `publish` the offer with just the first plan changed and try to change
@@ -225,7 +254,9 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                     mapped_item.push_item,
                     pre_push=False,
                 )
-            elif mapped_item.state != State.UPLOADFAILED and self.args.pre_push is True:
+            elif mapped_item.state != State.UPLOADFAILED and not self._allowed_to_publish(
+                mapped_item
+            ):
                 # Set the state as PUSHED when the operation is nochannel
                 mapped_item.push_item = evolve(mapped_item.push_item, state=State.PUSHED)
 

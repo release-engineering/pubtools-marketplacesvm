@@ -99,7 +99,13 @@ class CloudProvider(ABC, Generic[T, C]):
         """
 
     @abstractmethod
-    def _publish(self, push_item: T, nochannel: bool, overwrite: bool = False) -> Tuple[T, Any]:
+    def _publish(
+        self,
+        push_item: T,
+        nochannel: bool,
+        overwrite: bool = False,
+        preview_only: bool = False,
+    ) -> Tuple[T, Any]:
         """
         Abstract method for associating and publishing a VM image with a product.
 
@@ -111,6 +117,9 @@ class CloudProvider(ABC, Generic[T, C]):
             overwrite (bool, optional)
                 Whether to replace every image in the product with the given one or not.
                 Defaults to ``False``
+            preview_only (bool, optional)
+                Whether to publish with the final state as "preview" instead of "live"
+                when applicable.
         """
 
     #
@@ -138,6 +147,8 @@ class CloudProvider(ABC, Generic[T, C]):
         Args:
             push_item (VMIPushItem)
                 The push item to associate and publish a VM image into a product.
+            publish_result (Any)
+                The resulting data from publish.
         Returns:
             The publish result data.
         """
@@ -177,7 +188,13 @@ class CloudProvider(ABC, Generic[T, C]):
         pi, res = self._upload(push_item, custom_tags=custom_tags)
         return self._post_upload(pi, res)
 
-    def publish(self, push_item: T, nochannel: bool, overwrite: bool = False) -> Tuple[T, Any]:
+    def publish(
+        self,
+        push_item: T,
+        nochannel: bool,
+        overwrite: bool = False,
+        preview_only: bool = False,
+    ) -> Tuple[T, Any]:
         """
         Associate an existing VM image with a product and publish the changes.
 
@@ -189,10 +206,13 @@ class CloudProvider(ABC, Generic[T, C]):
                 set to `False`.
             overwrite (bool, optional)
                 Whether set only the requested image and erase everything else or not.
+            preview_only (bool, optional)
+                Whether to publish with the final state as "preview" instead of "live"
+                when applicable.
         Returns:
             object: The publish result data.
         """
-        pi, res = self._publish(push_item, nochannel, overwrite)
+        pi, res = self._publish(push_item, nochannel, overwrite, preview_only)
         return self._post_publish(pi, res)
 
 

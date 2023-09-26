@@ -295,7 +295,11 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         return push_item_with_ami_id, upload_result
 
     def _publish(
-        self, push_item: AmiPushItem, nochannel: bool, overwrite: bool = False
+        self,
+        push_item: AmiPushItem,
+        nochannel: bool,
+        overwrite: bool = False,
+        _=False,
     ) -> Tuple[AmiPushItem, Any]:
         """
         Associate and publish a AMI image into an AWS product.

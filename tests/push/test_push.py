@@ -26,7 +26,7 @@ class FakeCloudProvider(CloudProvider):
         time.sleep(2)
         return push_item, True
 
-    def _publish(self, push_item, nochannel, _):
+    def _publish(self, push_item, nochannel, overwrite, preview_only):
         return push_item, nochannel
 
 
@@ -111,6 +111,58 @@ def test_do_push_prepush(
 
 
 @mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
+@mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.starmap")
+def test_do_push_prepush_marketplace_preview(
+    mock_starmap: mock.MagicMock,
+    mock_source: mock.MagicMock,
+    vhd_push_item: VHDPushItem,
+    fake_cloud_instance: mock.MagicMock,
+    command_tester: CommandTester,
+) -> None:
+    """Test a successfull push to "preview" when --nochannel and `preview_stage` are given."""
+    qr = QueryResponse.from_json(
+        {
+            "name": "fake-policy",
+            "mappings": {
+                "azure-na": [
+                    {
+                        "destination": "fake-offer/fake-plan",
+                        "overwrite": False,
+                        "stage_preview": True,
+                    },
+                    {
+                        "destination": "do-not/publish-me",
+                        "overwrite": False,
+                        "stage_preview": False,
+                    },
+                ]
+            },
+        }
+    )
+    mock_starmap.query_image_by_name.return_value = qr
+    mock_source.get.return_value.__enter__.return_value = [vhd_push_item]
+
+    command_tester.test(
+        lambda: entry_point(MarketplacesVMPush),
+        [
+            "test-push",
+            "--starmap-url",
+            "https://starmap-example.com",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--debug",
+            "--pre-push",
+            "koji:https://fakekoji.com?vmi_build=azure_build",
+        ],
+    )
+
+    mock_source.get.assert_called_once()
+    mock_starmap.query_image_by_name.assert_called_once_with(name="test-build", version="7.0")
+    # get_provider, upload and publish calls for "azure-na"
+    assert fake_cloud_instance.call_count == 3
+
+
+@mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
 def test_not_vmi_push_item(
     mock_source: mock.MagicMock,
     fake_cloud_instance: mock.MagicMock,
@@ -191,6 +243,7 @@ def test_push_item_no_mapped_arch(
                     {
                         "destination": "ffffffff-ffff-ffff-ffff-ffffffffffff",
                         "overwrite": False,
+                        "stage_preview": False,
                     }
                 ]
             },
@@ -254,7 +307,7 @@ def test_push_item_fail_publish(
     """Test a push which fails on publish for AWS."""
 
     class FakePublish(FakeCloudProvider):
-        def _publish(self, push_item, nochannel, _):
+        def _publish(self, push_item, nochannel, overwrite, preview_only):
             raise Exception("Random exception")
 
     mock_cloud_instance.return_value = FakePublish()
@@ -292,7 +345,7 @@ def test_push_overridden_destination(
             time.sleep(2)
             return push_item, True
 
-        def publish(self, push_item, nochannel, overwrite):
+        def publish(self, push_item, nochannel, overwrite, **_):
             return push_item, True
 
     fake_cloud_instance.return_value = FakeCloudInstance()
@@ -307,11 +360,11 @@ def test_push_overridden_destination(
             "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
             "--repo",
             "{"
-            "    \"aws-na\": {\"destination\": \"new_aws_na_destination\"},"
-            "    \"aws-emea\": {\"destination\": \"new_aws_emea_destination\", \"overwrite\": true},"  # noqa: E501
+            "    \"aws-na\": {\"destination\": \"new_aws_na_destination\", \"stage_preview\": false},"  # noqa: E501
+            "    \"aws-emea\": {\"destination\": \"new_aws_emea_destination\", \"overwrite\": true, \"stage_preview\": false},"  # noqa: E501
             "    \"azure-na\": [ "
-            "    {\"destination\": \"new_azure_destination1\", \"overwrite\": true},"
-            "    {\"destination\": \"new_azure_destination2\"}"
+            "    {\"destination\": \"new_azure_destination1\", \"overwrite\": true, \"stage_preview\": false},"  # noqa: E501
+            "    {\"destination\": \"new_azure_destination2\", \"stage_preview\": false}"
             "]"
             "}",
             "--debug",

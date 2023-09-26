@@ -243,7 +243,11 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
         return push_item_with_sas, upload_result
 
     def _publish(
-        self, push_item: VHDPushItem, nochannel: bool, overwrite: bool = False
+        self,
+        push_item: VHDPushItem,
+        nochannel: bool,
+        overwrite: bool = False,
+        preview_only: bool = False,
     ) -> Tuple[VHDPushItem, Any]:
         """
         Associate and publish a VHD image into an Azure product.
@@ -256,6 +260,8 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
             overwrite (bool, optional)
                 Whether to replace every image in the product with the given one or not.
                 Defaults to ``False``
+            preview_only (bool, optional)
+                Whether to publish with the final state as "preview" instead of "live"
         """
         if not push_item.disk_version:
             push_item = evolve(push_item, disk_version=self._generate_disk_version(push_item))
@@ -275,6 +281,7 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
             "destination": destination,
             "keepdraft": nochannel,
             "overwrite": overwrite,
+            "preview_only": preview_only,
         }
         metadata = AzurePublishMetadata(**publish_metadata_kwargs)
         res = self.publish_svc.publish(metadata)

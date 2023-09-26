@@ -181,6 +181,7 @@ def test_publish(
         "destination": azure_push_item.dest[0],
         "keepdraft": False,
         "overwrite": False,
+        "preview_only": False,
     }
     meta_obj = MagicMock(**metadata)
     mock_metadata.return_value = meta_obj
