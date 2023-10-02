@@ -19,7 +19,13 @@ class FakeProvider(CloudProvider):
     def _upload(self, push_item: T, custom_tags: Optional[Dict[str, str]] = None) -> Tuple[T, Any]:
         return push_item, True
 
-    def _publish(self, push_item: T, nochannel: bool, overwrite: bool = False) -> Tuple[T, Any]:
+    def _publish(
+        self,
+        push_item: T,
+        nochannel: bool,
+        overwrite: bool = False,
+        preview_only: bool = False,
+    ) -> Tuple[T, Any]:
         return push_item, True
 
 
