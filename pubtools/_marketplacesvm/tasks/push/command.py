@@ -174,10 +174,11 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                     continue
 
                 log.info(
-                    "Pushing the item \"%s\" (pre-push=%s, preview=%s) to %s on %s.",
+                    "Pushing item \"%s\" (pre-push=%s, preview=%s, del_restricted=%s) to %s on %s.",
                     push_item.name,
                     pre_push,
                     dest.stage_preview,
+                    dest.delete_restricted,
                     dest.destination,
                     marketplace.upper(),
                 )
@@ -188,6 +189,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                     nochannel=pre_push,
                     overwrite=dest.overwrite,
                     preview_only=dest.stage_preview,
+                    delete_restricted=dest.delete_restricted,
                 )
 
                 last_destination = curr_dest

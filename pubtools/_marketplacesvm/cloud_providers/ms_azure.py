@@ -287,7 +287,9 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
         res = self.publish_svc.publish(metadata)
         return push_item, res
 
-    def _post_publish(self, push_item: VHDPushItem, publish_result: Any) -> Tuple[VHDPushItem, Any]:
+    def _post_publish(
+        self, push_item: VHDPushItem, publish_result: Any, _=False
+    ) -> Tuple[VHDPushItem, Any]:
         """
         Add release_date with after image is published.
 

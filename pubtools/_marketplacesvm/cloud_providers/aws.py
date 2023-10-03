@@ -4,6 +4,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from attrs import asdict, evolve, field, frozen
 from attrs.validators import deep_iterable, instance_of
+from cloudimg.aws import AWSDeleteMetadata as AWSDeleteMetadata
 from cloudimg.aws import AWSPublishingMetadata as AWSUploadMetadata
 from cloudimg.aws import AWSService as AWSUploadService
 from cloudpub.aws import AWSProductService as AWSPublishService
@@ -371,7 +372,9 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         res = self.publish_svc.publish(metadata)
         return push_item, res
 
-    def _post_publish(self, push_item: AmiPushItem, publish_result: Any) -> Tuple[AmiPushItem, Any]:
+    def _post_publish(
+        self, push_item: AmiPushItem, publish_result: Any, delete_restricted: bool = False
+    ) -> Tuple[AmiPushItem, Any]:
         """
         Post publishing activities currently restricts older versions.
 
@@ -380,14 +383,19 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
                 The original push item for uploading the AMI image.
             publish_result (str)
                 The AMI publish properties
+            delete_restricted (bool, Optional)
+                Whether to delete the restricted images associated with a product.
 
         Returns:
             Tuple of PushItem and Publish results.
         """
         version_split = push_item.release.version.split(".")
-        self.publish_svc.restrict_minor_versions(
+        restricted_amis = self.publish_svc.restrict_minor_versions(
             push_item.dest[0], push_item.marketplace_entity_type, ".".join(version_split[:2])
         )
+
+        if delete_restricted:
+            self._remove_amis(restricted_amis)
 
         image = self.upload_svc.get_image_by_id(self.image_id)
         release_date_tag = {"release_date": datetime.now().strftime("%Y%m%d%H::%M::%S")}
@@ -413,6 +421,24 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         matching_version_list = [v for t, v in current_versions.items() if publishing_version in t]
 
         return len(matching_version_list) > 0
+
+    def _remove_amis(self, restricted_amis: List[str]) -> None:
+        """
+        Check if a version exists in a product already in AWS.
+
+        Args:
+            restricted_amis (list[str])
+                A list of restricted amis to delete.
+        """
+        for ami_id in restricted_amis:
+            delete_metadata_kwargs = {
+                "image_id": ami_id,
+            }
+
+            LOG.debug("%s", delete_metadata_kwargs)
+            metadata = AWSDeleteMetadata(**delete_metadata_kwargs)
+
+            self.upload_svc.delete(metadata)
 
 
 register_provider(AWSProvider, "aws-na", "aws-emea")

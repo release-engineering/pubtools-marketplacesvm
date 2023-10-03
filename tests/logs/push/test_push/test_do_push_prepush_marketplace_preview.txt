@@ -13,9 +13,9 @@
 [ WARNING] Missing information for the attribute vhd_pushitem.sas_uri, leaving it unset.
 [    INFO] Uploading the item vhd_pushitem to AZURE-NA.
 [    INFO] Upload finished for vhd_pushitem on AZURE-NA
-[    INFO] Pushing the item "vhd_pushitem" (pre-push=True, preview=True) to fake-offer/fake-plan on AZURE-NA.
+[    INFO] Pushing item "vhd_pushitem" (pre-push=True, preview=True, del_restricted=False) to fake-offer/fake-plan on AZURE-NA.
 [ WARNING] Ignoring push for offer do-not on AZURE-NA since it's not marked as `preview`.
-[    INFO] Pushing the item "vhd_pushitem" (pre-push=False, preview=True) to fake-offer/fake-plan on AZURE-NA.
+[    INFO] Pushing item "vhd_pushitem" (pre-push=False, preview=True, del_restricted=False) to fake-offer/fake-plan on AZURE-NA.
 [ WARNING] Ignoring push for offer do-not on AZURE-NA since it's not marked as `preview`.
 [    INFO] Collecting results
 [    INFO] Marketplace VM push completed

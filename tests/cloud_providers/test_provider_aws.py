@@ -514,8 +514,10 @@ def test_post_publish(
     fake_aws_provider.upload_svc.get_image_by_id.return_value = fake_image
     fake_aws_provider.upload_svc.tag_image.return_value = FakeImageTag()
 
+    fake_aws_provider.publish_svc.restrict_minor_versions.return_value = ["ami-1", "ami-2"]
+
     fake_pi_return, fake_result_return = fake_aws_provider._post_publish(
-        updated_aws_push_item, None
+        updated_aws_push_item, None, True
     )
     fake_aws_provider.publish_svc.restrict_minor_versions.assert_called_once_with(
         'product-uuid', 'FakeProduct', '19.11'
@@ -527,3 +529,8 @@ def test_post_publish(
 
     fake_aws_provider.upload_svc.get_image_by_id.assert_called_once_with("ami-97969874573")
     fake_aws_provider.upload_svc.tag_image.assert_called_once_with(fake_image, release_date_tag)
+
+    called_args = fake_aws_provider.upload_svc.delete.call_args_list
+
+    assert called_args[0][0][0].image_id == "ami-1"
+    assert called_args[1][0][0].image_id == "ami-2"

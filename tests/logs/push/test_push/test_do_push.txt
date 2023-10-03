@@ -40,16 +40,16 @@
 [    INFO] Upload finished for ami_pushitem on AWS-NA
 [    INFO] Uploading the item ami_pushitem to AWS-EMEA.
 [    INFO] Upload finished for ami_pushitem on AWS-EMEA
-[    INFO] Pushing the item "ami_pushitem" (pre-push=True, preview=False) to 00000000-0000-0000-0000-000000000000 on AWS-NA.
-[    INFO] Pushing the item "ami_pushitem" (pre-push=False, preview=False) to 00000000-0000-0000-0000-000000000000 on AWS-NA.
-[    INFO] Pushing the item "ami_pushitem" (pre-push=True, preview=False) to 00000000-0000-0000-0000-000000000000 on AWS-EMEA.
-[    INFO] Pushing the item "ami_pushitem" (pre-push=False, preview=False) to 00000000-0000-0000-0000-000000000000 on AWS-EMEA.
+[    INFO] Pushing item "ami_pushitem" (pre-push=True, preview=False, del_restricted=False) to 00000000-0000-0000-0000-000000000000 on AWS-NA.
+[    INFO] Pushing item "ami_pushitem" (pre-push=False, preview=False, del_restricted=False) to 00000000-0000-0000-0000-000000000000 on AWS-NA.
+[    INFO] Pushing item "ami_pushitem" (pre-push=True, preview=False, del_restricted=False) to 00000000-0000-0000-0000-000000000000 on AWS-EMEA.
+[    INFO] Pushing item "ami_pushitem" (pre-push=False, preview=False, del_restricted=False) to 00000000-0000-0000-0000-000000000000 on AWS-EMEA.
 [    INFO] Uploading the item vhd_pushitem to AZURE-NA.
 [    INFO] Upload finished for vhd_pushitem on AZURE-NA
-[    INFO] Pushing the item "vhd_pushitem" (pre-push=True, preview=False) to destination_offer_main/plan1 on AZURE-NA.
-[    INFO] Pushing the item "vhd_pushitem" (pre-push=True, preview=False) to destination_offer_main/plan2 on AZURE-NA.
-[    INFO] Pushing the item "vhd_pushitem" (pre-push=True, preview=False) to destination_offer_main/plan3 on AZURE-NA.
-[    INFO] Pushing the item "vhd_pushitem" (pre-push=False, preview=False) to destination_offer_main/plan1 on AZURE-NA.
+[    INFO] Pushing item "vhd_pushitem" (pre-push=True, preview=False, del_restricted=False) to destination_offer_main/plan1 on AZURE-NA.
+[    INFO] Pushing item "vhd_pushitem" (pre-push=True, preview=False, del_restricted=False) to destination_offer_main/plan2 on AZURE-NA.
+[    INFO] Pushing item "vhd_pushitem" (pre-push=True, preview=False, del_restricted=False) to destination_offer_main/plan3 on AZURE-NA.
+[    INFO] Pushing item "vhd_pushitem" (pre-push=False, preview=False, del_restricted=False) to destination_offer_main/plan1 on AZURE-NA.
 [    INFO] Push already done for offer destination_offer_main on AZURE-NA.
 [    INFO] Push already done for offer destination_offer_main on AZURE-NA.
 [    INFO] Collecting results
