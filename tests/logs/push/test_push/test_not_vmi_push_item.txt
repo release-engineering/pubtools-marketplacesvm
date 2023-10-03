@@ -29,8 +29,8 @@
 [    INFO] Upload finished for ami_pushitem on AWS-NA
 [    INFO] Uploading the item ami_pushitem to AWS-EMEA.
 [    INFO] Upload finished for ami_pushitem on AWS-EMEA
-[    INFO] Pushing item "ami_pushitem" (pre-push=True, preview=False, del_restricted=False) to 00000000-0000-0000-0000-000000000000 on AWS-NA.
-[    INFO] Pushing item "ami_pushitem" (pre-push=False, preview=False, del_restricted=False) to 00000000-0000-0000-0000-000000000000 on AWS-NA.
+[    INFO] Pushing item "ami_pushitem" (pre-push=True, preview=False, del_restricted=False) to ffffffff-ffff-ffff-ffff-ffffffffffff on AWS-NA.
+[    INFO] Pushing item "ami_pushitem" (pre-push=False, preview=False, del_restricted=False) to ffffffff-ffff-ffff-ffff-ffffffffffff on AWS-NA.
 [    INFO] Pushing item "ami_pushitem" (pre-push=True, preview=False, del_restricted=False) to 00000000-0000-0000-0000-000000000000 on AWS-EMEA.
 [    INFO] Pushing item "ami_pushitem" (pre-push=False, preview=False, del_restricted=False) to 00000000-0000-0000-0000-000000000000 on AWS-EMEA.
 [    INFO] Collecting results

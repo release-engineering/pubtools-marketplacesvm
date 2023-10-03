@@ -89,17 +89,18 @@ class MappedVMIPushItem:
                 res.update(dest.tags)
         return res
 
-    @property
-    def push_item(self) -> VMIPushItem:
+    def _map_push_item(self, destinations: List[Destination]) -> VMIPushItem:
         """Return the wrapped push item with the missing attributes set."""
-        if self._push_item.dest:  # If it has destinations it means we already mapped it
+        if self._push_item.dest:  # If it has destinations it means we already mapped its properties
+            # Just update the destinations for the marketplace and return
+            self.push_item = evolve(self._push_item, dest=destinations)
             return self._push_item
 
         # Update the missing fields for push item and its release
         pi = self._push_item
 
         # Update the destinations
-        pi = evolve(pi, dest=self.destinations)
+        pi = evolve(pi, dest=destinations)
 
         # Update the push item attributes for each type using the attrs hidden annotation
         ignore_unset_attributes = ["md5sum", "sha256sum", "signing_key", "origin"]
@@ -121,9 +122,13 @@ class MappedVMIPushItem:
         self._push_item = evolve(pi, **new_attrs)
         return self._push_item
 
-    @push_item.setter
-    def push_item(self, x: VMIPushItem) -> None:
-        self._push_item = x
+    def _set_push_item(self, pi: VMIPushItem) -> None:
+        """Update the internal push item with the given one."""
+        self._push_item = pi
+
+    # The property "push_item" is only setter since the getter
+    # needs to be used as `get_push_item_for_marketplace`.
+    push_item = property(None, _set_push_item)
 
     @classmethod
     def register_converter(cls, name: str, func: Callable) -> None:
@@ -152,8 +157,7 @@ class MappedVMIPushItem:
             raise ValueError(f"No such marketplace {account}")
 
         destinations = self.clouds[account]
-        push_item = self.push_item
-        return evolve(push_item, dest=destinations)
+        return self._map_push_item(destinations)
 
     def get_metadata_for_mapped_item(self, destination: Destination) -> Dict[str, Any]:
         """
