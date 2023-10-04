@@ -38,11 +38,11 @@
 [ WARNING] Missing information for the attribute vhd_pushitem.sas_uri, leaving it unset.
 [    INFO] Uploading the item ami_pushitem to AWS-NA.
 [    INFO] Upload finished for ami_pushitem on AWS-NA
-[    INFO] Pushing the item "ami_pushitem" (pre-push=True, preview=False) to ffffffff-ffff-ffff-ffff-ffffffffffff on AWS-NA.
-[    INFO] Pushing the item "ami_pushitem" (pre-push=False, preview=False) to ffffffff-ffff-ffff-ffff-ffffffffffff on AWS-NA.
+[    INFO] Pushing item "ami_pushitem" (pre-push=True, preview=False, del_restricted=False) to ffffffff-ffff-ffff-ffff-ffffffffffff on AWS-NA.
+[    INFO] Pushing item "ami_pushitem" (pre-push=False, preview=False, del_restricted=False) to ffffffff-ffff-ffff-ffff-ffffffffffff on AWS-NA.
 [    INFO] Uploading the item vhd_pushitem to AWS-NA.
 [    INFO] Upload finished for vhd_pushitem on AWS-NA
-[    INFO] Pushing the item "vhd_pushitem" (pre-push=True, preview=False) to ffffffff-ffff-ffff-ffff-ffffffffffff on AWS-NA.
-[    INFO] Pushing the item "vhd_pushitem" (pre-push=False, preview=False) to ffffffff-ffff-ffff-ffff-ffffffffffff on AWS-NA.
+[    INFO] Pushing item "vhd_pushitem" (pre-push=True, preview=False, del_restricted=False) to ffffffff-ffff-ffff-ffff-ffffffffffff on AWS-NA.
+[    INFO] Pushing item "vhd_pushitem" (pre-push=False, preview=False, del_restricted=False) to ffffffff-ffff-ffff-ffff-ffffffffffff on AWS-NA.
 [    INFO] Collecting results
 [    INFO] Marketplace VM push completed
