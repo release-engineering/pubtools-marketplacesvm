@@ -61,12 +61,13 @@ def test_mapped_item_properties(
         assert mapped_item.tags == expected_tags
 
         # -- Test some attributes mapping
-        push_item = mapped_item.push_item
-        assert push_item.dest == mapped_item.destinations
-        assert push_item.release.arch == "x86_64"
+        for mkt in starmap_response.clouds.keys():
+            push_item = mapped_item.get_push_item_for_marketplace(mkt)
+            assert push_item.dest == starmap_response.clouds[mkt]
+            assert push_item.release.arch == "x86_64"
 
-        # -- Test wrapped _push_item changes
-        assert mapped_item._push_item == mapped_item.push_item
+            # -- Test wrapped _push_item changes
+            assert mapped_item._push_item == mapped_item.get_push_item_for_marketplace(mkt)
 
         # -- Test invalid marketplace
         with pytest.raises(ValueError, match="No such marketplace foo"):
@@ -100,7 +101,8 @@ def test_mapped_item_fills_missing_attributes(
 
     # Ensure the missing fields were mapped
     for f in fields:
-        assert getattr(mapped_item.push_item, f) == f
+        for mkt in starmap_response.clouds.keys():
+            assert getattr(mapped_item.get_push_item_for_marketplace(mkt), f) == f
 
 
 def test_get_metadata_for_mapped_item(

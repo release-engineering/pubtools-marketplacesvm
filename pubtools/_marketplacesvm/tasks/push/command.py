@@ -70,8 +70,8 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             )
             query = self._apply_starmap_overrides(query)
             item = MappedVMIPushItem(item, query.clouds)
-            if not item.push_item.dest:
-                log.info("Filtering out archive with no destinations: %s", item.push_item.src)
+            if not item.destinations:
+                log.info("Filtering out archive with no destinations: %s", item._push_item.src)
                 continue
             mapped_items.append({"item": item, "starmap_query": query_returned_from_starmap})
         return mapped_items
@@ -236,6 +236,9 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
         """
 
         def push_function(marketplace) -> Dict[str, Any]:
+            # Get the push item for the current marketplace
+            pi = mapped_item.get_push_item_for_marketplace(marketplace)
+
             # Associate image with Product/Offer/Plan and publish only if it's not a pre-push
             if mapped_item.state != State.UPLOADFAILED and self._allowed_to_publish(mapped_item):
                 # The first publish should always be with `pre_push` set True because it might
@@ -245,7 +248,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                 #
                 # Then this first `_publish` call is intended to only associate the image with
                 # all the offers/plans but not change it to live, when this is applicable.
-                mapped_item.push_item = self._publish(marketplace, mapped_item.push_item)
+                pi = self._publish(marketplace, pi)
 
                 # Once we associated all the images with their offer/plans it's now safe to call
                 # again the publish if and only if `pre_push == False`.
@@ -253,18 +256,18 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                 # with the Product/Offer/Plan and just the go-live part is called.
                 mapped_item.push_item = self._publish(
                     marketplace,
-                    mapped_item.push_item,
+                    pi,
                     pre_push=False,
                 )
             elif mapped_item.state != State.UPLOADFAILED and not self._allowed_to_publish(
                 mapped_item
             ):
                 # Set the state as PUSHED when the operation is nochannel
-                mapped_item.push_item = evolve(mapped_item.push_item, state=State.PUSHED)
+                mapped_item.push_item = evolve(pi, state=State.PUSHED)
 
             # Update the destinations from List[Destination] to List[str] for collection
-            dest_list_str = [d.destination for d in mapped_item.push_item.dest]
-            push_item_for_collection = evolve(mapped_item.push_item, dest=dest_list_str)
+            dest_list_str = [d.destination for d in pi.dest]
+            push_item_for_collection = evolve(pi, dest=dest_list_str)
 
             # Append the data for collection
             return {
