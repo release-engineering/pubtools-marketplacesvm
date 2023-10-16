@@ -7,7 +7,7 @@ from attrs import asdict, evolve
 from pushsource import AmiPushItem, AmiRelease, AmiSecurityGroup, VHDPushItem, VMIRelease
 from starmap_client.models import Destination, QueryResponse
 
-from pubtools._marketplacesvm.tasks.push.items import MappedVMIPushItem, State
+from pubtools._marketplacesvm.tasks.push.items import MappedVMIPushItem
 from pubtools._marketplacesvm.tasks.push.items.ami import aws_security_groups_converter
 
 
@@ -25,18 +25,6 @@ def test_mapped_item_properties(
 
     for push_item, starmap_response in items:
         mapped_item = MappedVMIPushItem(push_item, starmap_response.clouds)
-
-        # -- Test Property: state
-        assert mapped_item.state == State.PENDING  # Default from Source
-
-        # Test updating the state
-        mapped_item.state = State.PUSHED
-        assert mapped_item._push_item.state == State.PUSHED
-
-        # Test invalid state
-        expected_err = "Expected to receive a string for state, got: <class 'list'>"
-        with pytest.raises(TypeError, match=expected_err):
-            mapped_item.state = []  # type: ignore
 
         # -- Test Property: marketplaces
         assert mapped_item.marketplaces == list(starmap_response.clouds.keys())
@@ -67,8 +55,8 @@ def test_mapped_item_properties(
             assert push_item.dest == starmap_response.clouds[mkt]
             assert push_item.release.arch == "x86_64"
 
-            # -- Test wrapped _push_item changes
-            assert mapped_item._push_item == mapped_item.get_push_item_for_marketplace(mkt)
+            # -- Test wrapped push_item changes
+            assert mapped_item.push_item == mapped_item.get_push_item_for_marketplace(mkt)
 
         # -- Test invalid marketplace
         with pytest.raises(ValueError, match="No such marketplace foo"):
