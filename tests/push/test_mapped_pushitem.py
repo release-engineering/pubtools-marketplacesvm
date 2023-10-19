@@ -1,9 +1,10 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
+from datetime import datetime
 from typing import Any, Dict
 
 import pytest
-from attrs import asdict
-from pushsource import AmiPushItem, AmiSecurityGroup, VHDPushItem
+from attrs import asdict, evolve
+from pushsource import AmiPushItem, AmiRelease, AmiSecurityGroup, VHDPushItem, VMIRelease
 from starmap_client.models import Destination, QueryResponse
 
 from pubtools._marketplacesvm.tasks.push.items import MappedVMIPushItem, State
@@ -125,6 +126,86 @@ def test_get_metadata_for_mapped_item(
         }
     )
     assert mapped_item.get_metadata_for_mapped_item(dest) == {}
+
+
+def test_release_info_on_metadata_for_mapped_ami(
+    ami_push_item: AmiPushItem, starmap_query_aws: QueryResponse
+) -> None:
+    release_info = {
+        "product": "test-product",
+        "date": "2023-12-12",
+        "arch": "x86_64",
+        "respin": 1,
+        "version": "8.0",
+        "base_product": "test-base-product",
+        "base_version": "1.0",
+        "variant": "Server",
+        "type": "ga",
+    }
+
+    # Erase the previous data
+    pi = evolve(
+        ami_push_item, release=AmiRelease(arch="x86_64", product="foo", date="2023-11-11", respin=0)
+    )
+
+    # We simulate having the "release" dict on each Destination for StArMap response.
+    for list_dest in starmap_query_aws.clouds.values():
+        for dest in list_dest:
+            dest.meta["release"] = release_info
+
+    # Test whether the MappedVMIPushItem can return the inner push item with the proper release
+    mapped_item = MappedVMIPushItem(pi, starmap_query_aws.clouds)
+
+    # Pushsource converts the "date" to datetime so we must do the same here to validate
+    release_info["date"] = datetime.strptime(str(release_info["date"]), "%Y-%m-%d")
+
+    # Validate the release data
+    for mkt in starmap_query_aws.clouds.keys():
+        pi = mapped_item.get_push_item_for_marketplace(mkt)
+        rel_obj = pi.release
+
+        assert isinstance(rel_obj, AmiRelease)
+        assert asdict(rel_obj) == release_info
+
+
+def test_release_info_on_metadata_for_mapped_vhd(
+    vhd_push_item: VHDPushItem, starmap_query_aws: QueryResponse
+) -> None:
+    release_info = {
+        "product": "test-product",
+        "date": "2023-11-11",
+        "arch": "x86_64",
+        "respin": 2,
+        "version": "8.0",
+        "base_product": "test-base-product",
+        "base_version": "1.0",
+        "variant": "Server",
+        "type": "ga",
+    }
+
+    # Erase the previous data
+    pi = evolve(
+        vhd_push_item, release=VMIRelease(arch="x86_64", product="foo", date="2023-11-11", respin=0)
+    )
+
+    # We simulate having the "release" dict on each Destination for StArMap response.
+    for list_dest in starmap_query_aws.clouds.values():
+        for dest in list_dest:
+            dest.meta["release"] = release_info
+
+    # Test whether the MappedVMIPushItem can return the inner push item with the proper release
+    mapped_item = MappedVMIPushItem(pi, starmap_query_aws.clouds)
+
+    # Pushsource converts the "date" to datetime so we must do the same here to validate
+    release_info["date"] = datetime.strptime(str(release_info["date"]), "%Y-%m-%d")
+
+    # Validate the release data
+    for mkt in starmap_query_aws.clouds.keys():
+        pi = mapped_item.get_push_item_for_marketplace(mkt)
+        rel_obj = pi.release
+
+        assert isinstance(rel_obj, VMIRelease)
+        assert asdict(rel_obj) == release_info
 
 
 def test_get_tags_for_mapped_item(
