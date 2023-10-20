@@ -1,7 +1,7 @@
 import logging
 from typing import Any, Callable, ClassVar, Dict, List
 
-from attrs import asdict, define, evolve, field
+from attrs import Factory, asdict, define, evolve, field
 from attrs.validators import deep_mapping, instance_of
 from pushsource import AmiPushItem, AmiRelease, VMIPushItem, VMIRelease
 from starmap_client.models import Destination
@@ -29,7 +29,7 @@ class MappedVMIPushItem:
 
     _CONVERTER_HANDLERS: ClassVar[Dict[str, Callable]] = {}
 
-    _push_item: VMIPushItem = field(alias="_push_item", validator=instance_of(VMIPushItem))
+    push_item: VMIPushItem = field(validator=instance_of(VMIPushItem))
     """The underlying pushsource.VMIPushItem."""
 
     clouds: Dict[str, List[Destination]] = field(
@@ -41,16 +41,16 @@ class MappedVMIPushItem:
     )
     """Dictionary with the marketplace accounts and its destinations."""
 
-    @property
-    def state(self) -> str:
-        """Get the wrapped push item state."""
-        return self._push_item.state
-
-    @state.setter
-    def state(self, state: str) -> None:
-        if not isinstance(state, str):
-            raise TypeError(f"Expected to receive a string for state, got: {type(state)}")
-        self._push_item = evolve(self._push_item, state=state)
+    _mapped_push_item: Dict[str, VMIPushItem] = field(
+        alias="_mapped_push_item",
+        default=Factory(dict),
+        validator=deep_mapping(
+            key_validator=instance_of(str),
+            value_validator=instance_of(VMIPushItem),
+            mapping_validator=instance_of(dict),
+        ),
+    )
+    """The underlying pushsource.VMIPushItem for each marketplace."""
 
     @property
     def marketplaces(self) -> List[str]:
@@ -66,7 +66,7 @@ class MappedVMIPushItem:
                 [
                     dst
                     for dst in self.clouds[mkt]
-                    if not dst.architecture or dst.architecture == self._push_item.release.arch
+                    if not dst.architecture or dst.architecture == self.push_item.release.arch
                 ]
             )
         return dest
@@ -91,13 +91,13 @@ class MappedVMIPushItem:
 
     def _map_push_item(self, destinations: List[Destination]) -> VMIPushItem:
         """Return the wrapped push item with the missing attributes set."""
-        if self._push_item.dest:  # If it has destinations it means we already mapped its properties
+        if self.push_item.dest:  # If it has destinations it means we already mapped its properties
             # Just update the destinations for the marketplace and return
-            self.push_item = evolve(self._push_item, dest=destinations)
-            return self._push_item
+            self.push_item = evolve(self.push_item, dest=destinations)
+            return self.push_item
 
         # Update the missing fields for push item and its release
-        pi = self._push_item
+        pi = self.push_item
 
         # Update the destinations
         pi = evolve(pi, dest=destinations)
@@ -130,21 +130,13 @@ class MappedVMIPushItem:
                 elif attribute.name not in ignore_unset_attributes:
                     log.warning(
                         "Missing information for the attribute %s.%s, leaving it unset.",
-                        self._push_item.name,
+                        self.push_item.name,
                         attribute.name,
                     )
 
         # Finally return the updated push_item
-        self._push_item = evolve(pi, **new_attrs)
-        return self._push_item
-
-    def _set_push_item(self, pi: VMIPushItem) -> None:
-        """Update the internal push item with the given one."""
-        self._push_item = pi
-
-    # The property "push_item" is only setter since the getter
-    # needs to be used as `get_push_item_for_marketplace`.
-    push_item = property(None, _set_push_item)
+        self.push_item = evolve(pi, **new_attrs)
+        return self.push_item
 
     @classmethod
     def register_converter(cls, name: str, func: Callable) -> None:
@@ -172,8 +164,20 @@ class MappedVMIPushItem:
         if account not in self.marketplaces:
             raise ValueError(f"No such marketplace {account}")
 
-        destinations = self.clouds[account]
-        return self._map_push_item(destinations)
+        if not self._mapped_push_item.get(account):
+            destinations = self.clouds[account]
+            self._mapped_push_item[account] = self._map_push_item(destinations)
+
+        return self._mapped_push_item.get(account)
+
+    def update_push_item_for_marketplace(self, account: str, push_item: VMIPushItem) -> None:
+        """Update a push item for a given marketplace account.
+
+        Args:
+            account (str): the marketplace account.
+            push_item (VMIPushItem): the push item to update with.
+        """
+        self._mapped_push_item[account] = push_item
 
     def get_metadata_for_mapped_item(self, destination: Destination) -> Dict[str, Any]:
         """

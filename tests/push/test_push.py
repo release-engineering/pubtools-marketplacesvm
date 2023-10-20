@@ -1,4 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
+import logging
 import time
 from typing import Generator
 from unittest import mock
@@ -80,6 +81,156 @@ def test_do_push(
     fake_starmap.query_image_by_name.assert_has_calls(starmap_calls)
     # get_provider, upload and publish calls for "aws-na", "aws-emea", "azure-na"
     assert fake_cloud_instance.call_count == 11
+
+
+@mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.cloud_instance")
+@mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
+@mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.starmap")
+def test_do_push_ami_correct_id(
+    mock_starmap: mock.MagicMock,
+    mock_source: mock.MagicMock,
+    mock_cloud_instance: mock.MagicMock,
+    ami_push_item: AmiPushItem,
+    command_tester: CommandTester,
+) -> None:
+    """Test a successful push for AWS using the correct AMI ID for each marketplace."""
+    ami_na = "fake-ami-id-for-na"
+    ami_emea = "fake-ami-id-for-emea"
+
+    class FakeAWSProvider(FakeCloudProvider):
+        amis = [ami_na, ami_emea]
+        log = logging.getLogger("pubtools.marketplacesvm")
+
+        def _upload(self, push_item, custom_tags=None):
+            time.sleep(2)
+            push_item = evolve(push_item, image_id=self.amis.pop(0))
+            return push_item, True
+
+        def _publish(self, push_item, nochannel, overwrite, preview_only):
+            # This log will allow us to identify whether the image_id is the expected
+            self.log.debug(f"Pushing {push_item.name} with image: {push_item.image_id}")
+            return push_item, nochannel
+
+    mock_cloud_instance.return_value = FakeAWSProvider()
+
+    qr = QueryResponse.from_json(
+        {
+            "name": "fake-policy",
+            "mappings": {
+                "aws-na": [
+                    {
+                        "destination": "NA-DESTINATION",
+                        "overwrite": False,
+                        "stage_preview": True,
+                        "delete_restricted": False,
+                    },
+                ],
+                "aws-emea": [
+                    {
+                        "destination": "EMEA-DESTINATION",
+                        "overwrite": False,
+                        "stage_preview": True,
+                        "delete_restricted": False,
+                    },
+                ],
+            },
+        }
+    )
+    mock_starmap.query_image_by_name.return_value = qr
+    mock_source.get.return_value.__enter__.return_value = [ami_push_item]
+
+    command_tester.test(
+        lambda: entry_point(MarketplacesVMPush),
+        [
+            "test-push",
+            "--starmap-url",
+            "https://starmap-example.com",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--debug",
+            "--pre-push",
+            "koji:https://fakekoji.com?vmi_build=aws_build",
+        ],
+    )
+
+    mock_source.get.assert_called_once()
+    mock_starmap.query_image_by_name.assert_called_once_with(name="test-build", version="7.0")
+    assert mock_cloud_instance.call_count == 6
+
+
+@mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.cloud_instance")
+@mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
+@mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.starmap")
+def test_do_push_azure_correct_sas(
+    mock_starmap: mock.MagicMock,
+    mock_source: mock.MagicMock,
+    mock_cloud_instance: mock.MagicMock,
+    vhd_push_item: VHDPushItem,
+    command_tester: CommandTester,
+) -> None:
+    """Test a successful push for Azure using the correct SAS URI for each marketplace."""
+    azure_na = "fake-azure-sas-for-na"
+    azure_emea = "fake-azure-sas-for-emea"
+
+    class FakeAzureProvider(FakeCloudProvider):
+        vhds = [azure_na, azure_emea]
+        log = logging.getLogger("pubtools.marketplacesvm")
+
+        def _upload(self, push_item, custom_tags=None):
+            time.sleep(2)
+            push_item = evolve(push_item, sas_uri=self.vhds.pop(0))
+            return push_item, True
+
+        def _publish(self, push_item, nochannel, overwrite, preview_only):
+            # This log will allow us to identify whether the sas_uri is the expected
+            self.log.debug(f"Pushing {push_item.name} with image: {push_item.sas_uri}")
+            return push_item, nochannel
+
+    mock_cloud_instance.return_value = FakeAzureProvider()
+
+    qr = QueryResponse.from_json(
+        {
+            "name": "fake-policy",
+            "mappings": {
+                "azure-na": [
+                    {
+                        "destination": "NA-DESTINATION",
+                        "overwrite": False,
+                        "stage_preview": True,
+                        "delete_restricted": False,
+                    },
+                ],
+                "azure-emea": [
+                    {
+                        "destination": "EMEA-DESTINATION",
+                        "overwrite": False,
+                        "stage_preview": True,
+                        "delete_restricted": False,
+                    },
+                ],
+            },
+        }
+    )
+    mock_starmap.query_image_by_name.return_value = qr
+    mock_source.get.return_value.__enter__.return_value = [vhd_push_item]
+
+    command_tester.test(
+        lambda: entry_point(MarketplacesVMPush),
+        [
+            "test-push",
+            "--starmap-url",
+            "https://starmap-example.com",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--debug",
+            "--pre-push",
+            "koji:https://fakekoji.com?vmi_build=azure_build",
+        ],
+    )
+
+    mock_source.get.assert_called_once()
+    mock_starmap.query_image_by_name.assert_called_once_with(name="test-build", version="7.0")
+    assert mock_cloud_instance.call_count == 6
 
 
 def test_do_push_prepush(

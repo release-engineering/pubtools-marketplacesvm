@@ -71,7 +71,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             query = self._apply_starmap_overrides(query)
             item = MappedVMIPushItem(item, query.clouds)
             if not item.destinations:
-                log.info("Filtering out archive with no destinations: %s", item._push_item.src)
+                log.info("Filtering out archive with no destinations: %s", item.push_item.src)
                 continue
             mapped_items.append({"item": item, "starmap_query": query_returned_from_starmap})
         return mapped_items
@@ -240,7 +240,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             pi = mapped_item.get_push_item_for_marketplace(marketplace)
 
             # Associate image with Product/Offer/Plan and publish only if it's not a pre-push
-            if mapped_item.state != State.UPLOADFAILED and self._allowed_to_publish(mapped_item):
+            if pi.state != State.UPLOADFAILED and self._allowed_to_publish(mapped_item):
                 # The first publish should always be with `pre_push` set True because it might
                 # happen that one offer with multiple plans would receive the same image and
                 # we can't `publish` the offer with just the first plan changed and try to change
@@ -254,25 +254,24 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                 # again the publish if and only if `pre_push == False`.
                 # The indepondent operation will guarantee that the images are already associated
                 # with the Product/Offer/Plan and just the go-live part is called.
-                mapped_item.push_item = self._publish(
+                pi = self._publish(
                     marketplace,
                     pi,
                     pre_push=False,
                 )
-            elif mapped_item.state != State.UPLOADFAILED and not self._allowed_to_publish(
-                mapped_item
-            ):
+            elif pi.state != State.UPLOADFAILED and not self._allowed_to_publish(mapped_item):
                 # Set the state as PUSHED when the operation is nochannel
-                mapped_item.push_item = evolve(pi, state=State.PUSHED)
+                pi = evolve(pi, state=State.PUSHED)
 
             # Update the destinations from List[Destination] to List[str] for collection
             dest_list_str = [d.destination for d in pi.dest]
             push_item_for_collection = evolve(pi, dest=dest_list_str)
+            mapped_item.update_push_item_for_marketplace(marketplace, pi)
 
             # Append the data for collection
             return {
                 "push_item": push_item_for_collection,
-                "state": mapped_item.state,
+                "state": pi.state,
                 "marketplace": marketplace,
                 "destinations": mapped_item.clouds[marketplace],
                 "starmap_query": starmap_query,
@@ -283,11 +282,12 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             # In order to get the correct destinations we need to first pass the result of
             # get_push_item_from_marketplace.
 
-            mapped_item.push_item = self._upload(
+            pi = self._upload(
                 marketplace,
                 mapped_item.get_push_item_for_marketplace(marketplace),
                 custom_tags=mapped_item.get_tags_for_marketplace(marketplace),
             )
+            mapped_item.update_push_item_for_marketplace(marketplace, pi)
 
         res_output = []
         to_await = []
