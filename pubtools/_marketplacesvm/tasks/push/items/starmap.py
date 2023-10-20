@@ -1,9 +1,9 @@
 import logging
 from typing import Any, Callable, ClassVar, Dict, List
 
-from attrs import define, evolve, field
+from attrs import asdict, define, evolve, field
 from attrs.validators import deep_mapping, instance_of
-from pushsource import VMIPushItem
+from pushsource import AmiPushItem, AmiRelease, VMIPushItem, VMIRelease
 from starmap_client.models import Destination
 
 log = logging.getLogger("pubtools.marketplacesvm")
@@ -101,6 +101,22 @@ class MappedVMIPushItem:
 
         # Update the destinations
         pi = evolve(pi, dest=destinations)
+
+        # Build the VMIRelease information when the meta key `release` is present
+        rel_data = self.meta.pop("release", None)
+        if rel_data:
+            if pi.release:
+                log.debug("Merging original release information with data from StArMap")
+                # We just want to set the values present in StArMap and preserve what's given by
+                # the original "pi.release" when the attribute is NOT set by StArMap
+                old_release_data = asdict(pi.release)
+                old_release_data.update(rel_data)
+                rel_data = old_release_data
+            log.debug("Creating a VMIRelease object with %s", rel_data)
+            rel_obj = (
+                AmiRelease(**rel_data) if isinstance(pi, AmiPushItem) else VMIRelease(**rel_data)
+            )
+            pi = evolve(pi, release=rel_obj)
 
         # Update the push item attributes for each type using the attrs hidden annotation
         ignore_unset_attributes = ["md5sum", "sha256sum", "signing_key", "origin"]
