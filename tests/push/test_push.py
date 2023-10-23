@@ -116,6 +116,7 @@ def test_do_push_ami_correct_id(
     qr = QueryResponse.from_json(
         {
             "name": "fake-policy",
+            "workflow": "stratosphere",
             "mappings": {
                 "aws-na": [
                     {
@@ -191,6 +192,7 @@ def test_do_push_azure_correct_sas(
     qr = QueryResponse.from_json(
         {
             "name": "fake-policy",
+            "workflow": "stratosphere",
             "mappings": {
                 "azure-na": [
                     {
@@ -274,6 +276,7 @@ def test_do_push_prepush_marketplace_preview(
     qr = QueryResponse.from_json(
         {
             "name": "fake-policy",
+            "workflow": "stratosphere",
             "mappings": {
                 "azure-na": [
                     {
@@ -391,6 +394,7 @@ def test_push_item_no_mapped_arch(
     qr = QueryResponse.from_json(
         {
             "name": "fake-policy",
+            "workflow": "stratosphere",
             "mappings": {
                 "aws-na": [
                     {
