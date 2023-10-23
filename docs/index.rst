@@ -11,3 +11,4 @@ Virtual Machine images to various cloud marketplaces.
    :caption: Command Reference:
 
    push
+   community_push
