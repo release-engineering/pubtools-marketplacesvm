@@ -7,7 +7,12 @@ from typing import Any, Dict
 import pytest
 
 
-@pytest.fixture(params=["pubtools._marketplacesvm.tasks.push"])
+@pytest.fixture(
+    params=[
+        "pubtools._marketplacesvm.tasks.push",
+        "pubtools._marketplacesvm.tasks.community_push",
+    ]
+)
 def task_module(request: pytest.FixtureRequest):
     __import__(request.param)
     return sys.modules[request.param]

@@ -43,6 +43,7 @@ setup(
     entry_points={
         "console_scripts": [
             "pubtools-marketplacesvm-push = pubtools._marketplacesvm.tasks.push:entry_point",
+            "pubtools-marketplacesvm-community-push = pubtools._marketplacesvm.tasks.community_push:entry_point",
         ]
     },
     zip_safe=False,

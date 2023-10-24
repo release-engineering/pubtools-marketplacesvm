@@ -90,6 +90,7 @@ def starmap_response_aws() -> Dict[str, Any]:
             ],
         },
         "name": "sample-product",
+        "workflow": "stratosphere",
     }
 
 
@@ -125,6 +126,7 @@ def starmap_response_azure() -> Dict[str, Any]:
             ]
         },
         "name": "sample-product",
+        "workflow": "stratosphere",
     }
 
 
