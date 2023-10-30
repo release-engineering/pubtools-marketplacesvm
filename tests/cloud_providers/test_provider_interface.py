@@ -33,6 +33,7 @@ class TestCloudCredentials:
 
         assert CloudCredentials(cloud_name="foo-na")
         assert CloudCredentials(cloud_name="foo-emea")
+        assert CloudCredentials(cloud_name="foo-storage")
 
 
 class TestCloudProvider:

@@ -46,9 +46,12 @@ class CloudCredentials:
 
     @cloud_name.validator
     def _validate_cloud_name(self, attribute: Attribute, value: str):
-        """Validate whether the cloud name has `-na` or `-emea` in its suffix."""
-        if not value.endswith("-na") and not value.endswith("-emea"):
-            raise ValueError(f"Invalid value for {attribute.name}: missing region.")
+        """Validate whether the cloud name has a valid suffix."""
+        valid_suffix_list = ["-na", "-emea", "-storage"]
+        for suffix in valid_suffix_list:
+            if value.endswith(suffix):
+                return
+        raise ValueError(f"Invalid value for {attribute.name}: missing region.")
 
 
 C = TypeVar("C", bound=CloudCredentials)
