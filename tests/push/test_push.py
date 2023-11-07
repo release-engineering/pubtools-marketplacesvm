@@ -319,6 +319,60 @@ def test_do_push_prepush_marketplace_preview(
 
 
 @mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
+@mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.starmap")
+def test_do_push_live_marketplace_preview(
+    mock_starmap: mock.MagicMock,
+    mock_source: mock.MagicMock,
+    vhd_push_item: VHDPushItem,
+    fake_cloud_instance: mock.MagicMock,
+    command_tester: CommandTester,
+) -> None:
+    """Test a successfull push to "live" when --nochannel is absent and `preview_stage` is given."""
+    qr = QueryResponse.from_json(
+        {
+            "name": "fake-policy",
+            "workflow": "stratosphere",
+            "mappings": {
+                "azure-na": [
+                    {
+                        "destination": "fake-offer/fake-plan",
+                        "overwrite": False,
+                        "stage_preview": True,
+                        "delete_restricted": False,
+                    },
+                    {
+                        "destination": "do-not/publish-me",
+                        "overwrite": False,
+                        "stage_preview": False,
+                        "delete_restricted": False,
+                    },
+                ]
+            },
+        }
+    )
+    mock_starmap.query_image_by_name.return_value = qr
+    mock_source.get.return_value.__enter__.return_value = [vhd_push_item]
+
+    command_tester.test(
+        lambda: entry_point(MarketplacesVMPush),
+        [
+            "test-push",
+            "--starmap-url",
+            "https://starmap-example.com",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--debug",
+            "koji:https://fakekoji.com?vmi_build=azure_build",
+        ],
+    )
+
+    mock_source.get.assert_called_once()
+    mock_starmap.query_image_by_name.assert_called_once_with(name="test-build", version="7.0")
+    # get_provider, upload and publish calls for "azure-na"
+    assert fake_cloud_instance.call_count == 3
+
+
+@mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
 def test_not_vmi_push_item(
     mock_source: mock.MagicMock,
     fake_cloud_instance: mock.MagicMock,
