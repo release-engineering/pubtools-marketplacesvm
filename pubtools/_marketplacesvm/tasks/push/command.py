@@ -332,7 +332,8 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
         mod_result = []
         for result in results:
             res_dict = asdict(result["push_item"])
-            res_dict["starmap_query"] = asdict(result["starmap_query"])
+            if result.get("starmap_query"):
+                res_dict["starmap_query"] = asdict(result["starmap_query"])
             # dict can't be modified during iteration.
             # so iterate over list of keys.
             for key in list(res_dict):

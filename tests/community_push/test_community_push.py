@@ -1,10 +1,11 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 import re
-from typing import Generator
+from typing import Any, Dict, Generator
 from unittest import mock
 
 import pytest
 from _pytest.capture import CaptureFixture
+from attrs import evolve
 from pushsource import AmiPushItem, VHDPushItem
 from starmap_client.models import QueryResponse, Workflow
 
@@ -32,7 +33,14 @@ def fake_rhsm_api(requests_mocker):
     requests_mocker.register_uri(
         "GET",
         re.compile("amazon/provider_image_groups"),
-        json={"body": [{"name": "SAMPLE_PRODUCT_HOURLY", "providerShortName": "awstest"}]},
+        json={
+            "body": [
+                {"name": "SAMPLE_PRODUCT_HOURLY", "providerShortName": "awstest"},
+                {"name": "sample_product", "providerShortName": "awstest"},
+                {"name": "RHEL_HA", "providerShortName": "awstest"},
+                {"name": "SAP", "providerShortName": "awstest"},
+            ]
+        },
     )
     requests_mocker.register_uri("POST", re.compile("amazon/region"))
     requests_mocker.register_uri("PUT", re.compile("amazon/amis"))
@@ -65,6 +73,106 @@ def test_do_community_push(
     fake_source.get.assert_called_once()
     fake_starmap.query_image_by_name.assert_called_once_with(
         name="test-build", version="7.0", workflow=Workflow.community
+    )
+
+
+@pytest.mark.parametrize("product_name", ["RHEL_HA", "SAP"])
+@mock.patch("pubtools._marketplacesvm.tasks.community_push.CommunityVMPush.starmap")
+@mock.patch("pubtools._marketplacesvm.tasks.community_push.command.Source")
+def test_do_community_push_skip_houly_sap_ha(
+    mock_source: mock.MagicMock,
+    mock_starmap: mock.MagicMock,
+    product_name: str,
+    ami_push_item: AmiPushItem,
+    starmap_ami_billing_config: Dict[str, Any],
+    command_tester: CommandTester,
+) -> None:
+    # Set the custom product name to the push item
+    release = ami_push_item.release
+    release = evolve(release, product=product_name)
+    pi = evolve(ami_push_item, release=release)
+    mock_source.get.return_value.__enter__.return_value = [pi]
+
+    # Create a fake mapping
+    policy = {
+        "name": product_name,
+        "workflow": "community",
+        "mappings": {
+            "aws_storage": [
+                {
+                    "architecture": "x86_64",
+                    "destination": "fake-destination-access",
+                    "overwrite": False,
+                    "stage_preview": False,
+                    "delete_restricted": False,
+                    "meta": {"billing-code-config": starmap_ami_billing_config},
+                }
+            ]
+        },
+    }
+    mock_starmap.query_image_by_name.return_value = QueryResponse.from_json(policy)
+
+    # Test
+    command_tester.test(
+        lambda: entry_point(CommunityVMPush),
+        [
+            "test-push",
+            "--starmap-url",
+            "https://starmap-example.com",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--rhsm-url",
+            "https://rhsm.com/test/api/",
+            "--aws-provider-name",
+            "awstest",
+            "--debug",
+            "koji:https://fakekoji.com?vmi_build=ami_build",
+        ],
+    )
+
+
+@mock.patch("pubtools._marketplacesvm.tasks.community_push.CommunityVMPush.starmap")
+def test_do_community_push_no_billing_config(
+    mock_starmap: mock.MagicMock,
+    fake_source: mock.MagicMock,
+    ami_push_item: AmiPushItem,
+    command_tester: CommandTester,
+) -> None:
+    # Create a fake mapping
+    policy = {
+        "name": "sample-product",
+        "workflow": "community",
+        "mappings": {
+            "aws_storage": [
+                {
+                    "architecture": "x86_64",
+                    "destination": "fake-destination-access",
+                    "overwrite": False,
+                    "stage_preview": False,
+                    "delete_restricted": False,
+                    "meta": {},
+                }
+            ]
+        },
+    }
+    mock_starmap.query_image_by_name.return_value = QueryResponse.from_json(policy)
+
+    # Test
+    command_tester.test(
+        lambda: entry_point(CommunityVMPush),
+        [
+            "test-push",
+            "--starmap-url",
+            "https://starmap-example.com",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--rhsm-url",
+            "https://rhsm.com/test/api/",
+            "--aws-provider-name",
+            "awstest",
+            "--debug",
+            "koji:https://fakekoji.com?vmi_build=ami_build",
+        ],
     )
 
 

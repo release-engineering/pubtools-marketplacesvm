@@ -7,7 +7,7 @@ from attrs import evolve
 from pushsource import AmiPushItem, AmiRelease, KojiBuildInfo
 from starmap_client.models import QueryResponse
 
-from pubtools._marketplacesvm.tasks.push.command import MarketplacesVMPush
+from pubtools._marketplacesvm.tasks.community_push.command import CommunityVMPush
 
 
 @pytest.fixture(scope="session")
@@ -22,8 +22,8 @@ def monkeysession():
 @pytest.fixture(scope="session", autouse=True)
 def marketplaces_vm_push(monkeysession: pytest.MonkeyPatch) -> None:
     """Set a single-thread for MarketplacesVMPush."""
-    monkeysession.setattr(MarketplacesVMPush, '_REQUEST_THREADS', 1)
-    monkeysession.setattr(MarketplacesVMPush, '_PROCESS_THREADS', 1)
+    monkeysession.setattr(CommunityVMPush, '_REQUEST_THREADS', 1)
+    monkeysession.setattr(CommunityVMPush, '_PROCESS_THREADS', 1)
 
 
 @pytest.fixture
@@ -45,6 +45,7 @@ def release_params() -> Dict[str, Any]:
 def push_item_params() -> Dict[str, str]:
     return {
         "name": "name",
+        "src": "/foo/bar/sample_product_test.raw",
         "description": "",
         "build_info": KojiBuildInfo(name="test-build", version="7.0", release="20230101"),
     }
@@ -60,7 +61,25 @@ def ami_push_item(release_params: Dict[str, Any], push_item_params: Dict[str, st
 
 
 @pytest.fixture()
-def starmap_ami_meta(release_params) -> Dict[str, Any]:
+def starmap_ami_billing_config() -> Dict[str, Any]:
+    return {
+        "sample-hourly": {
+            "name": "Hourly2",
+            "codes": ["bp-6fa54006"],
+            "image_name": "sample_product",
+            "image_types": ["hourly"],
+        },
+        "sample-access": {
+            "name": "Access2",
+            "codes": ["bp-63a5400a"],
+            "image_name": "sample_product",
+            "image_types": ["access"],
+        },
+    }
+
+
+@pytest.fixture()
+def starmap_ami_meta(release_params, starmap_ami_billing_config) -> Dict[str, Any]:
     return {
         "description": "Provided by Red Hat, Inc.",
         "virtualization": "hvm",
@@ -69,6 +88,7 @@ def starmap_ami_meta(release_params) -> Dict[str, Any]:
         "sriov_net_support": "simple",
         "ena_support": True,
         "release": release_params,
+        "billing-code-config": starmap_ami_billing_config,
     }
 
 
