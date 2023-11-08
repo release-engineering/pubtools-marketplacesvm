@@ -173,11 +173,12 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                     )
                     continue
 
+                stage_preview = self._check_stage_preview(dest.stage_preview)
                 log.info(
                     "Pushing item \"%s\" (pre-push=%s, preview=%s, del_restricted=%s) to %s on %s.",
                     push_item.name,
                     pre_push,
-                    dest.stage_preview,
+                    stage_preview,
                     dest.delete_restricted,
                     dest.destination,
                     marketplace.upper(),
@@ -188,7 +189,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                     single_dest_item,
                     nochannel=pre_push,
                     overwrite=dest.overwrite,
-                    preview_only=dest.stage_preview,
+                    preview_only=stage_preview,
                     delete_restricted=dest.delete_restricted,
                 )
 
@@ -205,6 +206,13 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             )
             pi = evolve(push_item, state=State.NOTPUSHED)
         return pi
+
+    def _check_stage_preview(self, stage_preview: bool) -> bool:
+        # We only want to possibly return True whenever
+        # "--pre-push" is set alongside "stage_preview"
+        if self.args.pre_push and stage_preview:
+            return stage_preview
+        return False
 
     def _allowed_to_publish(self, mapped_item: MappedVMIPushItem) -> bool:
         """
