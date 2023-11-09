@@ -101,3 +101,164 @@ class RHSMClient:
         merged = self._session.merge_environment_settings(**settings)  # type: ignore [arg-type]
         kwargs.update(merged)
         return self._session.send(prepped_req, **kwargs)
+
+
+class AwsRHSMClient(RHSMClient):
+    """Client for RHSM management with AWS content."""
+
+    def aws_products(self) -> FutureType[requests.Response]:
+        """Return the list of AWS products present in RHSM.
+
+        Returns:
+            Future[requests.Response]: the AWS products list from RHSM server.
+        """
+        url = urljoin(
+            self._url,
+            "/v1/internal/cloud_access_providers/amazon/provider_image_groups",
+        )
+        LOG.debug("Fetching product from %s", url)
+
+        out = self._executor.submit(self._get, url)
+        out = f_map(out, fn=self._check_http_response, error_fn=self._on_failure)
+
+        return out
+
+    def aws_create_region(
+        self, region: str, aws_provider_name: str
+    ) -> FutureType[requests.Response]:
+        """Create a new AWS region in RHSM.
+
+        Args:
+            region (str): The region name to create
+            aws_provider_name (str): The AWS provider name
+
+        Returns:
+            Future[requests.Response]: The RHSM server result operation.
+        """
+        url = urljoin(self._url, "v1/internal/cloud_access_providers/amazon/regions")
+
+        rhsm_region = {"regionID": region, "providerShortname": aws_provider_name}
+        req = requests.Request("POST", url, json=rhsm_region)
+        prepped_req = self._session.prepare_request(req)
+
+        out = self._executor.submit(self._send, prepped_req)
+        out = f_map(out, error_fn=self._on_failure)
+
+        return out
+
+    def aws_update_image(
+        self,
+        image_id: str,
+        image_name: str,
+        arch: str,
+        product_name: str,
+        version: Optional[str] = None,
+        variant: Optional[str] = None,
+        status: str = "VISIBLE",
+    ) -> FutureType[requests.Response]:
+        """Update an AMI in RHSM.
+
+        Args:
+            image_id (str): The AMI ID
+            image_name (str): The image name
+            arch (str): The AMI architecture
+            product_name (str): The product name
+            version (Optional[str], optional): The product version. Defaults to None.
+            variant (Optional[str], optional): The product variant, if any. Defaults to None.
+            status (str, optional): The product status. Defaults to "VISIBLE".
+
+        Returns:
+            Future[requests.Response]: The RHSM server result operation.
+        """
+        url = urljoin(self._url, "/v1/internal/cloud_access_providers/amazon/amis")
+
+        now = datetime.utcnow().replace(microsecond=0).isoformat()
+        rhsm_image = {
+            "amiID": image_id,
+            "arch": arch.lower(),
+            "product": product_name,
+            "version": version or "none",
+            "variant": variant or "none",
+            "description": "Released %s on %s" % (image_name, now),
+            "status": status,
+        }
+        req = requests.Request("PUT", url, json=rhsm_image)
+        prepped_req = self._session.prepare_request(req)
+
+        out = self._executor.submit(self._send, prepped_req)
+        out = f_map(out, error_fn=self._on_failure)
+
+        return out
+
+    def aws_create_image(
+        self,
+        image_id: str,
+        image_name: str,
+        arch: str,
+        product_name: str,
+        region: str,
+        version: Optional[str] = None,
+        variant: Optional[str] = None,
+    ) -> FutureType[requests.Response]:
+        """Create an AMI in RSHM server.
+
+        Args:
+            image_id (str): The AMI ID
+            image_name (str): The image name
+            arch (str): The AMI architecture
+            product_name (str): The product name
+            region (str): The AWS region
+            version (Optional[str], optional): The product version. Defaults to None.
+            variant (Optional[str], optional): The product variant, if any. Defaults to None.
+
+        Returns:
+            Future[requests.Response]: The RHSM server result operation.
+        """
+        url = urljoin(self._url, "/v1/internal/cloud_access_providers/amazon/amis")
+
+        now = datetime.utcnow().replace(microsecond=0).isoformat()
+        rhsm_image = {
+            "amiID": image_id,
+            "region": region,
+            "arch": arch.lower(),
+            "product": product_name,
+            "version": version or "none",
+            "variant": variant or "none",
+            "description": "Released %s on %s" % (image_name, now),
+            "status": "VISIBLE",
+        }
+        req = requests.Request("POST", url, json=rhsm_image)
+        prepped_req = self._session.prepare_request(req)
+
+        out = self._executor.submit(self._send, prepped_req)
+        out = f_map(out, error_fn=self._on_failure)
+
+        return out
+
+    def aws_list_image_ids(self) -> Set[str]:
+        """Return all AMI IDs present in RHSM.
+
+        Returns:
+            Set[str]: Set containing all AMI IDs in RHSM.
+        """
+        url = urljoin(self._url, "/v1/internal/cloud_access_providers/amazon/amis")
+        image_ids = set()
+
+        def handle_page(offset: int = 0):
+            params = {"limit": 1000, "offset": offset}
+            req = requests.Request("GET", url, params=params)
+            prepped_req = self._session.prepare_request(req)
+
+            resp_f = self._executor.submit(self._send, prepped_req)
+            resp_f = f_map(resp_f, fn=self._check_http_response, error_fn=self._on_failure)
+            resp = resp_f.result().json()
+            items_count = resp["pagination"]["count"]
+            if items_count:
+                offset += items_count
+                for item in resp.get("body") or []:
+                    image_ids.add(item["amiID"])
+                return handle_page(offset)
+
+        LOG.debug("Listing all images from rhsm, %s", url)
+        handle_page()
+        return image_ids
