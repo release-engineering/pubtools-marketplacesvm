@@ -8,3 +8,5 @@ mock
 sphinx
 sphinx-argparse
 requests_mock
+types-mock
+types-requests

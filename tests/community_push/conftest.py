@@ -29,12 +29,12 @@ def marketplaces_vm_push(monkeysession: pytest.MonkeyPatch) -> None:
 @pytest.fixture
 def release_params() -> Dict[str, Any]:
     return {
-        "product": "sample-product",
+        "product": "sample_product",
         "version": "7.0",
         "arch": "x86_64",
         "respin": 1,
         "date": datetime.strptime("2023-12-12", "%Y-%m-%d"),
-        "base_product": "sample-base",
+        "base_product": "sample_base",
         "base_version": "1.0",
         "variant": "variant",
         "type": "ga",
@@ -54,29 +54,53 @@ def push_item_params() -> Dict[str, str]:
 def ami_push_item(release_params: Dict[str, Any], push_item_params: Dict[str, str]) -> AmiPushItem:
     """Return a minimal AmiPushItem."""
     release = AmiRelease(**release_params)
-    push_item_params.update({"name": "ami_pushitem", "release": release})
+    # FIXME: the "type: hourly" should be removed later when it will get resolved from StArMap
+    push_item_params.update({"name": "ami_pushitem", "release": release, "type": "hourly"})
     return AmiPushItem(**push_item_params)
 
 
+@pytest.fixture()
+def starmap_ami_meta(release_params) -> Dict[str, Any]:
+    return {
+        "description": "Provided by Red Hat, Inc.",
+        "virtualization": "hvm",
+        "volume": "gp2",
+        "root_device": "/dev/sda1",
+        "sriov_net_support": "simple",
+        "ena_support": True,
+        "release": release_params,
+    }
+
+
 @pytest.fixture
-def starmap_response_aws() -> Dict[str, Any]:
+def starmap_response_aws(starmap_ami_meta) -> Dict[str, Any]:
+    destinations = [
+        "us-east-1-hourly",
+        "us-east-1-access",
+        "us-east-2-hourly",
+        "us-east-2-access",
+        "us-west-1-hourly",
+        "us-west-1-access",
+        "us-west-2-hourly",
+        "us-west-2-access",
+    ]
+
     return {
         "mappings": {
-            "aws-na": [
+            "aws_storage": [
                 {
-                    # FIXME: These may change once we create a proper mapping for
-                    # community workflow
                     "architecture": "x86_64",
-                    "destination": "ffffffff-ffff-ffff-ffff-ffffffffffff",
-                    "overwrite": True,
+                    "destination": dest,
+                    "overwrite": False,
                     "stage_preview": False,
                     "delete_restricted": False,
-                    "meta": {"tag1": "aws-na-value1", "tag2": "aws-na-value2"},
+                    "meta": starmap_ami_meta,
                     "tags": {"key1": "value1", "key2": "value2"},
                 }
+                for dest in destinations
             ],
         },
-        "name": "sample-product",
+        "name": "sample_product",
         "workflow": "community",
     }
 
