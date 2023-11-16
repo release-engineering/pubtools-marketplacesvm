@@ -29,10 +29,17 @@ def fake_credentials() -> AWSCredentials:
 
 
 @pytest.fixture
-def fake_aws_provider(fake_credentials: AWSCredentials, monkeypatch: pytest.MonkeyPatch):
+@patch("pubtools._marketplacesvm.cloud_providers.aws.AWSPublishService")
+@patch("pubtools._marketplacesvm.cloud_providers.aws.AWSUploadService")
+def fake_aws_provider(
+    mock_upload: MagicMock,
+    mock_publish: MagicMock,
+    fake_credentials: AWSCredentials,
+    monkeypatch: pytest.MonkeyPatch,
+):
     provider = AWSProvider(fake_credentials)
-    monkeypatch.setattr(provider, 'upload_svc', MagicMock())
-    monkeypatch.setattr(provider, 'publish_svc', MagicMock())
+    monkeypatch.setattr(provider, 'upload_svc', mock_upload)
+    monkeypatch.setattr(provider, 'publish_svc', mock_publish)
     return provider
 
 
@@ -119,7 +126,14 @@ class FakeImageTag:
 
 
 @pytest.mark.parametrize("marketplace_account", ["aws-na", "aws-emea"])
-def test_get_provider(marketplace_account: str, fake_credentials: AWSCredentials) -> None:
+@patch("pubtools._marketplacesvm.cloud_providers.aws.AWSPublishService")
+@patch("pubtools._marketplacesvm.cloud_providers.aws.AWSUploadService")
+def test_get_provider(
+    mock_upload: MagicMock,
+    mock_publish: MagicMock,
+    marketplace_account: str,
+    fake_credentials: AWSCredentials,
+) -> None:
     creds = fake_credentials.credentials
     creds.update({"AWS_IMAGE_ACCESS_KEY": "updated-access-key"})
     auth_data = {"marketplace_account": marketplace_account, "auth": creds}
@@ -241,7 +255,11 @@ def test_upload_boot_mode(
 
 
 @patch("pubtools._marketplacesvm.cloud_providers.aws.AWSUploadMetadata")
+@patch("pubtools._marketplacesvm.cloud_providers.aws.AWSPublishService")
+@patch("pubtools._marketplacesvm.cloud_providers.aws.AWSUploadService")
 def test_upload_custom_s3(
+    mock_upload: MagicMock,
+    mock_publish: MagicMock,
     mock_metadata: MagicMock,
     aws_push_item: AmiPushItem,
     fake_credentials: AWSCredentials,

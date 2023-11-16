@@ -1,4 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
+import re
 from typing import Generator
 from unittest import mock
 
@@ -26,6 +27,18 @@ def fake_starmap(starmap_query_aws: QueryResponse) -> Generator[mock.MagicMock, 
         yield m
 
 
+@pytest.fixture(autouse=True)
+def fake_rhsm_api(requests_mocker):
+    requests_mocker.register_uri(
+        "GET",
+        re.compile("amazon/provider_image_groups"),
+        json={"body": [{"name": "SAMPLE_PRODUCT_HOURLY", "providerShortName": "awstest"}]},
+    )
+    requests_mocker.register_uri("POST", re.compile("amazon/region"))
+    requests_mocker.register_uri("PUT", re.compile("amazon/amis"))
+    requests_mocker.register_uri("POST", re.compile("amazon/amis"))
+
+
 def test_do_community_push(
     fake_source: mock.MagicMock,
     fake_starmap: mock.MagicMock,
@@ -40,6 +53,10 @@ def test_do_community_push(
             "https://starmap-example.com",
             "--credentials",
             "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--rhsm-url",
+            "https://rhsm.com/test/api/",
+            "--aws-provider-name",
+            "awstest",
             "--debug",
             "koji:https://fakekoji.com?vmi_build=ami_build",
         ],
@@ -73,6 +90,10 @@ def test_not_ami_push_item(
             "https://starmap-example.com",
             "--credentials",
             "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--rhsm-url",
+            "https://rhsm.com/test/api/",
+            "--aws-provider-name",
+            "awstest",
             "--debug",
             "koji:https://fakekoji.com?vmi_build=ami_build",
         ],
@@ -92,6 +113,10 @@ def test_no_credentials(
             "test-push",
             "--starmap-url",
             "https://starmap-example.com",
+            "--rhsm-url",
+            "https://rhsm.com/test/api/",
+            "--aws-provider-name",
+            "awstest",
             "--debug",
             "koji:https://fakekoji.com?vmi_build=ami_build",
         ],
@@ -108,11 +133,69 @@ def test_no_source(command_tester: CommandTester, capsys: CaptureFixture) -> Non
             "https://starmap-example.com",
             "--credentials",
             "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--rhsm-url",
+            "https://rhsm.com/test/api/",
+            "--aws-provider-name",
+            "awstest",
             "--debug",
         ],
     )
     _, err = capsys.readouterr()
     assert "error: too few arguments" or "error: the following arguments are required" in err
+
+
+def test_no_rhsm_url(
+    fake_source: mock.MagicMock,
+    fake_starmap: mock.MagicMock,
+    command_tester: CommandTester,
+    capsys: CaptureFixture,
+) -> None:
+    """Checks that exception is raised when the rhsm-url is missing."""
+    command_tester.test(
+        lambda: entry_point(CommunityVMPush),
+        [
+            "test-push",
+            "--starmap-url",
+            "https://starmap-example.com",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--aws-provider-name",
+            "awstest",
+            "--debug",
+            "koji:https://fakekoji.com?vmi_build=ami_build",
+        ],
+    )
+    _, err = capsys.readouterr()
+    assert "Exception: RHSM URL not provided for the RHSM client" in err
+
+
+def test_not_in_rhsm(
+    fake_starmap: mock.MagicMock,
+    fake_source: mock.MagicMock,
+    starmap_query_aws: QueryResponse,
+    command_tester: CommandTester,
+) -> None:
+    """Ensure there's an error when the product is not in RHSM."""
+    for dest_list in starmap_query_aws.clouds.values():
+        for dest in dest_list:
+            dest.meta["release"]["product"] = "not_in_rhsm_product"
+
+    command_tester.test(
+        lambda: entry_point(CommunityVMPush),
+        [
+            "test-push",
+            "--starmap-url",
+            "https://starmap-example.com",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--rhsm-url",
+            "https://rhsm.com/test/api/",
+            "--aws-provider-name",
+            "awstest",
+            "--debug",
+            "koji:https://fakekoji.com?vmi_build=ami_build",
+        ],
+    )
 
 
 @mock.patch("pubtools._marketplacesvm.tasks.community_push.CommunityVMPush._push_to_community")
@@ -145,6 +228,10 @@ def test_empty_value_to_collect(
             "https://starmap-example.com",
             "--credentials",
             "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--rhsm-url",
+            "https://rhsm.com/test/api/",
+            "--aws-provider-name",
+            "awstest",
             "--debug",
             "koji:https://fakekoji.com?vmi_build=ami_build",
         ],

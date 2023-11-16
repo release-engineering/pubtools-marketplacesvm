@@ -20,8 +20,4 @@
 [ WARNING] Missing information for the attribute ami_pushitem.version_title, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.security_groups, leaving it unset.
 [   DEBUG] Searching for product SAMPLE_PRODUCT_HOURLY for provider awstest in rhsm
-[   DEBUG] Fetching product from https://rhsm.com/v1/internal/cloud_access_providers/amazon/provider_image_groups
-[   DEBUG] 1 Products(AWS provider) in rhsm: SAMPLE_PRODUCT_HOURLY(awstest)
-[    INFO] Collecting results
-[   ERROR] Community VM push failed
-# Raised: 30
+# Raised: RHSM URL not provided for the RHSM client
