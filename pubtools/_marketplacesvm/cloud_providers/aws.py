@@ -17,6 +17,51 @@ from .base import UPLOAD_CONTAINER_NAME, CloudCredentials, CloudProvider, regist
 LOG = logging.getLogger("pubtools.marketplacesvm")
 
 
+def name_from_push_item(push_item: AmiPushItem) -> str:
+    """
+    Create an image name from the metadata provided.
+
+    Args:
+        push_item (AmiPushItem)
+            The input push item.
+    Returns:
+        str: The image name from push item.
+    """
+
+    def get_2_digits(version: str) -> str:
+        v = version.split(".")[:2]
+        return ".".join(v)
+
+    parts = []
+    release = push_item.release
+
+    if release.base_product is not None:
+        parts.append(release.base_product)
+        if release.base_version is not None:
+            parts.append(get_2_digits(release.base_version))
+
+    parts.append(release.product)
+
+    # Some attributes should be separated by underscores
+    underscore_parts = []
+
+    if release.version is not None:
+        underscore_parts.append(get_2_digits(release.version))
+
+    underscore_parts.append(push_item.virtualization.upper())
+
+    if release.type is not None:
+        underscore_parts.append(release.type.upper())
+
+    parts.append("_".join(underscore_parts))
+
+    parts.append(release.date.strftime("%Y%m%d"))
+    parts.append(release.arch)
+    parts.append(str(release.respin))
+
+    return "-".join(parts)
+
+
 @frozen
 class AWSCredentials(CloudCredentials):
     """Represent the credentials for AWSProvider."""
@@ -115,50 +160,6 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         self.image_id = ""
         self.s3_bucket = credentials.aws_s3_bucket or UPLOAD_CONTAINER_NAME
 
-    def _name_from_push_item(self, push_item: AmiPushItem) -> str:
-        """
-        Create an image name from the metadata provided.
-
-        Args:
-            push_item (AmiPushItem)
-                The input push item.
-        Returns:
-            str: The image name from push item.
-        """
-
-        def get_2_digits(version: str) -> str:
-            v = version.split(".")[:2]
-            return ".".join(v)
-
-        parts = []
-        release = push_item.release
-
-        if release.base_product is not None:
-            parts.append(release.base_product)
-            if release.base_version is not None:
-                parts.append(get_2_digits(release.base_version))
-
-        parts.append(release.product)
-
-        # Some attributes should be separated by underscores
-        underscore_parts = []
-
-        if release.version is not None:
-            underscore_parts.append(get_2_digits(release.version))
-
-        underscore_parts.append(push_item.virtualization.upper())
-
-        if release.type is not None:
-            underscore_parts.append(release.type.upper())
-
-        parts.append("_".join(underscore_parts))
-
-        parts.append(release.date.strftime("%Y%m%d"))
-        parts.append(release.arch)
-        parts.append(str(release.respin))
-
-        return "-".join(parts)
-
     def _get_security_items(self, push_item: AmiPushItem) -> List[Dict[str, Any]]:
         """
         Convert a list of AmiSecurityGroup to a list of dictionary.
@@ -209,7 +210,10 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         return cls(creds)
 
     def _upload(
-        self, push_item: AmiPushItem, custom_tags: Optional[Dict[str, str]] = None
+        self,
+        push_item: AmiPushItem,
+        custom_tags: Optional[Dict[str, str]] = None,
+        **kwargs,
     ) -> Tuple[AmiPushItem, Any]:
         """
         Upload and import a disk image to AWS.
@@ -234,12 +238,16 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
                 The push item with the required data to upload the AMI image into Azure.
             custom_tags (dict, optional)
                 Dictionary with keyword values to be added as custom tags.
+            groups (list, optional)
+                List of groups to share the image with. Defaults to ``self.aws_groups``.
         Returns:
             The EC2 image with the data from uploaded image.
         """
-        name = self._name_from_push_item(push_item)
+        name = name_from_push_item(push_item)
         binfo = push_item.build_info
-        LOG.info("Image name: %s", name)
+        default_groups = self.aws_groups or []
+        groups = kwargs.get("groups", default_groups)
+        LOG.info("Image name: %s | Sharing groups: %s", name, groups)
 
         tags = {
             "nvra": f"{binfo.name}-{binfo.version}-{binfo.release}.{push_item.release.arch}",
@@ -262,7 +270,7 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
             "virt_type": push_item.virtualization,
             "root_device_name": push_item.root_device,
             "volume_type": push_item.volume,
-            "accounts": self.aws_groups or [],
+            "accounts": groups,
             "snapshot_account_ids": self.aws_snapshot_accounts,
             "sriov_net_support": push_item.sriov_net_support,
             "ena_support": push_item.ena_support,
@@ -271,6 +279,8 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         }
         if push_item.boot_mode:
             upload_metadata_kwargs.update({"boot_mode": push_item.boot_mode.value})
+        if push_item.billing_codes:
+            upload_metadata_kwargs.update({"billing_products": push_item.billing_codes.codes})
 
         LOG.debug("%s", upload_metadata_kwargs)
         metadata = AWSUploadMetadata(**upload_metadata_kwargs)
@@ -278,7 +288,9 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         res = self.upload_svc.publish(metadata)
         return push_item, res
 
-    def _post_upload(self, push_item: AmiPushItem, upload_result: Any) -> Tuple[AmiPushItem, Any]:
+    def _post_upload(
+        self, push_item: AmiPushItem, upload_result: Any, **kwargs
+    ) -> Tuple[AmiPushItem, Any]:
         """
         Post upload activities currently sets the image Id.
 
@@ -441,4 +453,6 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
             self.upload_svc.delete(metadata)
 
 
-register_provider(AWSProvider, "aws-na", "aws-emea")
+register_provider(
+    AWSProvider, "aws-na", "aws-emea", "aws-us-storage", "aws-gov-storage", "aws-china-storage"
+)

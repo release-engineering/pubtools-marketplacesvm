@@ -16,7 +16,9 @@ class FakeProvider(CloudProvider):
     def from_credentials(cls, fake_creds: Dict[str, Any]) -> 'FakeProvider':
         return cls(fake_creds)
 
-    def _upload(self, push_item: T, custom_tags: Optional[Dict[str, str]] = None) -> Tuple[T, Any]:
+    def _upload(
+        self, push_item: T, custom_tags: Optional[Dict[str, str]] = None, **kwargs
+    ) -> Tuple[T, Any]:
         return push_item, True
 
     def _publish(
