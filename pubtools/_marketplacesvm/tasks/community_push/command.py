@@ -3,12 +3,14 @@ import json
 import logging
 import os
 import sys
-from typing import Any, Dict, Iterator, List, Optional, Union
+from typing import Any, Dict, Iterator, List, Optional
 
 from attrs import asdict, evolve
 from more_executors import Executors
-from pushsource import AmiPushItem, Source
-from starmap_client.models import QueryResponse, Workflow
+from pushsource import AmiPushItem, Source, VMIPushItem
+from starmap_client.models import Workflow
+
+from pubtools._marketplacesvm.tasks.community_push.items import enrich_push_item
 
 from ...services.rhsm import AwsRHSMClientService
 from ..push import MarketplacesVMPush
@@ -16,11 +18,14 @@ from ..push.items import MappedVMIPushItem, State
 
 log = logging.getLogger("pubtools.marketplacesvm")
 
+EnrichedPushItem = Dict[str, List[AmiPushItem]]
+
 
 class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
     """Upload an AMI to S3 and update RHSM."""
 
     _REQUEST_THREADS = int(os.environ.get("COMMUNITY_PUSH_REQUEST_THREADS", "5"))
+    _PROCESS_THREADS = int(os.environ.get("COMMUNITY_PUSH_PROCESS_THREADS", "10"))
 
     def __init__(self, *args, **kwargs):
         """Initialize the CommunityVMPush instance."""
@@ -53,7 +58,7 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                     yield item
 
     @property
-    def mapped_items(self) -> List[Dict[str, Union[MappedVMIPushItem, QueryResponse]]]:
+    def mapped_items(self) -> List[MappedVMIPushItem]:  # type: ignore [override]
         """
         Return the mapped push item with destinations and metadata from StArMap.
 
@@ -86,7 +91,7 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
             # if not item.destinations:
             #    log.info("Filtering out archive with no destinations: %s", item.push_item.src)
             #    continue
-            mapped_items.append({"item": item, "starmap_query": query})
+            mapped_items.append(item)
         return mapped_items
 
     @property
@@ -154,48 +159,135 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
             return False
         return True
 
-    def items_in_metadata_service(self, mapped_items: List[MappedVMIPushItem]):
+    def items_in_metadata_service(self, push_items: List[AmiPushItem]):
         """Check for all the push_items whether they are in rhsm or not.
 
         Args:
-            mapped_items:
-                List of MappedVMIPushItem to check on RHSM.
+            push_items:
+                List of enriched AmiPushItem to check on RHSM.
 
         Returns:
             False if any of item is missing in RHSM else True.
         """
         verified = True
-        for item in mapped_items:
+        for pi in push_items:
             # Since the StArMap "meta" should be the same for all destinations
             # we can retrieve a push item from any marketplace at this moment
             # just to have all properties loaded before checking on RHSM
-            pi = item.get_push_item_for_marketplace(item.marketplaces[0])
             if not self.in_rhsm(pi.release.product, pi.type):
                 log.error(
                     "Pre-push check in metadata service failed for %s at %s",
                     pi.name,
                     pi.src,
                 )
-                item.push_item = evolve(pi, state="INVALIDFILE")
+                pi = evolve(pi, state="INVALIDFILE")
                 verified = False
         return verified
 
-    def _push_to_community(
-        self, mapped_item: MappedVMIPushItem, starmap_query: QueryResponse
-    ) -> None:
+    def enrich_mapped_items(self, mapped_items: List[MappedVMIPushItem]) -> List[EnrichedPushItem]:
+        """Load all missing information for each mapped item.
+
+        It returns a list of dictionaries which contains the storage account and
+        the push items for each account.
+
+        Args:
+            mapped_items (List[MappedVMIPushItem]): The list of mapped items.
+
+        Returns:
+            List[EnrichedPushItem]: List of resulting enriched push items.
+        """
+        result: List[EnrichedPushItem] = []
+        for mapped_item in mapped_items:
+            account_dict: EnrichedPushItem = {}
+            for storage_account, destinations in mapped_item.clouds.items():
+                log.info("Processing the storage account %s", storage_account)
+
+                enriched_pi_list: List[AmiPushItem] = []
+                pi = mapped_item.get_push_item_for_marketplace(storage_account)
+                log.debug("Mapped push item for %s: %s", storage_account, pi)
+
+                for dest in destinations:
+                    epi = enrich_push_item(pi, dest)
+                    log.debug("Enriched push item for %s: %s", storage_account, pi)
+
+                    # SAP and RHEL-HA images are expected to be
+                    # shipped only to hourly destinations
+                    # See: https://gitlab.cee.redhat.com/exd-guild-distribution/cloud-image-tools/-/blob/master/cloudimgtools/create_staged_pushes.py#L330-348  # noqa: E501
+                    if epi.type != "hourly" and epi.release.product in ("RHEL_HA", "SAP"):
+                        log.warning(
+                            "Skipping upload of '%s' for '%s' as the image is expected to be pushed"
+                            " only to hourly destinations",
+                            epi.src,
+                            dest.destination,
+                        )
+                        continue
+
+                    log.info(
+                        "Adding push item \"%s\" with destination \"%s\" and type \"%s\" to the queue.",  # noqa: E501
+                        epi.name,
+                        epi.dest[0],
+                        epi.type,
+                    )
+                    enriched_pi_list.append(epi)
+                account_dict[storage_account] = enriched_pi_list
+            result.append(account_dict)
+        return result
+
+    def _upload(
+        self, marketplace: str, push_item: VMIPushItem, custom_tags: Optional[Dict[str, str]] = None
+    ) -> VMIPushItem:
+        # FIXME: This is temporary just to not call the self._upload inherited from
+        # `MarketplacesVMPush` at the moment, since we still need to verify whether
+        # the cloudprovider shenanigans will properly support this operation.
+        #
+        # This will be resolved in a future Merge Request
+        log.info("Uploading push item %s to %s", push_item, marketplace)
+        pi = evolve(push_item, state="PUSHED")
+        return pi
+
+    def _push_to_community(self, enriched_push_item: EnrichedPushItem) -> List[Dict[str, Any]]:
         """
         Perform the whole community workflow to upload the AMI and update RHSM.
 
         Args:
-            mapped_item
-                The item to process.
+            enriched_push_item
+                Dictionary with the storage account name and the push items.
         Returns:
             Dictionary with the resulting operation for the Collector service.
         """
-        # TODO: Implement the community workflow
-        log.debug("StArMap: %s", starmap_query)
-        log.debug("PushItem: %s", mapped_item)
-        raise NotImplementedError("Not implemented yet")
+        result = []
+        for storage_account, push_items in enriched_push_item.items():
+            # Setup the threading
+            to_await = []
+            out_pi = []
+            executor = Executors.thread_pool(
+                name="pubtools-marketplacesvm-community-push-regions",
+                max_workers=min(max(len(push_items), 1), self._PROCESS_THREADS),
+            )
+
+            # Upload the push items in parallel
+            log.info("Uploading to the storage account %s", storage_account)
+            for pi in push_items:
+                to_await.append(executor.submit(self._upload, storage_account, pi))
+
+            # Wait for all results
+            for f_out in to_await:
+                out_pi.append(f_out.result())
+
+            # Append the data for collection
+            # TODO: Find out the proper data to collect the push item results.
+            # This will be done in a future merge request.
+            for pi in out_pi:
+                result.append(
+                    {
+                        "push_item": pi,
+                        "state": pi.state,
+                        "region": pi.region,
+                        "type": pi.type,
+                        "destination": pi.dest,
+                    }
+                )
+        return result
 
     def add_args(self):
         """Include the required CLI arguments for CommunityVMPush."""
@@ -209,21 +301,21 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
 
     def run(self):
         """Execute the community_push command workflow."""
-        mapped_items = self.mapped_items
-        if not self.items_in_metadata_service([x["item"] for x in mapped_items]):
-            self._fail("Pre-push verification of push items in metadata service failed")
+        enriched_push_items = self.enrich_mapped_items(self.mapped_items)
+        for enriched_item in enriched_push_items:
+            for push_items in enriched_item.values():
+                if not self.items_in_metadata_service(push_items):
+                    self._fail("Pre-push verification of push items in metadata service failed")
 
         executor = Executors.thread_pool(
             name="pubtools-marketplacesvm-community-push",
-            max_workers=min(max(len(mapped_items), 1), self._REQUEST_THREADS),
+            max_workers=min(max(len(enriched_push_items), 1), self._REQUEST_THREADS),
         )
 
         to_await = []
         result = []
-        for item in mapped_items:
-            to_await.append(
-                executor.submit(self._push_to_community, item["item"], item["starmap_query"])
-            )
+        for enriched_item in enriched_push_items:
+            to_await.append(executor.submit(self._push_to_community, enriched_item))
 
         # waiting for results
         for f_out in to_await:
@@ -231,9 +323,13 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
 
         # process result for failures
         failed = False
-        for r in result:
-            if r.get("state", "") != State.PUSHED:
-                failed = True
+        if len(result) == 0:
+            log.error("No push item was processed.")
+            failed = True
+        else:
+            for r in result:
+                if r.get("state", "") != State.PUSHED:
+                    failed = True
 
         # send to collector
         log.info("Collecting results")
@@ -242,5 +338,4 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
         if failed:
             self._fail("Community VM push failed")
 
-        # FIXME: Remove the coverage skip when the command gets properly implemented
-        log.info("Community VM push completed")  # pragma: no cover
+        log.info("Community VM push completed")
