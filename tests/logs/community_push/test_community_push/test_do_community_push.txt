@@ -47,13 +47,77 @@
 [   DEBUG] Searching for product SAMPLE_PRODUCT_HOURLY for provider awstest in rhsm
 [   DEBUG] Searching for product sample_product for provider awstest in rhsm
 [    INFO] Uploading to the storage account aws_storage
-[    INFO] Uploading push item AmiPushItem(name='ami_pushitem', state='PENDING', src='/foo/bar/sample_product_test.raw', dest=['us-east-1-hourly'], md5sum=None, sha256sum=None, origin=None, build=None, build_info=KojiBuildInfo(name='test-build', version='7.0', release='20230101', id=None), signing_key=None, release=AmiRelease(product='sample_product', date=datetime.datetime(2023, 12, 12, 0, 0), arch='x86_64', respin=1, version='7.0', base_product='sample_base', base_version='1.0', variant='variant', type='ga'), description='Provided by Red Hat, Inc.', boot_mode=None, type='hourly', region='us-east-1', virtualization='hvm', volume='gp2', root_device='/dev/sda1', sriov_net_support='simple', ena_support=True, uefi_support=None, billing_codes=AmiBillingCodes(name='Hourly2', codes=['bp-6fa54006']), release_notes=None, usage_instructions=None, recommended_instance_type=None, marketplace_entity_type=None, image_id=None, public_image=True, scanning_port=None, user_name=None, version_title=None, security_groups=[]) to aws_storage
-[    INFO] Uploading push item AmiPushItem(name='ami_pushitem', state='PENDING', src='/foo/bar/sample_product_test.raw', dest=['us-east-1-access'], md5sum=None, sha256sum=None, origin=None, build=None, build_info=KojiBuildInfo(name='test-build', version='7.0', release='20230101', id=None), signing_key=None, release=AmiRelease(product='sample_product', date=datetime.datetime(2023, 12, 12, 0, 0), arch='x86_64', respin=1, version='7.0', base_product='sample_base', base_version='1.0', variant='variant', type='ga'), description='Provided by Red Hat, Inc.', boot_mode=None, type='access', region='us-east-1', virtualization='hvm', volume='gp2', root_device='/dev/sda1', sriov_net_support='simple', ena_support=True, uefi_support=None, billing_codes=AmiBillingCodes(name='Access2', codes=['bp-63a5400a']), release_notes=None, usage_instructions=None, recommended_instance_type=None, marketplace_entity_type=None, image_id=None, public_image=False, scanning_port=None, user_name=None, version_title=None, security_groups=[]) to aws_storage
-[    INFO] Uploading push item AmiPushItem(name='ami_pushitem', state='PENDING', src='/foo/bar/sample_product_test.raw', dest=['us-east-2-hourly'], md5sum=None, sha256sum=None, origin=None, build=None, build_info=KojiBuildInfo(name='test-build', version='7.0', release='20230101', id=None), signing_key=None, release=AmiRelease(product='sample_product', date=datetime.datetime(2023, 12, 12, 0, 0), arch='x86_64', respin=1, version='7.0', base_product='sample_base', base_version='1.0', variant='variant', type='ga'), description='Provided by Red Hat, Inc.', boot_mode=None, type='hourly', region='us-east-2', virtualization='hvm', volume='gp2', root_device='/dev/sda1', sriov_net_support='simple', ena_support=True, uefi_support=None, billing_codes=AmiBillingCodes(name='Hourly2', codes=['bp-6fa54006']), release_notes=None, usage_instructions=None, recommended_instance_type=None, marketplace_entity_type=None, image_id=None, public_image=True, scanning_port=None, user_name=None, version_title=None, security_groups=[]) to aws_storage
-[    INFO] Uploading push item AmiPushItem(name='ami_pushitem', state='PENDING', src='/foo/bar/sample_product_test.raw', dest=['us-east-2-access'], md5sum=None, sha256sum=None, origin=None, build=None, build_info=KojiBuildInfo(name='test-build', version='7.0', release='20230101', id=None), signing_key=None, release=AmiRelease(product='sample_product', date=datetime.datetime(2023, 12, 12, 0, 0), arch='x86_64', respin=1, version='7.0', base_product='sample_base', base_version='1.0', variant='variant', type='ga'), description='Provided by Red Hat, Inc.', boot_mode=None, type='access', region='us-east-2', virtualization='hvm', volume='gp2', root_device='/dev/sda1', sriov_net_support='simple', ena_support=True, uefi_support=None, billing_codes=AmiBillingCodes(name='Access2', codes=['bp-63a5400a']), release_notes=None, usage_instructions=None, recommended_instance_type=None, marketplace_entity_type=None, image_id=None, public_image=False, scanning_port=None, user_name=None, version_title=None, security_groups=[]) to aws_storage
-[    INFO] Uploading push item AmiPushItem(name='ami_pushitem', state='PENDING', src='/foo/bar/sample_product_test.raw', dest=['us-west-1-hourly'], md5sum=None, sha256sum=None, origin=None, build=None, build_info=KojiBuildInfo(name='test-build', version='7.0', release='20230101', id=None), signing_key=None, release=AmiRelease(product='sample_product', date=datetime.datetime(2023, 12, 12, 0, 0), arch='x86_64', respin=1, version='7.0', base_product='sample_base', base_version='1.0', variant='variant', type='ga'), description='Provided by Red Hat, Inc.', boot_mode=None, type='hourly', region='us-west-1', virtualization='hvm', volume='gp2', root_device='/dev/sda1', sriov_net_support='simple', ena_support=True, uefi_support=None, billing_codes=AmiBillingCodes(name='Hourly2', codes=['bp-6fa54006']), release_notes=None, usage_instructions=None, recommended_instance_type=None, marketplace_entity_type=None, image_id=None, public_image=True, scanning_port=None, user_name=None, version_title=None, security_groups=[]) to aws_storage
-[    INFO] Uploading push item AmiPushItem(name='ami_pushitem', state='PENDING', src='/foo/bar/sample_product_test.raw', dest=['us-west-1-access'], md5sum=None, sha256sum=None, origin=None, build=None, build_info=KojiBuildInfo(name='test-build', version='7.0', release='20230101', id=None), signing_key=None, release=AmiRelease(product='sample_product', date=datetime.datetime(2023, 12, 12, 0, 0), arch='x86_64', respin=1, version='7.0', base_product='sample_base', base_version='1.0', variant='variant', type='ga'), description='Provided by Red Hat, Inc.', boot_mode=None, type='access', region='us-west-1', virtualization='hvm', volume='gp2', root_device='/dev/sda1', sriov_net_support='simple', ena_support=True, uefi_support=None, billing_codes=AmiBillingCodes(name='Access2', codes=['bp-63a5400a']), release_notes=None, usage_instructions=None, recommended_instance_type=None, marketplace_entity_type=None, image_id=None, public_image=False, scanning_port=None, user_name=None, version_title=None, security_groups=[]) to aws_storage
-[    INFO] Uploading push item AmiPushItem(name='ami_pushitem', state='PENDING', src='/foo/bar/sample_product_test.raw', dest=['us-west-2-hourly'], md5sum=None, sha256sum=None, origin=None, build=None, build_info=KojiBuildInfo(name='test-build', version='7.0', release='20230101', id=None), signing_key=None, release=AmiRelease(product='sample_product', date=datetime.datetime(2023, 12, 12, 0, 0), arch='x86_64', respin=1, version='7.0', base_product='sample_base', base_version='1.0', variant='variant', type='ga'), description='Provided by Red Hat, Inc.', boot_mode=None, type='hourly', region='us-west-2', virtualization='hvm', volume='gp2', root_device='/dev/sda1', sriov_net_support='simple', ena_support=True, uefi_support=None, billing_codes=AmiBillingCodes(name='Hourly2', codes=['bp-6fa54006']), release_notes=None, usage_instructions=None, recommended_instance_type=None, marketplace_entity_type=None, image_id=None, public_image=True, scanning_port=None, user_name=None, version_title=None, security_groups=[]) to aws_storage
-[    INFO] Uploading push item AmiPushItem(name='ami_pushitem', state='PENDING', src='/foo/bar/sample_product_test.raw', dest=['us-west-2-access'], md5sum=None, sha256sum=None, origin=None, build=None, build_info=KojiBuildInfo(name='test-build', version='7.0', release='20230101', id=None), signing_key=None, release=AmiRelease(product='sample_product', date=datetime.datetime(2023, 12, 12, 0, 0), arch='x86_64', respin=1, version='7.0', base_product='sample_base', base_version='1.0', variant='variant', type='ga'), description='Provided by Red Hat, Inc.', boot_mode=None, type='access', region='us-west-2', virtualization='hvm', volume='gp2', root_device='/dev/sda1', sriov_net_support='simple', ena_support=True, uefi_support=None, billing_codes=AmiBillingCodes(name='Access2', codes=['bp-63a5400a']), release_notes=None, usage_instructions=None, recommended_instance_type=None, marketplace_entity_type=None, image_id=None, public_image=False, scanning_port=None, user_name=None, version_title=None, security_groups=[]) to aws_storage
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-east-1 (type: hourly, ship: True)
+[    INFO] Upload finished for ami_pushitem on us-east-1
+[    INFO] Creating region us-east-1 [awstest]
+[    INFO] Registering image foo with RHSM
+[   DEBUG] Searching for product SAMPLE_PRODUCT_HOURLY for provider awstest in rhsm
+[    INFO] Attempting to update the existing image foo in RHSM
+[   DEBUG] {'image_id': 'foo', 'image_name': 'bar', 'arch': 'x86_64', 'product_name': 'SAMPLE_PRODUCT_HOURLY', 'version': '7.0', 'variant': 'variant'}
+[    INFO] Successfully registered image foo with RHSM
+[    INFO] Successfully uploaded ami_pushitem [us-east-1] [foo]
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-east-1 (type: access, ship: True)
+[    INFO] Upload finished for ami_pushitem on us-east-1
+[    INFO] Creating region us-east-1 [awstest]
+[    INFO] Registering image foo with RHSM
+[   DEBUG] Searching for product sample_product for provider awstest in rhsm
+[    INFO] Attempting to update the existing image foo in RHSM
+[   DEBUG] {'image_id': 'foo', 'image_name': 'bar', 'arch': 'x86_64', 'product_name': 'sample_product', 'version': '7.0', 'variant': 'variant'}
+[    INFO] Successfully registered image foo with RHSM
+[    INFO] Successfully uploaded ami_pushitem [us-east-1] [foo]
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-east-2 (type: hourly, ship: True)
+[    INFO] Upload finished for ami_pushitem on us-east-2
+[    INFO] Creating region us-east-2 [awstest]
+[    INFO] Registering image foo with RHSM
+[   DEBUG] Searching for product SAMPLE_PRODUCT_HOURLY for provider awstest in rhsm
+[    INFO] Attempting to update the existing image foo in RHSM
+[   DEBUG] {'image_id': 'foo', 'image_name': 'bar', 'arch': 'x86_64', 'product_name': 'SAMPLE_PRODUCT_HOURLY', 'version': '7.0', 'variant': 'variant'}
+[    INFO] Successfully registered image foo with RHSM
+[    INFO] Successfully uploaded ami_pushitem [us-east-2] [foo]
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-east-2 (type: access, ship: True)
+[    INFO] Upload finished for ami_pushitem on us-east-2
+[    INFO] Creating region us-east-2 [awstest]
+[    INFO] Registering image foo with RHSM
+[   DEBUG] Searching for product sample_product for provider awstest in rhsm
+[    INFO] Attempting to update the existing image foo in RHSM
+[   DEBUG] {'image_id': 'foo', 'image_name': 'bar', 'arch': 'x86_64', 'product_name': 'sample_product', 'version': '7.0', 'variant': 'variant'}
+[    INFO] Successfully registered image foo with RHSM
+[    INFO] Successfully uploaded ami_pushitem [us-east-2] [foo]
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-west-1 (type: hourly, ship: True)
+[    INFO] Upload finished for ami_pushitem on us-west-1
+[    INFO] Creating region us-west-1 [awstest]
+[    INFO] Registering image foo with RHSM
+[   DEBUG] Searching for product SAMPLE_PRODUCT_HOURLY for provider awstest in rhsm
+[    INFO] Attempting to update the existing image foo in RHSM
+[   DEBUG] {'image_id': 'foo', 'image_name': 'bar', 'arch': 'x86_64', 'product_name': 'SAMPLE_PRODUCT_HOURLY', 'version': '7.0', 'variant': 'variant'}
+[    INFO] Successfully registered image foo with RHSM
+[    INFO] Successfully uploaded ami_pushitem [us-west-1] [foo]
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-west-1 (type: access, ship: True)
+[    INFO] Upload finished for ami_pushitem on us-west-1
+[    INFO] Creating region us-west-1 [awstest]
+[    INFO] Registering image foo with RHSM
+[   DEBUG] Searching for product sample_product for provider awstest in rhsm
+[    INFO] Attempting to update the existing image foo in RHSM
+[   DEBUG] {'image_id': 'foo', 'image_name': 'bar', 'arch': 'x86_64', 'product_name': 'sample_product', 'version': '7.0', 'variant': 'variant'}
+[    INFO] Successfully registered image foo with RHSM
+[    INFO] Successfully uploaded ami_pushitem [us-west-1] [foo]
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-west-2 (type: hourly, ship: True)
+[    INFO] Upload finished for ami_pushitem on us-west-2
+[    INFO] Creating region us-west-2 [awstest]
+[    INFO] Registering image foo with RHSM
+[   DEBUG] Searching for product SAMPLE_PRODUCT_HOURLY for provider awstest in rhsm
+[    INFO] Attempting to update the existing image foo in RHSM
+[   DEBUG] {'image_id': 'foo', 'image_name': 'bar', 'arch': 'x86_64', 'product_name': 'SAMPLE_PRODUCT_HOURLY', 'version': '7.0', 'variant': 'variant'}
+[    INFO] Successfully registered image foo with RHSM
+[    INFO] Successfully uploaded ami_pushitem [us-west-2] [foo]
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-west-2 (type: access, ship: True)
+[    INFO] Upload finished for ami_pushitem on us-west-2
+[    INFO] Creating region us-west-2 [awstest]
+[    INFO] Registering image foo with RHSM
+[   DEBUG] Searching for product sample_product for provider awstest in rhsm
+[    INFO] Attempting to update the existing image foo in RHSM
+[   DEBUG] {'image_id': 'foo', 'image_name': 'bar', 'arch': 'x86_64', 'product_name': 'sample_product', 'version': '7.0', 'variant': 'variant'}
+[    INFO] Successfully registered image foo with RHSM
+[    INFO] Successfully uploaded ami_pushitem [us-west-2] [foo]
 [    INFO] Collecting results
 [    INFO] Community VM push completed
