@@ -8,10 +8,12 @@ from typing import Any, Dict, Iterator, List, Optional
 from attrs import asdict, evolve
 from more_executors import Executors
 from pushsource import AmiPushItem, Source, VMIPushItem
+from requests import Response
 from starmap_client.models import Workflow
 
 from pubtools._marketplacesvm.tasks.community_push.items import enrich_push_item
 
+from ...cloud_providers.aws import name_from_push_item
 from ...services.rhsm import AwsRHSMClientService
 from ..push import MarketplacesVMPush
 from ..push.items import MappedVMIPushItem, State
@@ -184,6 +186,64 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                 verified = False
         return verified
 
+    def update_rhsm_metadata(self, image: Any, push_item: AmiPushItem) -> None:
+        """Update RHSM with the uploaded image info.
+
+        First it creates the region of the image assuming it returns OK if the region
+        is present. Then tries to update the existing image info.
+
+        If the image info is not preset, it creates one.
+
+        Args:
+            image: The return result from ``AWSUploadService.publish``.
+            push_item: The resulting push_item after uploading.
+        """
+        log.info("Creating region %s [%s]", push_item.region, self.args.aws_provider_name)
+        out = self.rhsm_client.aws_create_region(push_item.region, self.args.aws_provider_name)
+
+        response: Response = out.result()
+        if not response.ok:
+            log.error("Failed creating region %s for image %s", push_item.region, image.id)
+            response.raise_for_status()
+
+        log.info("Registering image %s with RHSM", image.id)
+        image_meta = {
+            "image_id": image.id,
+            "image_name": image.name,
+            "arch": push_item.release.arch,
+            "product_name": self.get_rhsm_product(push_item.release.product, push_item.type)[
+                "name"
+            ],
+            "version": push_item.release.version or None,
+            "variant": push_item.release.variant or None,
+        }
+        log.info("Attempting to update the existing image %s in RHSM", image.id)
+        log.debug("%s", image_meta)
+        out = self.rhsm_client.aws_update_image(**image_meta)
+        response = out.result()
+        if not response.ok:
+            log.warning(
+                "Update to RHSM failed for %s with error code %s. "
+                "Image might not be present on RHSM for update.",
+                image.id,
+                response.status_code,
+            )
+
+            log.info("Attempting to create new image %s in RHSM", image.id)
+            image_meta.update({"region": push_item.region})
+            log.debug("%s", image_meta)
+            out = self.rhsm_client.aws_create_image(**image_meta)
+            response = out.result()
+            if not response.ok:
+                log.error(
+                    "Failed to create image %s in RHSM with error code %s",
+                    image.id,
+                    response.status_code,
+                )
+                log.error(response.text)
+                response.raise_for_status()
+        log.info("Successfully registered image %s with RHSM", image.id)
+
     def enrich_mapped_items(self, mapped_items: List[MappedVMIPushItem]) -> List[EnrichedPushItem]:
         """Load all missing information for each mapped item.
 
@@ -236,13 +296,43 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
     def _upload(
         self, marketplace: str, push_item: VMIPushItem, custom_tags: Optional[Dict[str, str]] = None
     ) -> VMIPushItem:
-        # FIXME: This is temporary just to not call the self._upload inherited from
-        # `MarketplacesVMPush` at the moment, since we still need to verify whether
-        # the cloudprovider shenanigans will properly support this operation.
-        #
-        # This will be resolved in a future Merge Request
-        log.info("Uploading push item %s to %s", push_item, marketplace)
-        pi = evolve(push_item, state="PUSHED")
+        # First we do the AMI upload in a similar way of the base class
+        ship = not self.args.pre_push
+        try:
+            log.info(
+                "Uploading %s to region %s (type: %s, ship: %s)",
+                push_item.src,
+                push_item.region,
+                push_item.type,
+                ship,
+            )
+            pi, image = self.cloud_instance(marketplace).upload(push_item, custom_tags=custom_tags)
+            log.info("Upload finished for %s on %s", push_item.name, push_item.region)
+        except Exception as exc:
+            log.exception("Failed to upload %s: %s", push_item.name, str(exc), stack_info=True)
+            pi = evolve(push_item, state=State.UPLOADFAILED)
+            return pi
+
+        # Then, if we're shipping the community image, we should update the RHSM
+        # and change the the AWS group to "all" for the uploaded image
+        if ship:
+            try:
+                self.update_rhsm_metadata(image, push_item)
+                if push_item.public_image and self.args.allow_public_images:
+                    log.info("Releasing image %s publicly", image.id)
+                    groups = ["all"]
+                    # A repeat call to upload will only update the groups
+                    pi, _ = self.cloud_instance(marketplace).upload(
+                        push_item, custom_tags=custom_tags, groups=groups
+                    )
+            except Exception as exc:
+                log.exception("Failed to publish %s: %s", push_item.name, str(exc), stack_info=True)
+                pi = evolve(push_item, state=State.NOTPUSHED)
+                return pi
+
+        # Finally, if everything went well we return the updated push item
+        log.info("Successfully uploaded %s [%s] [%s]", pi.name, pi.region, image.id)
+        pi = evolve(pi, state=State.PUSHED)
         return pi
 
     def _push_to_community(self, enriched_push_item: EnrichedPushItem) -> List[Dict[str, Any]]:
@@ -275,16 +365,13 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                 out_pi.append(f_out.result())
 
             # Append the data for collection
-            # TODO: Find out the proper data to collect the push item results.
-            # This will be done in a future merge request.
             for pi in out_pi:
                 result.append(
                     {
                         "push_item": pi,
                         "state": pi.state,
-                        "region": pi.region,
-                        "type": pi.type,
-                        "destination": pi.dest,
+                        "image_id": pi.image_id,
+                        "image_name": name_from_push_item(pi),
                     }
                 )
         return result
@@ -297,6 +384,12 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
             "--aws-provider-name",
             help="AWS provider e.g. AWS, ACN (AWS China), AGOV (AWS US Gov)",
             default="AWS",
+        )
+
+        self.parser.add_argument(
+            "--allow-public-images",
+            help="images are released for general use",
+            action="store_true",
         )
 
     def run(self):
