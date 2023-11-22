@@ -6,9 +6,17 @@ from unittest.mock import MagicMock, patch
 import pytest
 from attrs import evolve
 from cloudpub.models.aws import VersionMapping as AWSVersionMapping
-from pushsource import AmiPushItem, AmiRelease, AmiSecurityGroup, BootMode, KojiBuildInfo
+from pushsource import (
+    AmiBillingCodes,
+    AmiPushItem,
+    AmiRelease,
+    AmiSecurityGroup,
+    BootMode,
+    KojiBuildInfo,
+)
 
 from pubtools._marketplacesvm.cloud_providers import AWSCredentials, AWSProvider, get_provider
+from pubtools._marketplacesvm.cloud_providers.aws import name_from_push_item
 from pubtools._marketplacesvm.cloud_providers.base import UPLOAD_CONTAINER_NAME
 
 
@@ -143,7 +151,7 @@ def test_get_provider(
 
 def test_name_from_push_item(aws_push_item: AmiPushItem, fake_aws_provider: AWSProvider):
     expected_name = "base_product-1.1-sample_product-1.0_VIRT_GA-20230130-x86_64-0"
-    res = fake_aws_provider._name_from_push_item(aws_push_item)
+    res = name_from_push_item(aws_push_item)
     assert res == expected_name
 
 
@@ -164,7 +172,7 @@ def test_format_version_info(aws_push_item: AmiPushItem, fake_aws_provider: AWSP
 def test_upload(
     mock_metadata: MagicMock, aws_push_item: AmiPushItem, fake_aws_provider: AWSProvider
 ):
-    created_name = fake_aws_provider._name_from_push_item(aws_push_item)
+    created_name = name_from_push_item(aws_push_item)
     binfo = aws_push_item.build_info
 
     tags = {
@@ -213,7 +221,7 @@ def test_upload_boot_mode(
     fake_aws_provider: AWSProvider,
 ):
     aws_push_item = evolve(aws_push_item, boot_mode=BootMode(boot_mode_str))
-    created_name = fake_aws_provider._name_from_push_item(aws_push_item)
+    created_name = name_from_push_item(aws_push_item)
     binfo = aws_push_item.build_info
 
     tags = {
@@ -255,6 +263,56 @@ def test_upload_boot_mode(
 
 
 @patch("pubtools._marketplacesvm.cloud_providers.aws.AWSUploadMetadata")
+def test_upload_billing_codes(
+    mock_metadata: MagicMock,
+    aws_push_item: AmiPushItem,
+    fake_aws_provider: AWSProvider,
+):
+    bc_dict = {"codes": ["foo", "bar"], "name": "fake-billing-code"}
+    bc = AmiBillingCodes._from_data(bc_dict)
+
+    aws_push_item = evolve(aws_push_item, billing_codes=bc)
+    created_name = name_from_push_item(aws_push_item)
+    binfo = aws_push_item.build_info
+
+    tags = {
+        "arch": aws_push_item.release.arch,
+        "buildid": str(aws_push_item.build_info.id),
+        "name": aws_push_item.build_info.name,
+        "nvra": f"{binfo.name}-{binfo.version}-{binfo.release}.{aws_push_item.release.arch}",
+        "release": aws_push_item.build_info.release,
+        "version": aws_push_item.build_info.version,
+    }
+    metadata = {
+        "billing_products": bc.codes,
+        "image_path": aws_push_item.src,
+        "image_name": created_name,
+        "snapshot_name": created_name,
+        "container": UPLOAD_CONTAINER_NAME,
+        "description": aws_push_item.description,
+        "arch": aws_push_item.release.arch,
+        "virt_type": aws_push_item.virtualization,
+        "root_device_name": aws_push_item.root_device,
+        "volume_type": aws_push_item.volume,
+        "accounts": fake_aws_provider.aws_groups,
+        "snapshot_account_ids": fake_aws_provider.aws_snapshot_accounts,
+        "sriov_net_support": aws_push_item.sriov_net_support,
+        "ena_support": aws_push_item.ena_support,
+        "tags": tags,
+    }
+    meta_obj = MagicMock(**metadata)
+    mock_metadata.return_value = meta_obj
+
+    fake_aws_provider.upload_svc.publish.return_value = FakeImageResp()
+
+    fake_aws_provider.upload(aws_push_item)
+
+    mock_metadata.assert_called_once_with(**metadata)
+    fake_aws_provider.upload_svc.publish.assert_called_once_with(meta_obj)
+    fake_aws_provider.publish_svc.publish.assert_not_called()
+
+
+@patch("pubtools._marketplacesvm.cloud_providers.aws.AWSUploadMetadata")
 @patch("pubtools._marketplacesvm.cloud_providers.aws.AWSPublishService")
 @patch("pubtools._marketplacesvm.cloud_providers.aws.AWSUploadService")
 def test_upload_custom_s3(
@@ -271,7 +329,7 @@ def test_upload_custom_s3(
     monkeypatch.setattr(fake_aws_provider, 'upload_svc', MagicMock())
     monkeypatch.setattr(fake_aws_provider, 'publish_svc', MagicMock())
 
-    created_name = fake_aws_provider._name_from_push_item(aws_push_item)
+    created_name = name_from_push_item(aws_push_item)
     binfo = aws_push_item.build_info
 
     tags = {
@@ -317,7 +375,7 @@ def test_upload_custom_tags(
     aws_push_item: AmiPushItem,
     fake_aws_provider: AWSProvider,
 ):
-    created_name = fake_aws_provider._name_from_push_item(aws_push_item)
+    created_name = name_from_push_item(aws_push_item)
     binfo = aws_push_item.build_info
 
     custom_tags = {"custom_key": "custom_value"}

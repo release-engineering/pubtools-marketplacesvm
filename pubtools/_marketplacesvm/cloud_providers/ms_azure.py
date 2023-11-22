@@ -188,7 +188,7 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
         return cls(creds)
 
     def _upload(
-        self, push_item: VHDPushItem, custom_tags: Optional[Dict[str, str]] = None
+        self, push_item: VHDPushItem, custom_tags: Optional[Dict[str, str]] = None, **kwargs
     ) -> Tuple[VHDPushItem, Any]:
         """
         Upload a VHD image into Azure.
@@ -225,7 +225,9 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
         res = self.upload_svc.publish(metadata)
         return push_item, res
 
-    def _post_upload(self, push_item: VHDPushItem, upload_result: Any) -> Tuple[VHDPushItem, Any]:
+    def _post_upload(
+        self, push_item: VHDPushItem, upload_result: Any, **kwargs
+    ) -> Tuple[VHDPushItem, Any]:
         """
         Export the SAS URI for the uploaded image.
 

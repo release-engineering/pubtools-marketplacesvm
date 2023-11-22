@@ -88,7 +88,9 @@ class CloudProvider(ABC, Generic[T, C]):
         """
 
     @abstractmethod
-    def _upload(self, push_item: T, custom_tags: Optional[Dict[str, str]] = None) -> Tuple[T, Any]:
+    def _upload(
+        self, push_item: T, custom_tags: Optional[Dict[str, str]] = None, **kwargs
+    ) -> Tuple[T, Any]:
         """
         Abstract method for uploading a VM image into a public cloud provider.
 
@@ -129,7 +131,7 @@ class CloudProvider(ABC, Generic[T, C]):
     # Subclasses can implement
     #
 
-    def _post_upload(self, push_item: T, upload_result: Any) -> Tuple[T, Any]:
+    def _post_upload(self, push_item: T, upload_result: Any, **kwargs) -> Tuple[T, Any]:
         """
         Define the default method for post upload actions.
 
@@ -181,7 +183,9 @@ class CloudProvider(ABC, Generic[T, C]):
         log.error(message)
         raise exception(message)
 
-    def upload(self, push_item: T, custom_tags: Optional[Dict[str, str]] = None) -> Tuple[T, Any]:
+    def upload(
+        self, push_item: T, custom_tags: Optional[Dict[str, str]] = None, **kwargs
+    ) -> Tuple[T, Any]:
         """
         Upload the VM image into a pulic cloud provider.
 
@@ -193,8 +197,8 @@ class CloudProvider(ABC, Generic[T, C]):
         Returns:
             object: The upload result data.
         """
-        pi, res = self._upload(push_item, custom_tags=custom_tags)
-        return self._post_upload(pi, res)
+        pi, res = self._upload(push_item, custom_tags=custom_tags, **kwargs)
+        return self._post_upload(pi, res, **kwargs)
 
     def publish(
         self,

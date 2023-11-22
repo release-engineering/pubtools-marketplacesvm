@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 import re
+import time
 from typing import Any, Dict, Generator
 from unittest import mock
 
@@ -9,9 +10,40 @@ from attrs import evolve
 from pushsource import AmiPushItem, VHDPushItem
 from starmap_client.models import QueryResponse, Workflow
 
+from pubtools._marketplacesvm.cloud_providers import CloudProvider
 from pubtools._marketplacesvm.tasks.community_push import CommunityVMPush, entry_point
 
 from ..command import CommandTester
+
+
+class UploadResponse(dict):
+    """Represent a fake S3 upload response."""
+
+    def __init__(self, *args, **kwargs):
+        super(UploadResponse, self).__init__(*args, **kwargs)
+        self.__dict__ = self
+
+
+class FakeCloudProvider(CloudProvider):
+    """Define a fake cloud provider for testing."""
+
+    @classmethod
+    def from_credentials(cls, _):
+        return cls()
+
+    def _upload(self, push_item, custom_tags=None, **kwargs):
+        time.sleep(2)
+        return push_item, UploadResponse({"id": "foo", "name": "bar"})
+
+    def _publish(self, push_item, nochannel, overwrite, preview_only):
+        return push_item, nochannel
+
+
+@pytest.fixture()
+def fake_cloud_instance() -> Generator[mock.MagicMock, None, None]:
+    with mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.cloud_instance") as m:
+        m.return_value = FakeCloudProvider()
+        yield m
 
 
 @pytest.fixture()
@@ -50,6 +82,7 @@ def fake_rhsm_api(requests_mocker):
 def test_do_community_push(
     fake_source: mock.MagicMock,
     fake_starmap: mock.MagicMock,
+    fake_cloud_instance: mock.MagicMock,
     command_tester: CommandTester,
 ) -> None:
     """Test a successfull community-push."""
@@ -181,6 +214,7 @@ def test_not_ami_push_item(
     mock_source: mock.MagicMock,
     fake_starmap: mock.MagicMock,
     ami_push_item: AmiPushItem,
+    fake_cloud_instance: mock.MagicMock,
     command_tester: CommandTester,
 ) -> None:
     """Ensure non AMI pushitem is skipped from inclusion in push list."""
@@ -203,6 +237,32 @@ def test_not_ami_push_item(
             "--aws-provider-name",
             "awstest",
             "--debug",
+            "koji:https://fakekoji.com?vmi_build=ami_build",
+        ],
+    )
+
+
+def test_do_community_push_public_image(
+    fake_source: mock.MagicMock,
+    fake_starmap: mock.MagicMock,
+    fake_cloud_instance: mock.MagicMock,
+    command_tester: CommandTester,
+):
+    """Successfully pushed images to all the accounts so it's available for general public."""
+    command_tester.test(
+        lambda: entry_point(CommunityVMPush),
+        [
+            "test-push",
+            "--starmap-url",
+            "https://starmap-example.com",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--rhsm-url",
+            "https://rhsm.com/test/api/",
+            "--aws-provider-name",
+            "awstest",
+            "--debug",
+            "--allow-public-image",
             "koji:https://fakekoji.com?vmi_build=ami_build",
         ],
     )
@@ -298,6 +358,61 @@ def test_not_in_rhsm(
             "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
             "--rhsm-url",
             "https://rhsm.com/test/api/",
+            "--aws-provider-name",
+            "awstest",
+            "--debug",
+            "koji:https://fakekoji.com?vmi_build=ami_build",
+        ],
+    )
+
+
+def test_rhsm_create_region_failure(
+    fake_source: mock.MagicMock,
+    fake_starmap: mock.MagicMock,
+    fake_cloud_instance: mock.MagicMock,
+    command_tester: CommandTester,
+    requests_mocker,
+) -> None:
+    """Push fails when the region couldn't be created on RHSM."""
+    requests_mocker.register_uri("POST", re.compile("amazon/region"), status_code=500)
+    command_tester.test(
+        lambda: entry_point(CommunityVMPush),
+        [
+            "test-push",
+            "--starmap-url",
+            "https://starmap-example.com",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--rhsm-url",
+            "https://example.com",
+            "--aws-provider-name",
+            "awstest",
+            "--debug",
+            "koji:https://fakekoji.com?vmi_build=ami_build",
+        ],
+    )
+
+
+def test_rhsm_create_image_failure(
+    fake_source: mock.MagicMock,
+    fake_starmap: mock.MagicMock,
+    fake_cloud_instance: mock.MagicMock,
+    command_tester: CommandTester,
+    requests_mocker,
+) -> None:
+    """Push fails if the image metadata couldn't be created on RHSM for a new image."""
+    requests_mocker.register_uri("PUT", re.compile("amazon/amis"), status_code=400)
+    requests_mocker.register_uri("POST", re.compile("amazon/amis"), status_code=500)
+    command_tester.test(
+        lambda: entry_point(CommunityVMPush),
+        [
+            "test-push",
+            "--starmap-url",
+            "https://starmap-example.com",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--rhsm-url",
+            "https://example.com",
             "--aws-provider-name",
             "awstest",
             "--debug",
