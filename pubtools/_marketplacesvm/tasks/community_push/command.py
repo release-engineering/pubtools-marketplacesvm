@@ -112,12 +112,15 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
             )
         return self._rhsm_products
 
-    def get_rhsm_product(self, product: str, image_type: str) -> Dict[str, Any]:
+    def get_rhsm_product(
+        self, product: str, image_type: str, aws_provider_name: str
+    ) -> Dict[str, Any]:
         """Retrieve a product info from RHSM for the specified product in metadata.
 
         Args:
             product (str): The product name
             image_type (str): The image type (hourly or access)
+            aws_provider_name (str): The provider name for RHSM
 
         Returns:
             The specified product info from RHSM.
@@ -125,7 +128,6 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
         # The rhsm prodcut should always be the product (short) plus
         # "_HOURLY" for hourly type images.
         image_type = image_type.upper()
-        aws_provider_name = self.args.aws_provider_name
         if image_type == "HOURLY":
             product = product.upper() + "_" + image_type
 
@@ -143,7 +145,7 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
 
         raise RuntimeError("Product not in RHSM: %s" % product)
 
-    def in_rhsm(self, product: str, image_type: str) -> bool:
+    def in_rhsm(self, product: str, image_type: str, aws_provider_name: str) -> bool:
         """Check whether the product is present in rhsm for the provider.
 
         Args:
@@ -155,7 +157,7 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
             True if the product is found in rhsm_products else False.
         """
         try:
-            self.get_rhsm_product(product, image_type)
+            self.get_rhsm_product(product, image_type, aws_provider_name)
         except RuntimeError as er:
             log.error(er)
             return False
@@ -176,7 +178,7 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
             # Since the StArMap "meta" should be the same for all destinations
             # we can retrieve a push item from any marketplace at this moment
             # just to have all properties loaded before checking on RHSM
-            if not self.in_rhsm(pi.release.product, pi.type):
+            if not self.in_rhsm(pi.release.product, pi.type, pi.marketplace_entity_type):
                 log.error(
                     "Pre-push check in metadata service failed for %s at %s",
                     pi.name,
@@ -198,8 +200,9 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
             image: The return result from ``AWSUploadService.publish``.
             push_item: The resulting push_item after uploading.
         """
-        log.info("Creating region %s [%s]", push_item.region, self.args.aws_provider_name)
-        out = self.rhsm_client.aws_create_region(push_item.region, self.args.aws_provider_name)
+        provider = push_item.marketplace_entity_type
+        log.info("Creating region %s [%s]", push_item.region, provider)
+        out = self.rhsm_client.aws_create_region(push_item.region, provider)
 
         response: Response = out.result()
         if not response.ok:
@@ -211,9 +214,9 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
             "image_id": image.id,
             "image_name": image.name,
             "arch": push_item.release.arch,
-            "product_name": self.get_rhsm_product(push_item.release.product, push_item.type)[
-                "name"
-            ],
+            "product_name": self.get_rhsm_product(
+                push_item.release.product, push_item.type, provider
+            )["name"],
             "version": push_item.release.version or None,
             "variant": push_item.release.variant or None,
         }
@@ -379,12 +382,6 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
     def add_args(self):
         """Include the required CLI arguments for CommunityVMPush."""
         super(CommunityVMPush, self).add_args()
-
-        self.parser.add_argument(
-            "--aws-provider-name",
-            help="AWS provider e.g. AWS, ACN (AWS China), AGOV (AWS US Gov)",
-            default="AWS",
-        )
 
         self.parser.add_argument(
             "--allow-public-images",

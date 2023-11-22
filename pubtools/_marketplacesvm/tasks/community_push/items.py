@@ -78,6 +78,18 @@ def _get_push_item_public_image(push_item: AmiPushItem) -> AmiPushItem:
     return evolve(push_item, public_image=is_public_image(push_item.type, push_item.release))
 
 
+def _get_push_item_rhsm_provider(push_item: AmiPushItem, destination: Destination) -> AmiPushItem:
+    # The idea here is to write the RHSM "provider" name into the AmiPush item so we won't
+    # need to have it passed by command line.
+    #
+    # However, since AmiPushItem doesn't have an attribute like "provider" or "provider_name"
+    # and it seems like to be cumbersome adding it upstream just for this use case we'll borrow
+    # a property used for marketplace but not for community AMIs named `marketplace_entity_type`
+    # and use it to hold the RHSM provider name for this workflow.
+    provider_name = destination.provider or "AWS"  # Defaults to "AWS" like the pubtools-ami CMD arg
+    return evolve(push_item, marketplace_entity_type=provider_name)
+
+
 def _update_destination(push_item: AmiPushItem, destination: Destination) -> AmiPushItem:
     return evolve(push_item, dest=[destination.destination])
 
@@ -101,6 +113,7 @@ def enrich_push_item(push_item: AmiPushItem, destination: Destination) -> AmiPus
     # - public_image
     pi = _get_push_item_region_type(push_item, destination)
     pi = _get_push_item_billing_code(pi, destination)
+    pi = _get_push_item_rhsm_provider(pi, destination)
     pi = _get_push_item_public_image(pi)
 
     # Now we need to convert the "dest" from "List[Destination]" into "List[str]"

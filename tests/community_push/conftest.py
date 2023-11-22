@@ -114,6 +114,7 @@ def starmap_response_aws(starmap_ami_meta) -> Dict[str, Any]:
                     "overwrite": False,
                     "stage_preview": False,
                     "delete_restricted": False,
+                    "provider": "awstest",
                     "meta": starmap_ami_meta,
                     "tags": {"key1": "value1", "key2": "value2"},
                 }
