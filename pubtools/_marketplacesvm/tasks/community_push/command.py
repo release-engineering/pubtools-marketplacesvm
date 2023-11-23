@@ -129,7 +129,7 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
         # "_HOURLY" for hourly type images.
         image_type = image_type.upper()
         if image_type == "HOURLY":
-            product = product.upper() + "_" + image_type
+            product = product + "_" + image_type
 
         log.debug(
             "Searching for product %s for provider %s in rhsm",

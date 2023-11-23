@@ -67,7 +67,7 @@ def fake_rhsm_api(requests_mocker):
         re.compile("amazon/provider_image_groups"),
         json={
             "body": [
-                {"name": "SAMPLE_PRODUCT_HOURLY", "providerShortName": "awstest"},
+                {"name": "sample_product_HOURLY", "providerShortName": "awstest"},
                 {"name": "sample_product", "providerShortName": "awstest"},
                 {"name": "RHEL_HA", "providerShortName": "awstest"},
                 {"name": "SAP", "providerShortName": "awstest"},
