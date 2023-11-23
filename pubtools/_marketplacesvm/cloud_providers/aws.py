@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime
+from functools import partial
 from typing import Any, Dict, List, Optional, Tuple
 
 from attrs import asdict, evolve, field, frozen
@@ -107,9 +108,7 @@ class AWSCredentials(CloudCredentials):
     )
     """Snapshot accounts to share to. Defaults to empty list."""
 
-    aws_region: Optional[str] = field(
-        alias="AWS_REGION", validator=instance_of(str), default="us-east-1"
-    )
+    aws_region: str = field(alias="AWS_REGION", validator=instance_of(str), default="us-east-1")
     """AWS Region. Defaults to 'us-east-1'."""
 
     aws_s3_bucket: Optional[str] = field(
@@ -146,11 +145,10 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         self.aws_groups = credentials.aws_groups
         self.aws_snapshot_accounts = credentials.aws_snapshot_accounts
 
-        self.upload_svc = AWSUploadService(
-            credentials.aws_image_access_key,
-            credentials.aws_image_secret_access,
-            credentials.aws_region,
+        self.upload_svc_partial = partial(
+            AWSUploadService, credentials.aws_image_access_key, credentials.aws_image_secret_access
         )
+        self.default_region = credentials.aws_region
 
         self.publish_svc = AWSPublishService(
             credentials.aws_marketplace_access_key,
@@ -285,7 +283,8 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         LOG.debug("%s", upload_metadata_kwargs)
         metadata = AWSUploadMetadata(**upload_metadata_kwargs)
 
-        res = self.upload_svc.publish(metadata)
+        region = push_item.region or self.default_region
+        res = self.upload_svc_partial(region=region).publish(metadata)
         return push_item, res
 
     def _post_upload(
@@ -401,17 +400,19 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         Returns:
             Tuple of PushItem and Publish results.
         """
+        region = push_item.region or self.default_region
         version_split = push_item.release.version.split(".")
         restricted_amis = self.publish_svc.restrict_minor_versions(
             push_item.dest[0], push_item.marketplace_entity_type, ".".join(version_split[:2])
         )
 
         if delete_restricted:
-            self._remove_amis(restricted_amis)
+            self._remove_amis(restricted_amis, region)
 
-        image = self.upload_svc.get_image_by_id(self.image_id)
+        upload_svc = self.upload_svc_partial(region=region)
+        image = upload_svc.get_image_by_id(self.image_id)
         release_date_tag = {"release_date": datetime.now().strftime("%Y%m%d%H::%M::%S")}
-        self.upload_svc.tag_image(image, release_date_tag)
+        upload_svc.tag_image(image, release_date_tag)
 
         return push_item, publish_result
 
@@ -434,13 +435,15 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
 
         return len(matching_version_list) > 0
 
-    def _remove_amis(self, restricted_amis: List[str]) -> None:
+    def _remove_amis(self, restricted_amis: List[str], region: str) -> None:
         """
         Check if a version exists in a product already in AWS.
 
         Args:
             restricted_amis (list[str])
                 A list of restricted amis to delete.
+            region (str):
+                The region in which the AMI is registered.
         """
         for ami_id in restricted_amis:
             delete_metadata_kwargs = {
@@ -450,7 +453,7 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
             LOG.debug("%s", delete_metadata_kwargs)
             metadata = AWSDeleteMetadata(**delete_metadata_kwargs)
 
-            self.upload_svc.delete(metadata)
+            self.upload_svc_partial(region=region).delete(metadata)
 
 
 register_provider(
