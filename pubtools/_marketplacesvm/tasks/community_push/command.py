@@ -301,6 +301,7 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
     ) -> VMIPushItem:
         # First we do the AMI upload in a similar way of the base class
         ship = not self.args.pre_push
+        container = "%s-%s" % (self.args.container_prefix, push_item.region)
         try:
             log.info(
                 "Uploading %s to region %s (type: %s, ship: %s)",
@@ -309,7 +310,9 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                 push_item.type,
                 ship,
             )
-            pi, image = self.cloud_instance(marketplace).upload(push_item, custom_tags=custom_tags)
+            pi, image = self.cloud_instance(marketplace).upload(
+                push_item, custom_tags=custom_tags, container=container
+            )
             log.info("Upload finished for %s on %s", push_item.name, push_item.region)
         except Exception as exc:
             log.exception("Failed to upload %s: %s", push_item.name, str(exc), stack_info=True)
@@ -326,7 +329,10 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                     groups = ["all"]
                     # A repeat call to upload will only update the groups
                     pi, _ = self.cloud_instance(marketplace).upload(
-                        push_item, custom_tags=custom_tags, groups=groups
+                        push_item,
+                        custom_tags=custom_tags,
+                        container=container,
+                        groups=groups,
                     )
             except Exception as exc:
                 log.exception("Failed to publish %s: %s", push_item.name, str(exc), stack_info=True)
@@ -387,6 +393,12 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
             "--allow-public-images",
             help="images are released for general use",
             action="store_true",
+        )
+
+        self.parser.add_argument(
+            "--container-prefix",
+            help="prefix to storage container for upload",
+            default="redhat-cloudimg",
         )
 
     def run(self):
