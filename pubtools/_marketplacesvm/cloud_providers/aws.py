@@ -238,6 +238,8 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
                 Dictionary with keyword values to be added as custom tags.
             groups (list, optional)
                 List of groups to share the image with. Defaults to ``self.aws_groups``.
+            container (str, optional)
+                The S3 container name to upload the image into. Defaults to ``self.s3_bucket``.
         Returns:
             The EC2 image with the data from uploaded image.
         """
@@ -245,6 +247,7 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         binfo = push_item.build_info
         default_groups = self.aws_groups or []
         groups = kwargs.get("groups", default_groups)
+        container = kwargs.get("container", self.s3_bucket)
         LOG.info("Image name: %s | Sharing groups: %s", name, groups)
 
         tags = {
@@ -262,7 +265,7 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
             "image_path": push_item.src,
             "image_name": name,
             "snapshot_name": name,
-            "container": self.s3_bucket,
+            "container": container,
             "description": push_item.description,
             "arch": self.ARCH_ALIASES.get(push_item.release.arch, push_item.release.arch),
             "virt_type": push_item.virtualization,
