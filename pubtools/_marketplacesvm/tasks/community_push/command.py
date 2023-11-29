@@ -315,7 +315,14 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
             )
             log.info("Upload finished for %s on %s", push_item.name, push_item.region)
         except Exception as exc:
-            log.exception("Failed to upload %s: %s", push_item.name, str(exc), stack_info=True)
+            log.exception(
+                "Failed to upload %s to %s-%s: %s",
+                push_item.name,
+                push_item.region,
+                push_item.type,
+                str(exc),
+                stack_info=True,
+            )
             pi = evolve(push_item, state=State.UPLOADFAILED)
             return pi
 
