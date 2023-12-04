@@ -155,6 +155,15 @@ def test_name_from_push_item(aws_push_item: AmiPushItem, fake_aws_provider: AWSP
     assert res == expected_name
 
 
+def test_name_from_push_item_community(aws_push_item: AmiPushItem, fake_aws_provider: AWSProvider):
+    bc_dict = {"codes": ["foo", "bar"], "name": "fake-billing-code"}
+    bc = AmiBillingCodes._from_data(bc_dict)
+    pi = evolve(aws_push_item, billing_codes=bc)
+    expected_name = "base_product-1.1-sample_product-1.0_VIRT_GA-20230130-x86_64-0-fake-billing-code-GP2"  # noqa: E501
+    res = name_from_push_item(pi)
+    assert res == expected_name
+
+
 def test_get_security_items(aws_push_item: AmiPushItem, fake_aws_provider: AWSProvider):
     res = fake_aws_provider._get_security_items(aws_push_item)
     assert [AmiSecurityGroup._from_data(x) for x in res] == aws_push_item.security_groups
@@ -223,9 +232,11 @@ def test_upload_different_region(
     fake_upload_response = MagicMock()
     fake_upload_response.id = "fake-ami-id"
 
-    created_name = name_from_push_item(aws_push_item)
     binfo = aws_push_item.build_info
-    aws_push_item = evolve(aws_push_item, region=region)
+    bc_dict = {"codes": ["foo", "bar"], "name": "fake-billing-code"}
+    bc = AmiBillingCodes._from_data(bc_dict)
+    aws_push_item = evolve(aws_push_item, region=region, billing_codes=bc)
+    created_name = name_from_push_item(aws_push_item)
 
     tags = {
         "arch": aws_push_item.release.arch,
@@ -236,7 +247,7 @@ def test_upload_different_region(
         "version": aws_push_item.build_info.version,
     }
     metadata = {
-        "billing_products": [],
+        "billing_products": bc.codes,
         "image_path": aws_push_item.src,
         "image_name": created_name,
         "snapshot_name": created_name,

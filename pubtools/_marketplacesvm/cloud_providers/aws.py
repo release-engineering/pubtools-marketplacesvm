@@ -60,6 +60,11 @@ def name_from_push_item(push_item: AmiPushItem) -> str:
     parts.append(release.arch)
     parts.append(str(release.respin))
 
+    # The parts below are used for community AMIs only
+    if push_item.billing_codes is not None:
+        parts.append(push_item.billing_codes.name)
+        parts.append(push_item.volume.upper())
+
     return "-".join(parts)
 
 
