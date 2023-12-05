@@ -222,10 +222,9 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
         whether it's safe to proceed to publish or not.
         """
         # The pre_push should only allow publishing when stage_preview is True
-        if self.args.pre_push and has_destination_stage_preview(mapped_item.destinations):
-            return True
-        # We should allow pushing when it's not a pre_push
-        elif not self.args.pre_push:
+        # or when it's not a pre_push
+        stage_prev = self.args.pre_push and has_destination_stage_preview(mapped_item.destinations)
+        if stage_prev or not self.args.pre_push:
             return True
         # For other cases we must not publish
         return False
