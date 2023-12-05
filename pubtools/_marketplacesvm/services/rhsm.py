@@ -106,6 +106,8 @@ class RHSMClient:
 class AwsRHSMClient(RHSMClient):
     """Client for RHSM management with AWS content."""
 
+    AMIS_URL = "/v1/internal/cloud_access_providers/amazon/amis"
+
     def aws_products(self) -> FutureType[requests.Response]:
         """Return the list of AWS products present in RHSM.
 
@@ -170,7 +172,7 @@ class AwsRHSMClient(RHSMClient):
         Returns:
             Future[requests.Response]: The RHSM server result operation.
         """
-        url = urljoin(self._url, "/v1/internal/cloud_access_providers/amazon/amis")
+        url = urljoin(self._url, self.AMIS_URL)
 
         now = datetime.utcnow().replace(microsecond=0).isoformat()
         rhsm_image = {
@@ -214,7 +216,7 @@ class AwsRHSMClient(RHSMClient):
         Returns:
             Future[requests.Response]: The RHSM server result operation.
         """
-        url = urljoin(self._url, "/v1/internal/cloud_access_providers/amazon/amis")
+        url = urljoin(self._url, self.AMIS_URL)
 
         now = datetime.utcnow().replace(microsecond=0).isoformat()
         rhsm_image = {
@@ -241,7 +243,7 @@ class AwsRHSMClient(RHSMClient):
         Returns:
             Set[str]: Set containing all AMI IDs in RHSM.
         """
-        url = urljoin(self._url, "/v1/internal/cloud_access_providers/amazon/amis")
+        url = urljoin(self._url, self.AMIS_URL)
         image_ids = set()
 
         def handle_page(offset: int = 0):
@@ -314,7 +316,7 @@ class AwsRHSMClientService(Service):
         rhsm_cert = self._service_args.rhsm_cert
         rhsm_key = self._service_args.rhsm_key
         if not rhsm_url:
-            raise Exception("RHSM URL not provided for the RHSM client")
+            raise ValueError("RHSM URL not provided for the RHSM client")
 
         result = pm.hook.get_cert_key_paths(server_url=rhsm_url)  # pylint: disable=no-member
         default_cert, default_key = result if result else (None, None)

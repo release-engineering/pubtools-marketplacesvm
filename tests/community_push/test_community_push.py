@@ -320,7 +320,7 @@ def test_no_rhsm_url(
         ],
     )
     _, err = capsys.readouterr()
-    assert "Exception: RHSM URL not provided for the RHSM client" in err
+    assert "RHSM URL not provided for the RHSM client" in err
 
 
 def test_not_in_rhsm(

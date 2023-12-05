@@ -89,10 +89,6 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                 ),
             )
             item = MappedVMIPushItem(item, query.clouds)
-            # TODO: Check in the upcoming storage-mapping format an analogue way to do this
-            # if not item.destinations:
-            #    log.info("Filtering out archive with no destinations: %s", item.push_item.src)
-            #    continue
             mapped_items.append(item)
         return mapped_items
 
@@ -351,6 +347,12 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
         pi = evolve(pi, state=State.PUSHED)
         return pi
 
+    def _check_product_in_rhsm(self, enriched_push_items: List[EnrichedPushItem]) -> None:
+        for enriched_item in enriched_push_items:
+            for push_items in enriched_item.values():
+                if not self.items_in_metadata_service(push_items):
+                    self._fail("Pre-push verification of push items in metadata service failed")
+
     def _push_to_community(self, enriched_push_item: EnrichedPushItem) -> List[Dict[str, Any]]:
         """
         Perform the whole community workflow to upload the AMI and update RHSM.
@@ -411,10 +413,7 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
     def run(self):
         """Execute the community_push command workflow."""
         enriched_push_items = self.enrich_mapped_items(self.mapped_items)
-        for enriched_item in enriched_push_items:
-            for push_items in enriched_item.values():
-                if not self.items_in_metadata_service(push_items):
-                    self._fail("Pre-push verification of push items in metadata service failed")
+        self._check_product_in_rhsm(enriched_push_items)
 
         executor = Executors.thread_pool(
             name="pubtools-marketplacesvm-community-push",
