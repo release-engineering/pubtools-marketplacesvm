@@ -89,10 +89,6 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                 ),
             )
             item = MappedVMIPushItem(item, query.clouds)
-            # TODO: Check in the upcoming storage-mapping format an analogue way to do this
-            # if not item.destinations:
-            #    log.info("Filtering out archive with no destinations: %s", item.push_item.src)
-            #    continue
             mapped_items.append(item)
         return mapped_items
 
