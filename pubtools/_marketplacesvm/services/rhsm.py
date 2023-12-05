@@ -316,7 +316,7 @@ class AwsRHSMClientService(Service):
         rhsm_cert = self._service_args.rhsm_cert
         rhsm_key = self._service_args.rhsm_key
         if not rhsm_url:
-            raise Exception("RHSM URL not provided for the RHSM client")
+            raise ValueError("RHSM URL not provided for the RHSM client")
 
         result = pm.hook.get_cert_key_paths(server_url=rhsm_url)  # pylint: disable=no-member
         default_cert, default_key = result if result else (None, None)
