@@ -243,6 +243,9 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
                 Dictionary with keyword values to be added as custom tags.
             groups (list, optional)
                 List of groups to share the image with. Defaults to ``self.aws_groups``.
+            snapshot_accounts (list, optional)
+                List of accounts to share the snapshot with. Defaults
+                to ``self.aws_snapshot_accounts``.
             container (str, optional)
                 The S3 container name to upload the image into. Defaults to ``self.s3_bucket``.
         Returns:
@@ -252,6 +255,8 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         binfo = push_item.build_info
         default_groups = self.aws_groups or []
         groups = kwargs.get("groups", default_groups)
+        default_snapshot_accounts = self.aws_snapshot_accounts or []
+        snapshot_accounts = kwargs.get("snapshot_accounts", default_snapshot_accounts)
         container = kwargs.get("container", self.s3_bucket)
         LOG.info("Image name: %s | Sharing groups: %s", name, groups)
 
@@ -277,7 +282,7 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
             "root_device_name": push_item.root_device,
             "volume_type": push_item.volume,
             "accounts": groups,
-            "snapshot_account_ids": self.aws_snapshot_accounts,
+            "snapshot_account_ids": snapshot_accounts,
             "sriov_net_support": push_item.sriov_net_support,
             "ena_support": push_item.ena_support,
             "billing_products": [],
