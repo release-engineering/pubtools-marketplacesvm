@@ -295,7 +295,7 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
 
                 for dest in destinations:
                     epi = enrich_push_item(pi, dest)
-                    log.debug("Enriched push item for %s: %s", storage_account, pi)
+                    log.debug("Enriched push item for %s: %s", storage_account, epi)
 
                     # SAP and RHEL-HA images are expected to be
                     # shipped only to hourly destinations
