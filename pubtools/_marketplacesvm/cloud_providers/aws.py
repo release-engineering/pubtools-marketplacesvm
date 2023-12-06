@@ -103,6 +103,16 @@ class AWSCredentials(CloudCredentials):
     )
     """Groups to share image with. Defaults to empty list."""
 
+    aws_accounts: Optional[List[str]] = field(
+        alias="AWS_ACCOUNTS",
+        validator=deep_iterable(
+            member_validator=instance_of(str),
+            iterable_validator=instance_of(list),
+        ),
+        factory=list,
+    )
+    """Accounts to share image with. Defaults to empty list."""
+
     aws_snapshot_accounts: Optional[List[str]] = field(
         alias="AWS_SNAPSHOT_ACCOUNTS",
         validator=deep_iterable(
@@ -148,6 +158,7 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         self.aws_access_role_arn = credentials.aws_access_role_arn
 
         self.aws_groups = credentials.aws_groups
+        self.aws_accounts = credentials.aws_accounts
         self.aws_snapshot_accounts = credentials.aws_snapshot_accounts
 
         self.upload_svc_partial = partial(
@@ -243,6 +254,8 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
                 Dictionary with keyword values to be added as custom tags.
             groups (list, optional)
                 List of groups to share the image with. Defaults to ``self.aws_groups``.
+            accounts (list, optional)
+                List of accounts to share the image with. Defaults to ``self.aws_accounts.``
             snapshot_accounts (list, optional)
                 List of accounts to share the snapshot with. Defaults
                 to ``self.aws_snapshot_accounts``.
@@ -255,6 +268,8 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         binfo = push_item.build_info
         default_groups = self.aws_groups or []
         groups = kwargs.get("groups", default_groups)
+        default_accounts = self.aws_accounts or []
+        accounts = kwargs.get("accounts", default_accounts)
         default_snapshot_accounts = self.aws_snapshot_accounts or []
         snapshot_accounts = kwargs.get("snapshot_accounts", default_snapshot_accounts)
         container = kwargs.get("container", self.s3_bucket)
@@ -281,7 +296,8 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
             "virt_type": push_item.virtualization,
             "root_device_name": push_item.root_device,
             "volume_type": push_item.volume,
-            "accounts": groups,
+            "accounts": accounts,
+            "groups": groups,
             "snapshot_account_ids": snapshot_accounts,
             "sriov_net_support": push_item.sriov_net_support,
             "ena_support": push_item.ena_support,
