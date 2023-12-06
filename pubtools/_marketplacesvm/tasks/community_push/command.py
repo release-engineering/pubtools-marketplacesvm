@@ -32,6 +32,8 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
     def __init__(self, *args, **kwargs):
         """Initialize the CommunityVMPush instance."""
         self._rhsm_products: Optional[List[Dict[str, Any]]] = None
+        self._accts_dict: Dict[str, List[str]] = {}
+        self._snapshot_accts_dict: Dict[str, List[str]] = {}
         super(CommunityVMPush, self).__init__(*args, **kwargs)
 
     def _fail(self, *args, **kwargs):
@@ -243,6 +245,31 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                 response.raise_for_status()
         log.info("Successfully registered image %s with RHSM", image.id)
 
+    def _update_accounts(self, mapped_item: MappedVMIPushItem) -> None:
+        """Update the "accounts" and "snapshot_accounts" configuration when provided by StArMap.
+
+        Args:
+            mapped_item (MappedVMIPushItem): The mapped item to retrieve the accounts from meta.
+        """
+
+        def set_accounts(
+            acct_name: str, mapped_item: MappedVMIPushItem, acct_dict: Dict[str, List[str]]
+        ) -> None:
+            accts: Optional[Dict[str, List[str]]] = mapped_item.meta.get(acct_name)
+            if not accts:
+                log.warning(
+                    "No %s definition in StArMap, leaving the defaults from credentials.", acct_name
+                )
+                return
+
+            log.info("Loading %s from StArMap.", acct_name)
+            for name, accounts in accts.items():
+                log.debug("Loaded region \"%s\" with accounts \"%s\".", name, accounts)
+                acct_dict.setdefault(name, accounts)
+
+        set_accounts("accounts", mapped_item, self._accts_dict)
+        set_accounts("snapshot_accounts", mapped_item, self._snapshot_accts_dict)
+
     def enrich_mapped_items(self, mapped_items: List[MappedVMIPushItem]) -> List[EnrichedPushItem]:
         """Load all missing information for each mapped item.
 
@@ -257,6 +284,7 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
         """
         result: List[EnrichedPushItem] = []
         for mapped_item in mapped_items:
+            self._update_accounts(mapped_item)
             account_dict: EnrichedPushItem = {}
             for storage_account, destinations in mapped_item.clouds.items():
                 log.info("Processing the storage account %s", storage_account)
@@ -306,8 +334,18 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                 push_item.type,
                 ship,
             )
+            default_accounts = self._accts_dict.get("default")
+            default_snapshot_accounts = self._snapshot_accts_dict.get("default")
+            accounts = self._accts_dict.get(push_item.region, default_accounts)
+            snapshot_accounts = self._snapshot_accts_dict.get(
+                push_item.region, default_snapshot_accounts
+            )
             pi, image = self.cloud_instance(marketplace).upload(
-                push_item, custom_tags=custom_tags, container=container
+                push_item,
+                custom_tags=custom_tags,
+                container=container,
+                accounts=accounts,
+                snapshot_accounts=snapshot_accounts,
             )
             log.info("Upload finished for %s on %s", push_item.name, push_item.region)
         except Exception as exc:
@@ -335,6 +373,8 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                         push_item,
                         custom_tags=custom_tags,
                         container=container,
+                        accounts=accounts,
+                        snapshot_accounts=snapshot_accounts,
                         groups=groups,
                     )
             except Exception as exc:
