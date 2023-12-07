@@ -410,9 +410,14 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         """
         region = push_item.region or self.default_region
         version_split = push_item.release.version.split(".")
+
+        LOG.info("Checking for version to restrict: %s", ".".join(version_split[:2]))
+
         restricted_amis = self.publish_svc.restrict_minor_versions(
             push_item.dest[0], push_item.marketplace_entity_type, ".".join(version_split[:2])
         )
+
+        LOG.info("Found AMIs to restrict: %s", restricted_amis)
 
         if delete_restricted:
             self._remove_amis(restricted_amis, region)
@@ -458,7 +463,7 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
                 "image_id": ami_id,
             }
 
-            LOG.debug("%s", delete_metadata_kwargs)
+            LOG.debug("Deleting AMI: %s", delete_metadata_kwargs)
             metadata = AWSDeleteMetadata(**delete_metadata_kwargs)
 
             self.upload_svc_partial(region=region).delete(metadata)

@@ -633,13 +633,22 @@ def test_publish_version_exists(
 
     fake_aws_provider.publish_svc.get_product_versions.return_value = aws_product_versions
 
-    _, res = fake_aws_provider.publish(updated_aws_push_item, nochannel=False, overwrite=False)
+    fake_aws_provider.publish_svc.restrict_minor_versions.return_value = ["ami-1", "ami-2"]
+
+    _, res = fake_aws_provider.publish(
+        updated_aws_push_item, nochannel=False, overwrite=False, delete_restricted=True
+    )
 
     assert res == {}
 
     mock_metadata.assert_not_called()
     fake_aws_provider.publish_svc.publish.assert_not_called()
     fake_aws_provider.upload_svc_partial.upload.assert_not_called()  # type: ignore [attr-defined] # noqa: E501
+
+    called_args = fake_aws_provider.upload_svc_partial.return_value.delete.call_args_list  # type: ignore [attr-defined] # noqa: E501
+
+    assert called_args[0][0][0].image_id == "ami-1"
+    assert called_args[1][0][0].image_id == "ami-2"
 
 
 @pytest.mark.parametrize("aws_fake_version", ["19.11.111", "19.11", "19.11.3333"])
