@@ -365,7 +365,7 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
         if ship:
             try:
                 self.update_rhsm_metadata(image, push_item)
-                if push_item.public_image and self.args.allow_public_images:
+                if push_item.public_image:
                     log.info("Releasing image %s publicly", image.id)
                     groups = ["all"]
                     # A repeat call to upload will only update the groups
@@ -437,12 +437,6 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
     def add_args(self):
         """Include the required CLI arguments for CommunityVMPush."""
         super(CommunityVMPush, self).add_args()
-
-        self.parser.add_argument(
-            "--allow-public-images",
-            help="images are released for general use",
-            action="store_true",
-        )
 
         self.parser.add_argument(
             "--container-prefix",
