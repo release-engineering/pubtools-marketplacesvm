@@ -294,7 +294,7 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                 log.debug("Mapped push item for %s: %s", storage_account, pi)
 
                 for dest in destinations:
-                    epi = enrich_push_item(pi, dest)
+                    epi = enrich_push_item(pi, dest, beta=self.args.beta)
                     log.debug("Enriched push item for %s: %s", storage_account, epi)
 
                     # SAP and RHEL-HA images are expected to be
@@ -437,6 +437,12 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
     def add_args(self):
         """Include the required CLI arguments for CommunityVMPush."""
         super(CommunityVMPush, self).add_args()
+
+        self.parser.add_argument(
+            "--beta",
+            help="Ship beta images instead of GA",
+            action="store_true",
+        )
 
         self.parser.add_argument(
             "--container-prefix",

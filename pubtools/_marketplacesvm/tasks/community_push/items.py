@@ -94,7 +94,7 @@ def _update_destination(push_item: AmiPushItem, destination: Destination) -> Ami
     return evolve(push_item, dest=[destination.destination])
 
 
-def enrich_push_item(push_item: AmiPushItem, destination: Destination) -> AmiPushItem:
+def enrich_push_item(push_item: AmiPushItem, destination: Destination, beta: bool) -> AmiPushItem:
     """
     Set the missing push item attributes required for community workflow.
 
@@ -103,6 +103,8 @@ def enrich_push_item(push_item: AmiPushItem, destination: Destination) -> AmiPus
             The push item to enrich with the missing values
         destination:
             The destination with all required information to enrich the push item.
+        beta:
+            Whether the release type is "beta" or not ("ga")
     Returns:
         The enriched push item for community workflow.
     """
@@ -115,6 +117,11 @@ def enrich_push_item(push_item: AmiPushItem, destination: Destination) -> AmiPus
     pi = _get_push_item_billing_code(pi, destination)
     pi = _get_push_item_rhsm_provider(pi, destination)
     pi = _get_push_item_public_image(pi)
+
+    # Set the release type
+    rel_type = "beta" if beta else "ga"
+    rel = evolve(pi.release, type=rel_type)
+    pi = evolve(pi, release=rel)
 
     # Now we need to convert the "dest" from "List[Destination]" into "List[str]"
     # by just keeping the desired destinations and getting rid of everything else
