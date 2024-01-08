@@ -62,6 +62,7 @@
 [    INFO] Attempting to update the existing image foo in RHSM
 [   DEBUG] {'image_id': 'foo', 'image_name': 'bar', 'arch': 'x86_64', 'product_name': 'sample_product_HOURLY', 'version': '7.0', 'variant': 'variant'}
 [    INFO] Successfully registered image foo with RHSM
+[    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [us-east-1] [foo]
 [    INFO] Uploading /foo/bar/sample_product_test.raw to region us-east-1 (type: access, ship: True)
 [    INFO] Upload finished for ami_pushitem on us-east-1
@@ -80,6 +81,7 @@
 [    INFO] Attempting to update the existing image foo in RHSM
 [   DEBUG] {'image_id': 'foo', 'image_name': 'bar', 'arch': 'x86_64', 'product_name': 'sample_product_HOURLY', 'version': '7.0', 'variant': 'variant'}
 [    INFO] Successfully registered image foo with RHSM
+[    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [us-east-2] [foo]
 [    INFO] Uploading /foo/bar/sample_product_test.raw to region us-east-2 (type: access, ship: True)
 [    INFO] Upload finished for ami_pushitem on us-east-2
@@ -98,6 +100,7 @@
 [    INFO] Attempting to update the existing image foo in RHSM
 [   DEBUG] {'image_id': 'foo', 'image_name': 'bar', 'arch': 'x86_64', 'product_name': 'sample_product_HOURLY', 'version': '7.0', 'variant': 'variant'}
 [    INFO] Successfully registered image foo with RHSM
+[    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [us-west-1] [foo]
 [    INFO] Uploading /foo/bar/sample_product_test.raw to region us-west-1 (type: access, ship: True)
 [    INFO] Upload finished for ami_pushitem on us-west-1
@@ -116,6 +119,7 @@
 [    INFO] Attempting to update the existing image foo in RHSM
 [   DEBUG] {'image_id': 'foo', 'image_name': 'bar', 'arch': 'x86_64', 'product_name': 'sample_product_HOURLY', 'version': '7.0', 'variant': 'variant'}
 [    INFO] Successfully registered image foo with RHSM
+[    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [us-west-2] [foo]
 [    INFO] Uploading /foo/bar/sample_product_test.raw to region us-west-2 (type: access, ship: True)
 [    INFO] Upload finished for ami_pushitem on us-west-2

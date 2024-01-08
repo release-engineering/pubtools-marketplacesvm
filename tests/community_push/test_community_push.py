@@ -236,30 +236,6 @@ def test_not_ami_push_item(
     )
 
 
-def test_do_community_push_public_image(
-    fake_source: mock.MagicMock,
-    fake_starmap: mock.MagicMock,
-    fake_cloud_instance: mock.MagicMock,
-    command_tester: CommandTester,
-):
-    """Successfully pushed images to all the accounts so it's available for general public."""
-    command_tester.test(
-        lambda: entry_point(CommunityVMPush),
-        [
-            "test-push",
-            "--starmap-url",
-            "https://starmap-example.com",
-            "--credentials",
-            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
-            "--rhsm-url",
-            "https://rhsm.com/test/api/",
-            "--debug",
-            "--allow-public-image",
-            "koji:https://fakekoji.com?vmi_build=ami_build",
-        ],
-    )
-
-
 def test_no_credentials(
     fake_source: mock.MagicMock,
     fake_starmap: mock.MagicMock,
