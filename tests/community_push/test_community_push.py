@@ -413,3 +413,27 @@ def test_empty_value_to_collect(
             "koji:https://fakekoji.com?vmi_build=ami_build",
         ],
     )
+
+
+def test_beta_images_live_push(
+    fake_source: mock.MagicMock,
+    fake_starmap: mock.MagicMock,
+    fake_cloud_instance: mock.MagicMock,
+    command_tester: CommandTester,
+) -> None:
+    """Test a beta community live push."""
+    command_tester.test(
+        lambda: entry_point(CommunityVMPush),
+        [
+            "test-push",
+            "--starmap-url",
+            "https://starmap-example.com",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--rhsm-url",
+            "https://rhsm.com/test/api/",
+            "--debug",
+            "--beta",
+            "koji:https://fakekoji.com?vmi_build=ami_build",
+        ],
+    )
