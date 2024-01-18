@@ -61,10 +61,11 @@
 [    INFO] Attempting to update the existing image foo in RHSM
 [   DEBUG] {'image_id': 'foo', 'image_name': 'bar', 'arch': 'x86_64', 'product_name': 'sample_product_HOURLY', 'version': '7.0', 'variant': 'variant'}
 [ WARNING] Update to RHSM failed for foo with error code 400. Image might not be present on RHSM for update.
+
 [    INFO] Attempting to create new image foo in RHSM
 [   DEBUG] {'image_id': 'foo', 'image_name': 'bar', 'arch': 'x86_64', 'product_name': 'sample_product_HOURLY', 'version': '7.0', 'variant': 'variant', 'region': 'us-east-1'}
 [   ERROR] Failed to create image foo in RHSM with error code 500
-[   ERROR] 
+
 [   ERROR] Failed to publish ami_pushitem: 500 Server Error: None for url: https://example.com/v1/internal/cloud_access_providers/amazon/amis
 [    INFO] Uploading /foo/bar/sample_product_test.raw to region us-east-1 (type: access, ship: True)
 [    INFO] Upload finished for ami_pushitem on us-east-1
@@ -74,10 +75,11 @@
 [    INFO] Attempting to update the existing image foo in RHSM
 [   DEBUG] {'image_id': 'foo', 'image_name': 'bar', 'arch': 'x86_64', 'product_name': 'sample_product', 'version': '7.0', 'variant': 'variant'}
 [ WARNING] Update to RHSM failed for foo with error code 400. Image might not be present on RHSM for update.
+
 [    INFO] Attempting to create new image foo in RHSM
 [   DEBUG] {'image_id': 'foo', 'image_name': 'bar', 'arch': 'x86_64', 'product_name': 'sample_product', 'version': '7.0', 'variant': 'variant', 'region': 'us-east-1'}
 [   ERROR] Failed to create image foo in RHSM with error code 500
-[   ERROR] 
+
 [   ERROR] Failed to publish ami_pushitem: 500 Server Error: None for url: https://example.com/v1/internal/cloud_access_providers/amazon/amis
 [    INFO] Uploading /foo/bar/sample_product_test.raw to region us-east-2 (type: hourly, ship: True)
 [    INFO] Upload finished for ami_pushitem on us-east-2
@@ -87,10 +89,11 @@
 [    INFO] Attempting to update the existing image foo in RHSM
 [   DEBUG] {'image_id': 'foo', 'image_name': 'bar', 'arch': 'x86_64', 'product_name': 'sample_product_HOURLY', 'version': '7.0', 'variant': 'variant'}
 [ WARNING] Update to RHSM failed for foo with error code 400. Image might not be present on RHSM for update.
+
 [    INFO] Attempting to create new image foo in RHSM
 [   DEBUG] {'image_id': 'foo', 'image_name': 'bar', 'arch': 'x86_64', 'product_name': 'sample_product_HOURLY', 'version': '7.0', 'variant': 'variant', 'region': 'us-east-2'}
 [   ERROR] Failed to create image foo in RHSM with error code 500
-[   ERROR] 
+
 [   ERROR] Failed to publish ami_pushitem: 500 Server Error: None for url: https://example.com/v1/internal/cloud_access_providers/amazon/amis
 [    INFO] Uploading /foo/bar/sample_product_test.raw to region us-east-2 (type: access, ship: True)
 [    INFO] Upload finished for ami_pushitem on us-east-2
@@ -100,10 +103,11 @@
 [    INFO] Attempting to update the existing image foo in RHSM
 [   DEBUG] {'image_id': 'foo', 'image_name': 'bar', 'arch': 'x86_64', 'product_name': 'sample_product', 'version': '7.0', 'variant': 'variant'}
 [ WARNING] Update to RHSM failed for foo with error code 400. Image might not be present on RHSM for update.
+
 [    INFO] Attempting to create new image foo in RHSM
 [   DEBUG] {'image_id': 'foo', 'image_name': 'bar', 'arch': 'x86_64', 'product_name': 'sample_product', 'version': '7.0', 'variant': 'variant', 'region': 'us-east-2'}
 [   ERROR] Failed to create image foo in RHSM with error code 500
-[   ERROR] 
+
 [   ERROR] Failed to publish ami_pushitem: 500 Server Error: None for url: https://example.com/v1/internal/cloud_access_providers/amazon/amis
 [    INFO] Uploading /foo/bar/sample_product_test.raw to region us-west-1 (type: hourly, ship: True)
 [    INFO] Upload finished for ami_pushitem on us-west-1
@@ -113,10 +117,11 @@
 [    INFO] Attempting to update the existing image foo in RHSM
 [   DEBUG] {'image_id': 'foo', 'image_name': 'bar', 'arch': 'x86_64', 'product_name': 'sample_product_HOURLY', 'version': '7.0', 'variant': 'variant'}
 [ WARNING] Update to RHSM failed for foo with error code 400. Image might not be present on RHSM for update.
+
 [    INFO] Attempting to create new image foo in RHSM
 [   DEBUG] {'image_id': 'foo', 'image_name': 'bar', 'arch': 'x86_64', 'product_name': 'sample_product_HOURLY', 'version': '7.0', 'variant': 'variant', 'region': 'us-west-1'}
 [   ERROR] Failed to create image foo in RHSM with error code 500
-[   ERROR] 
+
 [   ERROR] Failed to publish ami_pushitem: 500 Server Error: None for url: https://example.com/v1/internal/cloud_access_providers/amazon/amis
 [    INFO] Uploading /foo/bar/sample_product_test.raw to region us-west-1 (type: access, ship: True)
 [    INFO] Upload finished for ami_pushitem on us-west-1
@@ -126,10 +131,11 @@
 [    INFO] Attempting to update the existing image foo in RHSM
 [   DEBUG] {'image_id': 'foo', 'image_name': 'bar', 'arch': 'x86_64', 'product_name': 'sample_product', 'version': '7.0', 'variant': 'variant'}
 [ WARNING] Update to RHSM failed for foo with error code 400. Image might not be present on RHSM for update.
+
 [    INFO] Attempting to create new image foo in RHSM
 [   DEBUG] {'image_id': 'foo', 'image_name': 'bar', 'arch': 'x86_64', 'product_name': 'sample_product', 'version': '7.0', 'variant': 'variant', 'region': 'us-west-1'}
 [   ERROR] Failed to create image foo in RHSM with error code 500
-[   ERROR] 
+
 [   ERROR] Failed to publish ami_pushitem: 500 Server Error: None for url: https://example.com/v1/internal/cloud_access_providers/amazon/amis
 [    INFO] Uploading /foo/bar/sample_product_test.raw to region us-west-2 (type: hourly, ship: True)
 [    INFO] Upload finished for ami_pushitem on us-west-2
@@ -139,10 +145,11 @@
 [    INFO] Attempting to update the existing image foo in RHSM
 [   DEBUG] {'image_id': 'foo', 'image_name': 'bar', 'arch': 'x86_64', 'product_name': 'sample_product_HOURLY', 'version': '7.0', 'variant': 'variant'}
 [ WARNING] Update to RHSM failed for foo with error code 400. Image might not be present on RHSM for update.
+
 [    INFO] Attempting to create new image foo in RHSM
 [   DEBUG] {'image_id': 'foo', 'image_name': 'bar', 'arch': 'x86_64', 'product_name': 'sample_product_HOURLY', 'version': '7.0', 'variant': 'variant', 'region': 'us-west-2'}
 [   ERROR] Failed to create image foo in RHSM with error code 500
-[   ERROR] 
+
 [   ERROR] Failed to publish ami_pushitem: 500 Server Error: None for url: https://example.com/v1/internal/cloud_access_providers/amazon/amis
 [    INFO] Uploading /foo/bar/sample_product_test.raw to region us-west-2 (type: access, ship: True)
 [    INFO] Upload finished for ami_pushitem on us-west-2
@@ -152,10 +159,11 @@
 [    INFO] Attempting to update the existing image foo in RHSM
 [   DEBUG] {'image_id': 'foo', 'image_name': 'bar', 'arch': 'x86_64', 'product_name': 'sample_product', 'version': '7.0', 'variant': 'variant'}
 [ WARNING] Update to RHSM failed for foo with error code 400. Image might not be present on RHSM for update.
+
 [    INFO] Attempting to create new image foo in RHSM
 [   DEBUG] {'image_id': 'foo', 'image_name': 'bar', 'arch': 'x86_64', 'product_name': 'sample_product', 'version': '7.0', 'variant': 'variant', 'region': 'us-west-2'}
 [   ERROR] Failed to create image foo in RHSM with error code 500
-[   ERROR] 
+
 [   ERROR] Failed to publish ami_pushitem: 500 Server Error: None for url: https://example.com/v1/internal/cloud_access_providers/amazon/amis
 [    INFO] Collecting results
 [   ERROR] Community VM push failed

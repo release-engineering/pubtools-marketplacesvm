@@ -204,7 +204,12 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
 
         response: Response = out.result()
         if not response.ok:
-            log.error("Failed creating region %s for image %s", push_item.region, image.id)
+            log.error(
+                "Failed creating region %s for image %s: %s",
+                push_item.region,
+                image.id,
+                response.text,
+            )
             response.raise_for_status()
 
         log.info("Registering image %s with RHSM", image.id)
@@ -225,9 +230,10 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
         if not response.ok:
             log.warning(
                 "Update to RHSM failed for %s with error code %s. "
-                "Image might not be present on RHSM for update.",
+                "Image might not be present on RHSM for update.\n%s",
                 image.id,
                 response.status_code,
+                response.text,
             )
 
             log.info("Attempting to create new image %s in RHSM", image.id)
@@ -237,11 +243,11 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
             response = out.result()
             if not response.ok:
                 log.error(
-                    "Failed to create image %s in RHSM with error code %s",
+                    "Failed to create image %s in RHSM with error code %s\n%s",
                     image.id,
                     response.status_code,
+                    response.text,
                 )
-                log.error(response.text)
                 response.raise_for_status()
         log.info("Successfully registered image %s with RHSM", image.id)
 

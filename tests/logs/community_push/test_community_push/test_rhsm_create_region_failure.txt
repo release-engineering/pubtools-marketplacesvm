@@ -56,42 +56,42 @@
 [    INFO] Uploading /foo/bar/sample_product_test.raw to region us-east-1 (type: hourly, ship: True)
 [    INFO] Upload finished for ami_pushitem on us-east-1
 [    INFO] Creating region us-east-1 [awstest]
-[   ERROR] Failed creating region us-east-1 for image foo
+[   ERROR] Failed creating region us-east-1 for image foo: 
 [   ERROR] Failed to publish ami_pushitem: 500 Server Error: None for url: https://example.com/v1/internal/cloud_access_providers/amazon/regions
 [    INFO] Uploading /foo/bar/sample_product_test.raw to region us-east-1 (type: access, ship: True)
 [    INFO] Upload finished for ami_pushitem on us-east-1
 [    INFO] Creating region us-east-1 [awstest]
-[   ERROR] Failed creating region us-east-1 for image foo
+[   ERROR] Failed creating region us-east-1 for image foo: 
 [   ERROR] Failed to publish ami_pushitem: 500 Server Error: None for url: https://example.com/v1/internal/cloud_access_providers/amazon/regions
 [    INFO] Uploading /foo/bar/sample_product_test.raw to region us-east-2 (type: hourly, ship: True)
 [    INFO] Upload finished for ami_pushitem on us-east-2
 [    INFO] Creating region us-east-2 [awstest]
-[   ERROR] Failed creating region us-east-2 for image foo
+[   ERROR] Failed creating region us-east-2 for image foo: 
 [   ERROR] Failed to publish ami_pushitem: 500 Server Error: None for url: https://example.com/v1/internal/cloud_access_providers/amazon/regions
 [    INFO] Uploading /foo/bar/sample_product_test.raw to region us-east-2 (type: access, ship: True)
 [    INFO] Upload finished for ami_pushitem on us-east-2
 [    INFO] Creating region us-east-2 [awstest]
-[   ERROR] Failed creating region us-east-2 for image foo
+[   ERROR] Failed creating region us-east-2 for image foo: 
 [   ERROR] Failed to publish ami_pushitem: 500 Server Error: None for url: https://example.com/v1/internal/cloud_access_providers/amazon/regions
 [    INFO] Uploading /foo/bar/sample_product_test.raw to region us-west-1 (type: hourly, ship: True)
 [    INFO] Upload finished for ami_pushitem on us-west-1
 [    INFO] Creating region us-west-1 [awstest]
-[   ERROR] Failed creating region us-west-1 for image foo
+[   ERROR] Failed creating region us-west-1 for image foo: 
 [   ERROR] Failed to publish ami_pushitem: 500 Server Error: None for url: https://example.com/v1/internal/cloud_access_providers/amazon/regions
 [    INFO] Uploading /foo/bar/sample_product_test.raw to region us-west-1 (type: access, ship: True)
 [    INFO] Upload finished for ami_pushitem on us-west-1
 [    INFO] Creating region us-west-1 [awstest]
-[   ERROR] Failed creating region us-west-1 for image foo
+[   ERROR] Failed creating region us-west-1 for image foo: 
 [   ERROR] Failed to publish ami_pushitem: 500 Server Error: None for url: https://example.com/v1/internal/cloud_access_providers/amazon/regions
 [    INFO] Uploading /foo/bar/sample_product_test.raw to region us-west-2 (type: hourly, ship: True)
 [    INFO] Upload finished for ami_pushitem on us-west-2
 [    INFO] Creating region us-west-2 [awstest]
-[   ERROR] Failed creating region us-west-2 for image foo
+[   ERROR] Failed creating region us-west-2 for image foo: 
 [   ERROR] Failed to publish ami_pushitem: 500 Server Error: None for url: https://example.com/v1/internal/cloud_access_providers/amazon/regions
 [    INFO] Uploading /foo/bar/sample_product_test.raw to region us-west-2 (type: access, ship: True)
 [    INFO] Upload finished for ami_pushitem on us-west-2
 [    INFO] Creating region us-west-2 [awstest]
-[   ERROR] Failed creating region us-west-2 for image foo
+[   ERROR] Failed creating region us-west-2 for image foo: 
 [   ERROR] Failed to publish ami_pushitem: 500 Server Error: None for url: https://example.com/v1/internal/cloud_access_providers/amazon/regions
 [    INFO] Collecting results
 [   ERROR] Community VM push failed
