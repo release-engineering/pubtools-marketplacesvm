@@ -643,7 +643,7 @@ def test_publish_version_exists(
     fake_aws_provider.publish_svc.restrict_minor_versions.return_value = ["ami-1", "ami-2"]
 
     _, res = fake_aws_provider.publish(
-        updated_aws_push_item, nochannel=False, overwrite=False, delete_restricted=True
+        updated_aws_push_item, nochannel=False, overwrite=False, restrict_version=True
     )
 
     assert res == {}

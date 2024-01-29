@@ -146,7 +146,7 @@ class CloudProvider(ABC, Generic[T, C]):
         return push_item, upload_result
 
     def _post_publish(
-        self, push_item: T, publish_result: Any, delete_restricted: bool = False
+        self, push_item: T, publish_result: Any, restrict_version: bool = False
     ) -> Tuple[T, Any]:
         """
         Define the default method for post publishing actions.
@@ -156,8 +156,8 @@ class CloudProvider(ABC, Generic[T, C]):
                 The push item to associate and publish a VM image into a product.
             publish_result (Any)
                 The resulting data from publish.
-            delete_restricted (bool, optional)
-                Whether to delete the restricted images associated with a product when
+            restrict_version (bool, optional)
+                Whether to restrict and delete an image associated with a product when
                 applicable.
         Returns:
             The publish result data.
@@ -206,7 +206,7 @@ class CloudProvider(ABC, Generic[T, C]):
         nochannel: bool,
         overwrite: bool = False,
         preview_only: bool = False,
-        delete_restricted: bool = False,
+        restrict_version: bool = False,
     ) -> Tuple[T, Any]:
         """
         Associate an existing VM image with a product and publish the changes.
@@ -222,14 +222,14 @@ class CloudProvider(ABC, Generic[T, C]):
             preview_only (bool, optional)
                 Whether to publish with the final state as "preview" instead of "live"
                 when applicable.
-            delete_restricted (bool, optional)
-                Whether to delete the restricted images associated with a product when
+            restrict_version (bool, optional)
+                Whether to restrict and delete images associated with a product when
                 applicable.
         Returns:
             object: The publish result data.
         """
         pi, res = self._publish(push_item, nochannel, overwrite, preview_only)
-        return self._post_publish(pi, res, delete_restricted)
+        return self._post_publish(pi, res, restrict_version)
 
 
 P = TypeVar('P', bound=CloudProvider)

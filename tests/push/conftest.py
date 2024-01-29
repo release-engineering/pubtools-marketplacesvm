@@ -72,7 +72,7 @@ def starmap_response_aws() -> Dict[str, Any]:
                     "destination": "ffffffff-ffff-ffff-ffff-ffffffffffff",
                     "overwrite": True,
                     "stage_preview": False,
-                    "delete_restricted": False,
+                    "restrict_version": False,
                     "meta": {"tag1": "aws-na-value1", "tag2": "aws-na-value2"},
                     "tags": {"key1": "value1", "key2": "value2"},
                 }
@@ -83,7 +83,7 @@ def starmap_response_aws() -> Dict[str, Any]:
                     "destination": "00000000-0000-0000-0000-000000000000",
                     "overwrite": True,
                     "stage_preview": False,
-                    "delete_restricted": False,
+                    "restrict_version": False,
                     "meta": {"tag1": "aws-emea-value1", "tag2": "aws-emea-value2"},
                     "tags": {"key3": "value3", "key4": "value4"},
                 }
@@ -104,7 +104,7 @@ def starmap_response_azure() -> Dict[str, Any]:
                     "destination": "destination_offer_main/plan1",
                     "overwrite": True,
                     "stage_preview": False,
-                    "delete_restricted": False,
+                    "restrict_version": False,
                     "meta": {"tag1": "value1", "tag2": "value2"},
                     "tags": {"key1": "value1", "key2": "value2"},
                 },
@@ -113,7 +113,7 @@ def starmap_response_azure() -> Dict[str, Any]:
                     "destination": "destination_offer_main/plan2",
                     "overwrite": False,
                     "stage_preview": False,
-                    "delete_restricted": False,
+                    "restrict_version": False,
                     "meta": {"tag3": "value3", "tag4": "value5"},
                 },
                 {
@@ -121,7 +121,7 @@ def starmap_response_azure() -> Dict[str, Any]:
                     "destination": "destination_offer_main/plan3",
                     "overwrite": False,
                     "stage_preview": False,
-                    "delete_restricted": False,
+                    "restrict_version": False,
                 },
             ]
         },

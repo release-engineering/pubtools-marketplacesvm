@@ -36,7 +36,7 @@ def test_get_push_item_billing_code_no_name(ami_push_item: AmiPushItem) -> None:
             "meta": {"billing-code-config": bcode},
             "overwrite": False,
             "stage_preview": False,
-            "delete_restricted": False,
+            "restrict_version": False,
         }
     )
 

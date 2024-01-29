@@ -413,7 +413,7 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         return push_item, res
 
     def _post_publish(
-        self, push_item: AmiPushItem, publish_result: Any, delete_restricted: bool = False
+        self, push_item: AmiPushItem, publish_result: Any, restrict_version: bool = False
     ) -> Tuple[AmiPushItem, Any]:
         """
         Post publishing activities currently restricts older versions.
@@ -423,30 +423,30 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
                 The original push item for uploading the AMI image.
             publish_result (str)
                 The AMI publish properties
-            delete_restricted (bool, Optional)
-                Whether to delete the restricted images associated with a product.
+            restrict_version (bool, Optional)
+                Whether to restrict the version and remove the accompanying AMI/Snapshot.
 
         Returns:
             Tuple of PushItem and Publish results.
         """
         region = push_item.region or self.default_region
-        version_split = push_item.release.version.split(".")
-
-        LOG.info("Checking for version to restrict: %s", ".".join(version_split[:2]))
-
-        restricted_amis = self.publish_svc.restrict_minor_versions(
-            push_item.dest[0], push_item.marketplace_entity_type, ".".join(version_split[:2])
-        )
-
-        LOG.info("Found AMIs to restrict: %s", restricted_amis)
-
-        if delete_restricted:
-            self._remove_amis(restricted_amis, region)
 
         upload_svc = self.upload_svc_partial(region=region)
         image = upload_svc.get_image_by_id(self.image_id)
         release_date_tag = {"release_date": datetime.now().strftime("%Y%m%d%H::%M::%S")}
         upload_svc.tag_image(image, release_date_tag)
+
+        if restrict_version:
+            version_split = push_item.release.version.split(".")
+
+            LOG.info("Checking for version to restrict: %s", ".".join(version_split[:2]))
+
+            restricted_amis = self.publish_svc.restrict_minor_versions(
+                push_item.dest[0], push_item.marketplace_entity_type, ".".join(version_split[:2])
+            )
+
+            LOG.info("Found AMIs to restrict: %s", restricted_amis)
+            self._remove_amis(restricted_amis, region)
 
         return push_item, publish_result
 
