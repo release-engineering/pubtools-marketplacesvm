@@ -123,7 +123,7 @@ def test_do_push_ami_correct_id(
                         "destination": "NA-DESTINATION",
                         "overwrite": False,
                         "stage_preview": True,
-                        "delete_restricted": False,
+                        "restrict_version": False,
                     },
                 ],
                 "aws-emea": [
@@ -131,7 +131,7 @@ def test_do_push_ami_correct_id(
                         "destination": "EMEA-DESTINATION",
                         "overwrite": False,
                         "stage_preview": True,
-                        "delete_restricted": False,
+                        "restrict_version": False,
                     },
                 ],
             },
@@ -199,7 +199,7 @@ def test_do_push_azure_correct_sas(
                         "destination": "NA-DESTINATION",
                         "overwrite": False,
                         "stage_preview": True,
-                        "delete_restricted": False,
+                        "restrict_version": False,
                     },
                 ],
                 "azure-emea": [
@@ -207,7 +207,7 @@ def test_do_push_azure_correct_sas(
                         "destination": "EMEA-DESTINATION",
                         "overwrite": False,
                         "stage_preview": True,
-                        "delete_restricted": False,
+                        "restrict_version": False,
                     },
                 ],
             },
@@ -283,13 +283,13 @@ def test_do_push_prepush_marketplace_preview(
                         "destination": "fake-offer/fake-plan",
                         "overwrite": False,
                         "stage_preview": True,
-                        "delete_restricted": False,
+                        "restrict_version": False,
                     },
                     {
                         "destination": "do-not/publish-me",
                         "overwrite": False,
                         "stage_preview": False,
-                        "delete_restricted": False,
+                        "restrict_version": False,
                     },
                 ]
             },
@@ -338,13 +338,13 @@ def test_do_push_live_marketplace_preview(
                         "destination": "fake-offer/fake-plan",
                         "overwrite": False,
                         "stage_preview": True,
-                        "delete_restricted": False,
+                        "restrict_version": False,
                     },
                     {
                         "destination": "do-not/publish-me",
                         "overwrite": False,
                         "stage_preview": False,
-                        "delete_restricted": False,
+                        "restrict_version": False,
                     },
                 ]
             },
@@ -455,7 +455,7 @@ def test_push_item_no_mapped_arch(
                         "destination": "ffffffff-ffff-ffff-ffff-ffffffffffff",
                         "overwrite": False,
                         "stage_preview": False,
-                        "delete_restricted": False,
+                        "restrict_version": False,
                     }
                 ]
             },
@@ -572,11 +572,11 @@ def test_push_overridden_destination(
             "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
             "--repo",
             "{"
-            "    \"aws-na\": {\"destination\": \"new_aws_na_destination\", \"stage_preview\": false, \"delete_restricted\": false},"  # noqa: E501
-            "    \"aws-emea\": {\"destination\": \"new_aws_emea_destination\", \"overwrite\": true, \"stage_preview\": false, \"delete_restricted\": false},"  # noqa: E501
+            "    \"aws-na\": {\"destination\": \"new_aws_na_destination\", \"stage_preview\": false, \"restrict_version\": false},"  # noqa: E501
+            "    \"aws-emea\": {\"destination\": \"new_aws_emea_destination\", \"overwrite\": true, \"stage_preview\": false, \"restrict_version\": false},"  # noqa: E501
             "    \"azure-na\": [ "
-            "    {\"destination\": \"new_azure_destination1\", \"overwrite\": true, \"stage_preview\": false, \"delete_restricted\": false},"  # noqa: E501
-            "    {\"destination\": \"new_azure_destination2\", \"stage_preview\": false, \"delete_restricted\": false}"  # noqa: E501
+            "    {\"destination\": \"new_azure_destination1\", \"overwrite\": true, \"stage_preview\": false, \"restrict_version\": false},"  # noqa: E501
+            "    {\"destination\": \"new_azure_destination2\", \"stage_preview\": false, \"restrict_version\": false}"  # noqa: E501
             "]"
             "}",
             "--debug",

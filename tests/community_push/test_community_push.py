@@ -135,7 +135,7 @@ def test_do_community_push_skip_houly_sap_ha(
                     "destination": "fake-destination-access",
                     "overwrite": False,
                     "stage_preview": False,
-                    "delete_restricted": False,
+                    "restrict_version": False,
                     "provider": "awstest",
                     "meta": {"billing-code-config": starmap_ami_billing_config},
                 }
@@ -179,7 +179,7 @@ def test_do_community_push_no_billing_config(
                     "destination": "fake-destination-access",
                     "overwrite": False,
                     "stage_preview": False,
-                    "delete_restricted": False,
+                    "restrict_version": False,
                     "provider": "awstest",
                     "meta": {},
                 }

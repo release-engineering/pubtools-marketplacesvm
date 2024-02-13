@@ -109,7 +109,7 @@ def test_get_metadata_for_mapped_item(
             "destination": "foo/bar",
             "overwrite": True,
             "stage_preview": False,
-            "delete_restricted": False,
+            "restrict_version": False,
             "architecture": "x86_64",
         }
     )
@@ -211,7 +211,7 @@ def test_get_tags_for_mapped_item(
             "destination": "foo/bar",
             "overwrite": True,
             "stage_preview": False,
-            "delete_restricted": False,
+            "restrict_version": False,
             "architecture": "x86_64",
         }
     )
