@@ -1,3 +1,4 @@
+import logging
 import os
 from typing import Any, Dict, Optional
 
@@ -10,6 +11,8 @@ BILLING_CODES_NAME_MAPPING = {
     "access": "Access2",
     "marketplace": "Marketplace",
 }
+
+log = logging.getLogger("pubtools.marketplacesvm")
 
 
 def _get_push_item_region_type(push_item: AmiPushItem, destination: Destination) -> AmiPushItem:
@@ -94,7 +97,9 @@ def _update_destination(push_item: AmiPushItem, destination: Destination) -> Ami
     return evolve(push_item, dest=[destination.destination])
 
 
-def enrich_push_item(push_item: AmiPushItem, destination: Destination, beta: bool) -> AmiPushItem:
+def enrich_push_item(
+    push_item: AmiPushItem, destination: Destination, beta: bool, require_bc: bool = True
+) -> AmiPushItem:
     """
     Set the missing push item attributes required for community workflow.
 
@@ -105,6 +110,9 @@ def enrich_push_item(push_item: AmiPushItem, destination: Destination, beta: boo
             The destination with all required information to enrich the push item.
         beta:
             Whether the release type is "beta" or not ("ga")
+        require_bc:
+            Whether the billing_codes are required (True) or not (False).
+            Defaults to True.
     Returns:
         The enriched push item for community workflow.
     """
@@ -114,7 +122,10 @@ def enrich_push_item(push_item: AmiPushItem, destination: Destination, beta: boo
     # - billing_codes
     # - public_image
     pi = _get_push_item_region_type(push_item, destination)
-    pi = _get_push_item_billing_code(pi, destination)
+    if require_bc:
+        pi = _get_push_item_billing_code(pi, destination)
+    else:
+        log.warning("BILLING CODES REQUIREMENT IS CURRENTLY DISABLED!")
     pi = _get_push_item_rhsm_provider(pi, destination)
     pi = _get_push_item_public_image(pi)
 
