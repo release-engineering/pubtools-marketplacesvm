@@ -28,6 +28,9 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
 
     _REQUEST_THREADS = int(os.environ.get("COMMUNITY_PUSH_REQUEST_THREADS", "5"))
     _PROCESS_THREADS = int(os.environ.get("COMMUNITY_PUSH_PROCESS_THREADS", "10"))
+    _REQUIRE_BC = bool(
+        os.environ.get("COMMUNITY_PUSH_REQUIRE_BILLING_CODES", "true").lower() == "true"
+    )
 
     def __init__(self, *args, **kwargs):
         """Initialize the CommunityVMPush instance."""
@@ -300,7 +303,9 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                 log.debug("Mapped push item for %s: %s", storage_account, pi)
 
                 for dest in destinations:
-                    epi = enrich_push_item(pi, dest, beta=self.args.beta)
+                    epi = enrich_push_item(
+                        pi, dest, beta=self.args.beta, require_bc=self._REQUIRE_BC
+                    )
                     log.debug("Enriched push item for %s: %s", storage_account, epi)
 
                     # SAP and RHEL-HA images are expected to be

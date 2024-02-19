@@ -107,6 +107,36 @@ def test_do_community_push(
     )
 
 
+def test_do_community_push_skip_billing_codes(
+    fake_source: mock.MagicMock,
+    fake_starmap: mock.MagicMock,
+    fake_cloud_instance: mock.MagicMock,
+    command_tester: CommandTester,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test a successfull community-push without requiring billing codes."""
+    monkeypatch.setattr(CommunityVMPush, '_REQUIRE_BC', False)
+    command_tester.test(
+        lambda: entry_point(CommunityVMPush),
+        [
+            "test-push",
+            "--starmap-url",
+            "https://starmap-example.com",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--rhsm-url",
+            "https://rhsm.com/test/api/",
+            "--debug",
+            "koji:https://fakekoji.com?vmi_build=ami_build",
+        ],
+    )
+
+    fake_source.get.assert_called_once()
+    fake_starmap.query_image_by_name.assert_called_once_with(
+        name="test-build", version="7.0", workflow=Workflow.community
+    )
+
+
 @pytest.mark.parametrize("product_name", ["RHEL_HA", "SAP"])
 @mock.patch("pubtools._marketplacesvm.tasks.community_push.CommunityVMPush.starmap")
 @mock.patch("pubtools._marketplacesvm.tasks.community_push.command.Source")
