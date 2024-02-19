@@ -359,6 +359,11 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         else:
             os_name = push_item.build_info.name
 
+        if push_item.release.base_version is not None:
+            os_version = push_item.release.base_version
+        else:
+            os_version = push_item.release.version
+
         release = push_item.release
         release_date = release.date.strftime("%Y%m%d")
         respin = str(release.respin)
@@ -385,7 +390,7 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
                                 "AccessRoleArn": self.aws_access_role_arn,
                                 "UserName": push_item.user_name,
                                 "OperatingSystemName": os_name.split("-")[0].upper(),
-                                "OperatingSystemVersion": push_item.release.version,
+                                "OperatingSystemVersion": os_version,
                                 "ScanningPort": push_item.scanning_port,
                             },
                             "UsageInstructions": self._format_version_info(
