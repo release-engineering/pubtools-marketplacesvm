@@ -267,12 +267,12 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         name = name_from_push_item(push_item)
         binfo = push_item.build_info
         default_groups = self.aws_groups or []
-        groups = kwargs.get("groups", default_groups)
+        groups = kwargs.get("groups") or default_groups
         default_accounts = self.aws_accounts or []
-        accounts = kwargs.get("accounts", default_accounts)
+        accounts = kwargs.get("accounts") or default_accounts
         default_snapshot_accounts = self.aws_snapshot_accounts or []
-        snapshot_accounts = kwargs.get("snapshot_accounts", default_snapshot_accounts)
-        container = kwargs.get("container", self.s3_bucket)
+        snapshot_accounts = kwargs.get("snapshot_accounts") or default_snapshot_accounts
+        container = kwargs.get("container") or self.s3_bucket
         LOG.info("Image name: %s | Sharing groups: %s", name, groups)
 
         tags = {
