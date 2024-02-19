@@ -168,7 +168,7 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
         major, minor = version.split(".", maxsplit=1)
 
         # we don't want an additional "." to break the format thus lets sanitize the minor version
-        minor.replace(".", "-")
+        minor = minor.replace(".", "-")
 
         # Return the new disk_version
         return f"{major}.{minor}.{current_date}"
