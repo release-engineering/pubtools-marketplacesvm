@@ -238,6 +238,21 @@ def test_generate_disk_version(
     assert res == "7.0.202301010000"
 
 
+@patch("pubtools._marketplacesvm.cloud_providers.ms_azure.datetime")
+def test_generate_disk_version_xyz(
+    mock_date: MagicMock, azure_push_item: VHDPushItem, fake_azure_provider: AzureProvider
+) -> None:
+    mock_strftime = MagicMock()
+    mock_strftime.strftime.return_value = "202301010000"
+    mock_date.now.return_value = mock_strftime
+    b_info = KojiBuildInfo(name=azure_push_item.name, version="7.0.15", release="0")
+    push_item = evolve(azure_push_item, build_info=b_info)
+
+    res = fake_azure_provider._generate_disk_version(push_item)
+
+    assert res == "7.0-15.202301010000"
+
+
 def test_borg() -> None:
     a = AzureDestinationBorg()
     b = AzureDestinationBorg()
