@@ -1,4 +1,9 @@
-from strenum import StrEnum
+import sys
+
+if sys.version_info >= (3, 11):
+    from enum import StrEnum  # pragma: no cover
+else:
+    from strenum import StrEnum  # pragma: no cover
 
 
 class State(StrEnum):

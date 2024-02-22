@@ -57,12 +57,6 @@ security:
   script:
     - tox -e security
 
-python3.7:
-  <<: *common
-  stage: unit-tests
-  script: 
-    - tox -e py37
-
 python3.8:
   <<: *common
   stage: unit-tests
@@ -80,6 +74,12 @@ python3.10:
   stage: unit-tests
   script:
     - tox -e py310
+
+python3.11:
+  <<: *common
+  stage: unit-tests
+  script:
+    - tox -e py311
 
 coverage:
   <<: *common
