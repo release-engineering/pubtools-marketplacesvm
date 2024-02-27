@@ -1,4 +1,5 @@
 import logging
+import os
 from datetime import datetime
 from functools import partial
 from typing import Any, Dict, List, Optional, Tuple
@@ -144,6 +145,9 @@ class AWSCredentials(CloudCredentials):
 class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
     """The AWS marketplace provider."""
 
+    _TIMEOUT_ATTEMPTS = int(os.environ.get("MARKETPLACESVM_PUSH_AWS_TIMEOUT_ATTEMPTS", "288"))
+    _TIMEOUT_INTERVALS = int(os.environ.get("MARKETPLACESVM_PUSH_AWS_TIMEOUT_INTERVALS", "600"))
+
     ARCH_ALIASES: Dict[str, str] = {"aarch64": "arm64"}
     """Dictionary of aliases for architecture names between brew and AWS."""
 
@@ -170,6 +174,8 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
             credentials.aws_marketplace_access_key,
             credentials.aws_marketplace_secret_access,
             credentials.aws_region,
+            self._TIMEOUT_ATTEMPTS,
+            self._TIMEOUT_INTERVALS,
         )
         self.image_id = ""
         self.s3_bucket = credentials.aws_s3_bucket or UPLOAD_CONTAINER_NAME
