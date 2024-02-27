@@ -308,6 +308,8 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
             upload_metadata_kwargs.update({"boot_mode": push_item.boot_mode.value})
         if push_item.billing_codes:
             upload_metadata_kwargs.update({"billing_products": push_item.billing_codes.codes})
+        if push_item.access_endpoint_url:
+            upload_metadata_kwargs.update({"access_endpoint_url": push_item.access_endpoint_url})
 
         LOG.debug("%s", upload_metadata_kwargs)
         metadata = AWSUploadMetadata(**upload_metadata_kwargs)

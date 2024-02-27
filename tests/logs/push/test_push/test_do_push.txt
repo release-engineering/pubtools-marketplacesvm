@@ -26,6 +26,7 @@
 [ WARNING] Missing information for the attribute ami_pushitem.user_name, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.version_title, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.security_groups, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.access_endpoint_url, leaving it unset.
 [    INFO] Uploading the item ami_pushitem to AWS-NA.
 [    INFO] Upload finished for ami_pushitem on AWS-NA
 [    INFO] Uploading the item ami_pushitem to AWS-EMEA.

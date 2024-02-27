@@ -7,6 +7,7 @@ import pytest
 from attrs import evolve
 from cloudpub.models.aws import VersionMapping as AWSVersionMapping
 from pushsource import (
+    AmiAccessEndpointUrl,
     AmiBillingCodes,
     AmiPushItem,
     AmiRelease,
@@ -484,6 +485,58 @@ def test_upload_custom_tags(
     fake_aws_provider.upload_svc_partial.return_value.publish.return_value = FakeImageResp()  # type: ignore [attr-defined] # noqa: E501
 
     fake_aws_provider.upload(aws_push_item, custom_tags=custom_tags)
+
+    mock_metadata.assert_called_once_with(**metadata)
+    fake_aws_provider.upload_svc_partial.return_value.publish.assert_called_once_with(meta_obj)  # type: ignore [attr-defined] # noqa: E501
+    fake_aws_provider.publish_svc.publish.assert_not_called()
+
+
+@patch("pubtools._marketplacesvm.cloud_providers.aws.AWSUploadMetadata")
+def test_upload_access_endpoint_url(
+    mock_metadata: MagicMock,
+    aws_push_item: AmiPushItem,
+    fake_aws_provider: AWSProvider,
+):
+    aeu_dict = {"port": 10, "protocol": "https"}
+    aeu = AmiAccessEndpointUrl._from_data(aeu_dict)
+
+    aws_push_item = evolve(aws_push_item, access_endpoint_url=aeu)
+    created_name = name_from_push_item(aws_push_item)
+    binfo = aws_push_item.build_info
+
+    tags = {
+        "arch": aws_push_item.release.arch,
+        "buildid": str(aws_push_item.build_info.id),
+        "name": aws_push_item.build_info.name,
+        "nvra": f"{binfo.name}-{binfo.version}-{binfo.release}.{aws_push_item.release.arch}",
+        "release": aws_push_item.build_info.release,
+        "version": aws_push_item.build_info.version,
+    }
+    metadata = {
+        "image_path": aws_push_item.src,
+        "image_name": created_name,
+        "snapshot_name": created_name,
+        "container": UPLOAD_CONTAINER_NAME,
+        "description": aws_push_item.description,
+        "arch": aws_push_item.release.arch,
+        "virt_type": aws_push_item.virtualization,
+        "root_device_name": aws_push_item.root_device,
+        "volume_type": aws_push_item.volume,
+        "accounts": fake_aws_provider.aws_accounts,
+        "groups": fake_aws_provider.aws_groups,
+        "snapshot_account_ids": fake_aws_provider.aws_snapshot_accounts,
+        "sriov_net_support": aws_push_item.sriov_net_support,
+        "ena_support": aws_push_item.ena_support,
+        "billing_products": [],
+        "access_endpoint_url": aws_push_item.access_endpoint_url,
+        "tags": tags,
+    }
+    meta_obj = MagicMock(**metadata)
+    mock_metadata.return_value = meta_obj
+
+    fake_aws_provider.upload_svc_partial.return_value.publish.return_value = FakeImageResp()  # type: ignore [attr-defined] # noqa: E501
+
+    fake_aws_provider.upload(aws_push_item)
 
     mock_metadata.assert_called_once_with(**metadata)
     fake_aws_provider.upload_svc_partial.return_value.publish.assert_called_once_with(meta_obj)  # type: ignore [attr-defined] # noqa: E501
