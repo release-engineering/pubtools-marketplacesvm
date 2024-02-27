@@ -500,7 +500,7 @@ def test_publish(
 ):
     # update base_product so we can test both naming conventions
     release = aws_push_item.release
-    updated_release = evolve(release, base_product=new_base_product)
+    updated_release = evolve(release, base_product=new_base_product, base_version=None)
     updated_aws_push_item = evolve(aws_push_item, release=updated_release)
     updated_aws_push_item, _ = fake_aws_provider._post_upload(
         updated_aws_push_item, FakeImageResp()
