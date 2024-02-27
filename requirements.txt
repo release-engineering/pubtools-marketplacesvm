@@ -13,4 +13,4 @@ strenum>=0.4.15
 starmap-client @ git+https://gitlab.cee.redhat.com/stratosphere/starmap-client.git@v1.0.0
 
 # cloudpub
-cloudpub @ git+https://gitlab.cee.redhat.com/stratosphere/cloudpub.git@main
+cloudpub @ git+https://gitlab.cee.redhat.com/stratosphere/cloudpub.git@v0.6.0
