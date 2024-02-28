@@ -165,13 +165,10 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
 
         # Get the version from PushItem's build_info
         version = push_item.build_info.version
-        major, minor = version.split(".", maxsplit=1)
-
-        # we don't want an additional "." to break the format thus lets sanitize the minor version
-        minor = minor.replace(".", "-")
+        version_split = version.split(".")
 
         # Return the new disk_version
-        return f"{major}.{minor}.{current_date}"
+        return f"{version_split[0]}.{version_split[1]}.{current_date}"
 
     @classmethod
     def from_credentials(cls, auth_data: Dict[str, Any]) -> 'AzureProvider':
