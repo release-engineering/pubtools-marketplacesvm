@@ -376,7 +376,9 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         release_date = release.date.strftime("%Y%m%d")
         respin = str(release.respin)
 
-        version_title = f"{push_item.release.version} {release_date}-{respin}"
+        version_title = (
+            push_item.marketplace_title or f"{push_item.release.version} {release_date}-{respin}"
+        )
 
         if self._check_version_exists(version_title, push_item.dest[0]):
             LOG.info("Version already exists in AWS: %s", version_title)

@@ -7,6 +7,7 @@
 [ WARNING] Missing information for the attribute ami_pushitem.build, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.description, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.boot_mode, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.marketplace_title_template, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.type, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.region, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.virtualization, leaving it unset.
@@ -43,6 +44,7 @@
 [ WARNING] Missing information for the attribute vhd_pushitem.build, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.description, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.boot_mode, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.marketplace_title_template, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.sku_id, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.support_legacy, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.legacy_sku_id, leaving it unset.
