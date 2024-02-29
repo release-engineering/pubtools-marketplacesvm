@@ -215,6 +215,25 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         formatted_str = str_to_format.format(major_version=major_version, major_minor=major_minor)
         return formatted_str
 
+    def _get_access_endpoint_url(self, push_item: AmiPushItem) -> Optional[Dict[str, Any]]:
+        """
+        Format a string with versioning info.
+
+        Args:
+            str_to_format (str)
+                String to format with version information.
+            version_str (str)
+                String with version info ie 8.1.
+        Returns:
+            str: The formatted str.
+        """
+        if push_item.access_endpoint_url:
+            return {
+                "port": push_item.access_endpoint_url.port,
+                "protocol": push_item.access_endpoint_url.protocol,
+            }
+        return None
+
     @classmethod
     def from_credentials(cls, auth_data: Dict[str, Any]) -> 'AWSProvider':
         """
@@ -314,8 +333,6 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
             upload_metadata_kwargs.update({"boot_mode": push_item.boot_mode.value})
         if push_item.billing_codes:
             upload_metadata_kwargs.update({"billing_products": push_item.billing_codes.codes})
-        if push_item.access_endpoint_url:
-            upload_metadata_kwargs.update({"access_endpoint_url": push_item.access_endpoint_url})
 
         LOG.debug("%s", upload_metadata_kwargs)
         metadata = AWSUploadMetadata(**upload_metadata_kwargs)
@@ -408,11 +425,13 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
                             ),
                             "RecommendedInstanceType": push_item.recommended_instance_type,
                             "SecurityGroups": self._get_security_items(push_item),
+                            "AccessEndpointUrl": self._get_access_endpoint_url(push_item),
                         }
                     }
                 }
             ],
         }
+
         version_mapping = AWSVersionMapping.from_json(version_mapping_kwargs)
         publish_metadata_kwargs = {
             "version_mapping": version_mapping,
