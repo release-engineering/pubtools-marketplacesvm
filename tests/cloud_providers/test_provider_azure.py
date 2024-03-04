@@ -250,7 +250,10 @@ def test_generate_disk_version_xyz(
 
     res = fake_azure_provider._generate_disk_version(push_item)
 
-    assert res == "7.0-15.202301010000"
+    assert res == "7.0.202301010000"
+
+    # Make sure we pass Pushsource regex for versioning
+    evolve(push_item, disk_version=res)
 
 
 def test_borg() -> None:
