@@ -45,6 +45,12 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                             item.src,
                         )
                         continue
+                    # filter out CoreOS Assembler PushItems for government regions
+                    elif (item.src and item.src.startswith("ami")) and (
+                        item.region and "-gov-" in item.region
+                    ):
+                        log.info("Skipping PushItem %s for region %s", item.name, item.region)
+                        continue
                     yield item
 
     @property
@@ -59,7 +65,14 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
         for item in self.raw_items:
             log.info("Retrieving the mappings for %s from %s", item.name, self.args.starmap_url)
             binfo = item.build_info
-            query = self.starmap.query_image_by_name(name=binfo.name, version=binfo.version)
+            if item.marketplace_name:
+                name = binfo.name + "-" + item.marketplace_name
+            else:
+                name = binfo.name
+            query = self.starmap.query_image_by_name(
+                name=name,
+                version=binfo.version,
+            )
             query_returned_from_starmap = query
             log.info(
                 "starmap query returned for %s : %s ",

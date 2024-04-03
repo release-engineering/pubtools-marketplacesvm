@@ -1,5 +1,6 @@
 import logging
 import os
+from collections import namedtuple
 from datetime import datetime
 from functools import partial
 from typing import Any, Dict, List, Optional, Tuple
@@ -211,8 +212,13 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         """
         splitted_version = version_str.split(".")
         major_version = splitted_version[0]
+        minor_version = splitted_version[1]
         major_minor = ".".join(splitted_version[0:2])
-        formatted_str = str_to_format.format(major_version=major_version, major_minor=major_minor)
+        formatted_str = str_to_format.format(
+            major_minor=major_minor,
+            major_version=major_version,
+            minor_version=minor_version,
+        )
         return formatted_str
 
     def _get_access_endpoint_url(self, push_item: AmiPushItem) -> Optional[Dict[str, Any]]:
@@ -248,6 +254,41 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         creds = AWSCredentials(**auth_data)
         return cls(creds)
 
+    def _copy_image_from_ami_catalog(self, push_item: AmiPushItem):
+        """
+        Copy AMI from AMI-Catalog (AWS-Marketplace AMIs and Community-AMIs) to account.
+
+        Args:
+            push_item(AmiPushItem): The push item containing the source of AMI ID.
+        Returns:
+            ami_id (namedtuple): An named tuple object which contains AMI ID.
+        Raises:
+            RuntimeError if AMI is not found.
+        """
+        upload_svc = self.upload_svc_partial(region=push_item.region)
+
+        img = upload_svc.get_image_from_ami_catalog(push_item.src)
+        if img is None:
+            raise RuntimeError("AMI not found.")
+        # Create a named tuple to store the ami-id of image
+        UploadResult = namedtuple("UploadResult", "id")  # NOSONAR
+
+        # Search if the AMI is already in the Account
+        ami = upload_svc.get_image_by_name(push_item.build)
+        if ami:
+            LOG.info("AMI already exits in account.Skipping Copying AMI.")
+            result = UploadResult(ami.id)
+        else:
+            LOG.info("AMI not found in account. Copying ami to account.")
+
+            copy_result = upload_svc.copy_ami(
+                image_id=push_item.src,
+                image_name=push_item.build,
+                image_region=push_item.region,
+            )
+            result = UploadResult(copy_result["ImageId"])
+        return result
+
     def _upload(
         self,
         push_item: AmiPushItem,
@@ -274,7 +315,7 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
 
         Args:
             push_item (AmiPushItem)
-                The push item with the required data to upload the AMI image into Azure.
+                The push item with the required data to upload the AMI image into AWS.
             custom_tags (dict, optional)
                 Dictionary with keyword values to be added as custom tags.
             groups (list, optional)
@@ -289,6 +330,11 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         Returns:
             The EC2 image with the data from uploaded image.
         """
+        # Check if the AMI is already created for this push item.
+        if push_item.src.startswith("ami"):
+            result = self._copy_image_from_ami_catalog(push_item)
+            return push_item, result
+
         name = name_from_push_item(push_item)
         binfo = push_item.build_info
         default_groups = self.aws_groups or []
@@ -372,7 +418,7 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
 
         Args:
             push_item (AmiPushItem)
-                The push item to associate and publish a VM image into an Azure product.
+                The push item to associate and publish a VM image into an AWS product.
             nochannel (bool)
                 Whether to keep draft or not.
             overwrite (bool, Optional)
