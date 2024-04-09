@@ -117,6 +117,30 @@ def aws_push_item(
 
 
 @pytest.fixture
+def aws_rhcos_push_item(ami_release: AmiRelease, security_group: AmiSecurityGroup) -> AmiPushItem:
+    params = {
+        "name": "rhcos",
+        "description": "foo",
+        "src": "ami-01",
+        "dest": ["product-uuid"],
+        "build": "sample_product-1.0.1-1-x86_64",
+        "build_info": KojiBuildInfo(
+            name="test-build", version="1.0.1", release="20230101", id=1234
+        ),
+        "virtualization": "virt",
+        "volume": "gp2",
+        "release": ami_release,
+        "scanning_port": 22,
+        "release_notes": "https://access.redhat.com/{major_minor}/{major_version}-{minor_version}.html",  # noqa: E501
+        "usage_instructions": "Example. {major_minor}",
+        "recommended_instance_type": "m5.large",
+        "marketplace_entity_type": "FakeProduct",
+        "security_groups": [security_group],
+    }
+    return AmiPushItem(**params)
+
+
+@pytest.fixture
 def aws_product_versions() -> Dict[str, Any]:
     product_versions = {
         "Fake-Version": {
@@ -202,6 +226,55 @@ def test_format_version_info(aws_push_item: AmiPushItem, fake_aws_provider: AWSP
         aws_push_item.release_notes, aws_push_item.release.version
     )
     assert res == expected_output
+
+
+def test_upload_of_rhcos_image(
+    aws_rhcos_push_item: AmiPushItem,
+    fake_aws_provider: AWSProvider,
+):
+    fake_aws_provider.upload_svc_partial.return_value.get_image_from_ami_catalog.return_value = FakeImageResp()  # type: ignore [attr-defined] # noqa: E501
+    fake_aws_provider.upload_svc_partial.return_value.copy_ami.return_value = {  # type: ignore [attr-defined] # noqa: E501
+        "ImageId": "fake-ami-02"
+    }
+    fake_aws_provider.upload_svc_partial.return_value.get_image_by_name.return_value = (  # type: ignore [attr-defined] # noqa: E501
+        None
+    )
+
+    _, result = fake_aws_provider.upload(aws_rhcos_push_item)
+    assert result.id == "fake-ami-02"
+    fake_aws_provider.upload_svc_partial.return_value.get_image_from_ami_catalog.assert_called_once()  # type: ignore [attr-defined] # noqa: E501
+    fake_aws_provider.upload_svc_partial.return_value.get_image_by_name.assert_called_once()  # type: ignore [attr-defined] # noqa: E501
+    fake_aws_provider.upload_svc_partial.return_value.copy_ami.assert_called_once()  # type: ignore [attr-defined] # noqa: E501
+
+
+def test_upload_of_rhcos_image_not_found(
+    aws_rhcos_push_item: AmiPushItem,
+    fake_aws_provider: AWSProvider,
+):
+    fake_aws_provider.upload_svc_partial.return_value.get_image_from_ami_catalog.return_value = None  # type: ignore [attr-defined] # noqa: E501
+    with pytest.raises(Exception) as execinfo:
+        fake_aws_provider.upload(aws_rhcos_push_item)
+
+    assert "AMI not found." in str(execinfo)
+    fake_aws_provider.upload_svc_partial.return_value.get_image_from_ami_catalog.assert_called_once()  # type: ignore [attr-defined] # noqa: E501
+
+
+def test_upload_of_rhcos_image_ami_already_coppied(
+    aws_rhcos_push_item: AmiPushItem,
+    fake_aws_provider: AWSProvider,
+):
+    fake_aws_provider.upload_svc_partial.return_value.get_image_from_ami_catalog.return_value = FakeImageResp()  # type: ignore [attr-defined] # noqa: E501
+    fake_aws_provider.upload_svc_partial.return_value.copy_ami.return_value = {  # type: ignore [attr-defined] # noqa: E501
+        "ImageId": "fake-ami-02"
+    }
+    fake_aws_provider.upload_svc_partial.return_value.get_image_by_name.return_value = FakeImageResp  # type: ignore [attr-defined] # noqa: E501
+    fake_aws_provider.upload_svc_partial.return_value.get_image_by_name.return_value.id = "fake-ami-03"  # type: ignore [attr-defined] # noqa: E501
+
+    _, result = fake_aws_provider.upload(aws_rhcos_push_item)
+    assert result.id == "fake-ami-03"
+    fake_aws_provider.upload_svc_partial.return_value.get_image_from_ami_catalog.assert_called_once()  # type: ignore [attr-defined] # noqa: E501
+    fake_aws_provider.upload_svc_partial.return_value.get_image_by_name.assert_called_once()  # type: ignore [attr-defined] # noqa: E501
+    fake_aws_provider.upload_svc_partial.return_value.copy_ami.assert_not_called()  # type: ignore [attr-defined] # noqa: E501
 
 
 @patch("pubtools._marketplacesvm.cloud_providers.aws.AWSUploadMetadata")

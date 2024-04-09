@@ -656,3 +656,37 @@ def test_empty_value_to_collect(
             "koji:https://fakekoji.com?vmi_build=ami_build",
         ],
     )
+
+
+@mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
+def test_push_item_rhcos_gov(
+    mock_source: mock.MagicMock,
+    ami_push_item: AmiPushItem,
+    fake_starmap: mock.MagicMock,
+    fake_cloud_instance: mock.MagicMock,
+    vhd_push_item: VHDPushItem,
+    command_tester: CommandTester,
+) -> None:
+    """Ensure the push item for rhcos gov region is filtered out."""
+    ami_push_item = evolve(ami_push_item, marketplace_name="aws")
+    ami_push_item_gov = evolve(ami_push_item, src="ami-01")
+    ami_push_item_gov = evolve(ami_push_item_gov, region="us-gov-1")
+    vhd_push_item = evolve(vhd_push_item, marketplace_name="azure")
+
+    mock_source.get.return_value.__enter__.return_value = [
+        ami_push_item,
+        ami_push_item_gov,
+        vhd_push_item,
+    ]
+    command_tester.test(
+        lambda: entry_point(MarketplacesVMPush),
+        [
+            "test-push",
+            "--starmap-url",
+            "https://starmap-example.com",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--debug",
+            "koji:https://fakekoji.com?vmi_build=unknown_build,ami_build",
+        ],
+    )
