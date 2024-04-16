@@ -4,11 +4,21 @@ from typing import Any, Dict
 
 import pytest
 from attrs import asdict, evolve
-from pushsource import AmiPushItem, AmiRelease, AmiSecurityGroup, VHDPushItem, VMIRelease
+from pushsource import (
+    AmiAccessEndpointUrl,
+    AmiPushItem,
+    AmiRelease,
+    AmiSecurityGroup,
+    VHDPushItem,
+    VMIRelease,
+)
 from starmap_client.models import Destination, QueryResponse
 
 from pubtools._marketplacesvm.tasks.push.items import MappedVMIPushItem
-from pubtools._marketplacesvm.tasks.push.items.ami import aws_security_groups_converter
+from pubtools._marketplacesvm.tasks.push.items.ami import (
+    aws_access_endpoint_url_converter,
+    aws_security_groups_converter,
+)
 
 
 def test_mapped_item_properties(
@@ -250,3 +260,12 @@ def test_converter_aws_securitygroups() -> None:
 
     assert isinstance(res[0], AmiSecurityGroup)
     assert asdict(res[0]) == fake_sec_group
+
+
+def test_converter_aws_access_endpoint_url_converter() -> None:
+    fake_access_endpoint_url = {'port': 9990, 'protocol': 'http'}
+
+    res = aws_access_endpoint_url_converter(fake_access_endpoint_url)
+
+    assert isinstance(res, AmiAccessEndpointUrl)
+    assert asdict(res) == fake_access_endpoint_url
