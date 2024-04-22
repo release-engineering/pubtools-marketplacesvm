@@ -488,12 +488,14 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
             "keepdraft": nochannel,
             "overwrite": overwrite,
         }
+
+        LOG.debug("%s", publish_metadata_kwargs)
         metadata = AWSPublishMetadata(**publish_metadata_kwargs)
         res = self.publish_svc.publish(metadata)
         return push_item, res
 
     def _post_publish(
-        self, push_item: AmiPushItem, publish_result: Any, restrict_version: bool = False
+        self, push_item: AmiPushItem, publish_result: Any, **kwargs
     ) -> Tuple[AmiPushItem, Any]:
         """
         Post publishing activities currently restricts older versions.
@@ -505,6 +507,10 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
                 The AMI publish properties
             restrict_version (bool, Optional)
                 Whether to restrict the version and remove the accompanying AMI/Snapshot.
+            restrict_major (int, Optional)
+                How many major versions should there be for this product.
+            restrict_minor (int, Optional)
+                How many minor versions should there be for this product.
 
         Returns:
             Tuple of PushItem and Publish results.
@@ -515,14 +521,19 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         image = upload_svc.get_image_by_id(self.image_id)
         release_date_tag = {"release_date": datetime.now().strftime("%Y%m%d%H::%M::%S")}
         upload_svc.tag_image(image, release_date_tag)
+        restrict_version = kwargs.get("restrict_version", False)
+        restrict_major = kwargs.get("restrict_major")
+        restrict_minor = kwargs.get("restrict_minor")
 
         if restrict_version:
-            version_split = push_item.release.version.split(".")
+            LOG.info(
+                "Starting to restrict versions: restrict_major = %s, restrict_minor = %s",
+                restrict_major,
+                restrict_minor,
+            )
 
-            LOG.info("Checking for version to restrict: %s", ".".join(version_split[:2]))
-
-            restricted_amis = self.publish_svc.restrict_minor_versions(
-                push_item.dest[0], push_item.marketplace_entity_type, ".".join(version_split[:2])
+            restricted_amis = self.publish_svc.restrict_versions(
+                push_item.dest[0], push_item.marketplace_entity_type, restrict_major, restrict_minor
             )
 
             LOG.info("Found AMIs to restrict: %s", restricted_amis)

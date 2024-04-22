@@ -1,8 +1,8 @@
 [    INFO] Loading items from koji:https://fakekoji.com?vmi_build=ami_build,azure_build
 [    INFO] Retrieving the mappings for ami_pushitem from https://starmap-example.com
-[    INFO] starmap query returned for ami_pushitem : {"name": "test-build", "version": "7.0", "query_response": {"name": "sample-product", "workflow": "stratosphere", "clouds": {"aws-na": [{"id": null, "meta": {"tag1": "aws-na-value1", "tag2": "aws-na-value2"}, "architecture": "x86_64", "destination": "ffffffff-ffff-ffff-ffff-ffffffffffff", "overwrite": true, "stage_preview": false, "restrict_version": false, "provider": null, "tags": {"key1": "value1", "key2": "value2"}}], "aws-emea": [{"id": null, "meta": {"tag1": "aws-emea-value1", "tag2": "aws-emea-value2"}, "architecture": "x86_64", "destination": "00000000-0000-0000-0000-000000000000", "overwrite": true, "stage_preview": false, "restrict_version": false, "provider": null, "tags": {"key3": "value3", "key4": "value4"}}]}}} 
+[    INFO] starmap query returned for ami_pushitem : {"name": "test-build", "version": "7.0", "query_response": {"name": "sample-product", "workflow": "stratosphere", "clouds": {"aws-na": [{"id": null, "meta": {"tag1": "aws-na-value1", "tag2": "aws-na-value2"}, "architecture": "x86_64", "destination": "ffffffff-ffff-ffff-ffff-ffffffffffff", "overwrite": true, "stage_preview": false, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "provider": null, "tags": {"key1": "value1", "key2": "value2"}}], "aws-emea": [{"id": null, "meta": {"tag1": "aws-emea-value1", "tag2": "aws-emea-value2"}, "architecture": "x86_64", "destination": "00000000-0000-0000-0000-000000000000", "overwrite": true, "stage_preview": false, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "provider": null, "tags": {"key3": "value3", "key4": "value4"}}]}}} 
 [    INFO] Retrieving the mappings for vhd_pushitem from https://starmap-example.com
-[    INFO] starmap query returned for vhd_pushitem : {"name": "test-build", "version": "7.0", "query_response": {"name": "sample-product", "workflow": "stratosphere", "clouds": {"azure-na": [{"id": null, "meta": {"tag1": "value1", "tag2": "value2"}, "architecture": "x86_64", "destination": "destination_offer_main/plan1", "overwrite": true, "stage_preview": false, "restrict_version": false, "provider": null, "tags": {"key1": "value1", "key2": "value2"}}, {"id": null, "meta": {"tag3": "value3", "tag4": "value5"}, "architecture": "x86_64", "destination": "destination_offer_main/plan2", "overwrite": false, "stage_preview": false, "restrict_version": false, "provider": null, "tags": null}, {"id": null, "meta": null, "architecture": "x86_64", "destination": "destination_offer_main/plan3", "overwrite": false, "stage_preview": false, "restrict_version": false, "provider": null, "tags": null}]}}} 
+[    INFO] starmap query returned for vhd_pushitem : {"name": "test-build", "version": "7.0", "query_response": {"name": "sample-product", "workflow": "stratosphere", "clouds": {"azure-na": [{"id": null, "meta": {"tag1": "value1", "tag2": "value2"}, "architecture": "x86_64", "destination": "destination_offer_main/plan1", "overwrite": true, "stage_preview": false, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "provider": null, "tags": {"key1": "value1", "key2": "value2"}}, {"id": null, "meta": {"tag3": "value3", "tag4": "value5"}, "architecture": "x86_64", "destination": "destination_offer_main/plan2", "overwrite": false, "stage_preview": false, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "provider": null, "tags": null}, {"id": null, "meta": null, "architecture": "x86_64", "destination": "destination_offer_main/plan3", "overwrite": false, "stage_preview": false, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "provider": null, "tags": null}]}}} 
 [ WARNING] Missing information for the attribute ami_pushitem.src, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.build, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.description, leaving it unset.
@@ -33,13 +33,13 @@
 [    INFO] Upload finished for ami_pushitem on AWS-NA
 [    INFO] Uploading the item ami_pushitem to AWS-EMEA.
 [    INFO] Upload finished for ami_pushitem on AWS-EMEA
-[    INFO] Pushing "ami_pushitem" (pre-push=True, preview=False, restrict_version=False) to ffffffff-ffff-ffff-ffff-ffffffffffff on AWS-NA.
+[    INFO] Pushing "ami_pushitem" (pre-push=True, preview=False) to ffffffff-ffff-ffff-ffff-ffffffffffff on AWS-NA.
 [   ERROR] Failed to publish ami_pushitem on Random exception: AWS-NA
-[    INFO] Pushing "ami_pushitem" (pre-push=False, preview=False, restrict_version=False) to ffffffff-ffff-ffff-ffff-ffffffffffff on AWS-NA.
+[    INFO] Pushing "ami_pushitem" (pre-push=False, preview=False) to ffffffff-ffff-ffff-ffff-ffffffffffff on AWS-NA.
 [   ERROR] Failed to publish ami_pushitem on Random exception: AWS-NA
-[    INFO] Pushing "ami_pushitem" (pre-push=True, preview=False, restrict_version=False) to 00000000-0000-0000-0000-000000000000 on AWS-EMEA.
+[    INFO] Pushing "ami_pushitem" (pre-push=True, preview=False) to 00000000-0000-0000-0000-000000000000 on AWS-EMEA.
 [   ERROR] Failed to publish ami_pushitem on Random exception: AWS-EMEA
-[    INFO] Pushing "ami_pushitem" (pre-push=False, preview=False, restrict_version=False) to 00000000-0000-0000-0000-000000000000 on AWS-EMEA.
+[    INFO] Pushing "ami_pushitem" (pre-push=False, preview=False) to 00000000-0000-0000-0000-000000000000 on AWS-EMEA.
 [   ERROR] Failed to publish ami_pushitem on Random exception: AWS-EMEA
 [ WARNING] Missing information for the attribute vhd_pushitem.src, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.build, leaving it unset.
@@ -55,9 +55,9 @@
 [ WARNING] Missing information for the attribute vhd_pushitem.sas_uri, leaving it unset.
 [    INFO] Uploading the item vhd_pushitem to AZURE-NA.
 [    INFO] Upload finished for vhd_pushitem on AZURE-NA
-[    INFO] Pushing "vhd_pushitem" (pre-push=True, preview=False, restrict_version=False) to destination_offer_main/plan1 on AZURE-NA.
+[    INFO] Pushing "vhd_pushitem" (pre-push=True, preview=False) to destination_offer_main/plan1 on AZURE-NA.
 [   ERROR] Failed to publish vhd_pushitem on Random exception: AZURE-NA
-[    INFO] Pushing "vhd_pushitem" (pre-push=False, preview=False, restrict_version=False) to destination_offer_main/plan1 on AZURE-NA.
+[    INFO] Pushing "vhd_pushitem" (pre-push=False, preview=False) to destination_offer_main/plan1 on AZURE-NA.
 [   ERROR] Failed to publish vhd_pushitem on Random exception: AZURE-NA
 [    INFO] Collecting results
 [   ERROR] Marketplace VM push failed

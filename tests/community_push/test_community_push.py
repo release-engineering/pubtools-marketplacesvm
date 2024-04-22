@@ -235,6 +235,52 @@ def test_do_community_push_no_billing_config(
     )
 
 
+@mock.patch("pubtools._marketplacesvm.tasks.community_push.CommunityVMPush.starmap")
+def test_do_community_push_major_minor(
+    mock_starmap: mock.MagicMock,
+    command_tester: CommandTester,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # Create a fake mapping
+    monkeypatch.setattr(CommunityVMPush, '_REQUIRE_BC', False)
+    policy = {
+        "name": "sample-product",
+        "workflow": "community",
+        "mappings": {
+            "aws_storage": [
+                {
+                    "architecture": "x86_64",
+                    "destination": "fake-destination-access",
+                    "overwrite": False,
+                    "stage_preview": False,
+                    "restrict_version": False,
+                    "restrict_major": 2,
+                    "restrict_minor": 2,
+                    "provider": "awstest",
+                    "meta": {},
+                }
+            ]
+        },
+    }
+    mock_starmap.query_image_by_name.return_value = QueryResponse.from_json(policy)
+
+    # Test
+    command_tester.test(
+        lambda: entry_point(CommunityVMPush),
+        [
+            "test-push",
+            "--starmap-url",
+            "https://starmap-example.com",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--rhsm-url",
+            "https://rhsm.com/test/api/",
+            "--debug",
+            "koji:https://fakekoji.com?vmi_build=ami_build",
+        ],
+    )
+
+
 @mock.patch("pubtools._marketplacesvm.tasks.community_push.command.Source")
 def test_not_ami_push_item(
     mock_source: mock.MagicMock,
