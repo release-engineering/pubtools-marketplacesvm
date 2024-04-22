@@ -23,7 +23,7 @@ class FakeCloudProvider(CloudProvider):
     def from_credentials(cls, _):
         return cls()
 
-    def _upload(self, push_item, custom_tags=None):
+    def _upload(self, push_item, custom_tags=None, **kwargs):
         time.sleep(2)
         return push_item, True
 
@@ -101,7 +101,7 @@ def test_do_push_ami_correct_id(
         amis = [ami_na, ami_emea]
         log = logging.getLogger("pubtools.marketplacesvm")
 
-        def _upload(self, push_item, custom_tags=None):
+        def _upload(self, push_item, custom_tags=None, **kwargs):
             time.sleep(2)
             push_item = evolve(push_item, image_id=self.amis.pop(0))
             return push_item, True
@@ -177,7 +177,7 @@ def test_do_push_azure_correct_sas(
         vhds = [azure_na, azure_emea]
         log = logging.getLogger("pubtools.marketplacesvm")
 
-        def _upload(self, push_item, custom_tags=None):
+        def _upload(self, push_item, custom_tags=None, **kwargs):
             time.sleep(2)
             push_item = evolve(push_item, sas_uri=self.vhds.pop(0))
             return push_item, True
@@ -553,7 +553,7 @@ def test_push_overridden_destination(
     """Test a push success with the destinations overriden from command line."""
 
     class FakeCloudInstance:
-        def upload(self, push_item, custom_tags=None):
+        def upload(self, push_item, custom_tags=None, **kwargs):
             time.sleep(2)
             return push_item, True
 

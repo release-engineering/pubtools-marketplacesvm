@@ -124,7 +124,11 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
         return query
 
     def _upload(
-        self, marketplace: str, push_item: VMIPushItem, custom_tags: Optional[Dict[str, str]] = None
+        self,
+        marketplace: str,
+        push_item: VMIPushItem,
+        custom_tags: Optional[Dict[str, str]] = None,
+        **kwargs,
     ) -> VMIPushItem:
         """
         Upload a single push item to the cloud marketplace and update the status.
@@ -136,12 +140,16 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                 The item to upload
             custom_tags:
                 Optional tags to be applied alongside the default ones from upload.
+            kwargs:
+                Additional arguments for CloudProviders
         Returns:
             The push item after the upload.
         """
         try:
             log.info("Uploading the item %s to %s.", push_item.name, marketplace.upper())
-            pi, _ = self.cloud_instance(marketplace).upload(push_item, custom_tags=custom_tags)
+            pi, _ = self.cloud_instance(marketplace).upload(
+                push_item, custom_tags=custom_tags, **kwargs
+            )
             log.info("Upload finished for %s on %s", push_item.name, marketplace.upper())
             pi = evolve(pi, state=State.NOTPUSHED)
         except Exception as exc:
@@ -306,6 +314,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                 marketplace,
                 mapped_item.get_push_item_for_marketplace(marketplace),
                 custom_tags=mapped_item.get_tags_for_marketplace(marketplace),
+                accounts=mapped_item.meta.get("sharing_accounts", []),
             )
             mapped_item.update_push_item_for_marketplace(marketplace, pi)
 
