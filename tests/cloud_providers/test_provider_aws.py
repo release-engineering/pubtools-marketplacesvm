@@ -739,7 +739,7 @@ def test_publish_version_exists(
 
     fake_aws_provider.publish_svc.get_product_versions.return_value = aws_product_versions
 
-    fake_aws_provider.publish_svc.restrict_minor_versions.return_value = ["ami-1", "ami-2"]
+    fake_aws_provider.publish_svc.restrict_versions.return_value = ["ami-1", "ami-2"]
 
     _, res = fake_aws_provider.publish(
         updated_aws_push_item, nochannel=False, overwrite=False, restrict_version=True
@@ -770,13 +770,13 @@ def test_post_publish(
     fake_aws_provider.upload_svc_partial.return_value.get_image_by_id.return_value = fake_image  # type: ignore [attr-defined] # noqa: E501
     fake_aws_provider.upload_svc_partial.return_value.tag_image.return_value = FakeImageTag()  # type: ignore [attr-defined] # noqa: E501
 
-    fake_aws_provider.publish_svc.restrict_minor_versions.return_value = ["ami-1", "ami-2"]
+    fake_aws_provider.publish_svc.restrict_versions.return_value = ["ami-1", "ami-2"]
 
     fake_pi_return, fake_result_return = fake_aws_provider._post_publish(
-        updated_aws_push_item, None, True
+        updated_aws_push_item, None, restrict_version=True, restrict_major=2, restrict_minor=2
     )
-    fake_aws_provider.publish_svc.restrict_minor_versions.assert_called_once_with(
-        'product-uuid', 'FakeProduct', '19.11'
+    fake_aws_provider.publish_svc.restrict_versions.assert_called_once_with(
+        'product-uuid', 'FakeProduct', 2, 2
     )
     assert fake_pi_return == updated_aws_push_item
     assert fake_result_return is None

@@ -188,11 +188,10 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
 
                 stage_preview = self._check_stage_preview(dest.stage_preview)
                 log.info(
-                    "Pushing \"%s\" (pre-push=%s, preview=%s, restrict_version=%s) to %s on %s.",
+                    "Pushing \"%s\" (pre-push=%s, preview=%s) to %s on %s.",
                     push_item.name,
                     pre_push,
                     stage_preview,
-                    dest.restrict_version,
                     dest.destination,
                     marketplace.upper(),
                 )
@@ -204,6 +203,8 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                     overwrite=dest.overwrite,
                     preview_only=stage_preview,
                     restrict_version=dest.restrict_version,
+                    restrict_major=dest.restrict_major,
+                    restrict_minor=dest.restrict_minor,
                 )
 
                 last_destination = curr_dest

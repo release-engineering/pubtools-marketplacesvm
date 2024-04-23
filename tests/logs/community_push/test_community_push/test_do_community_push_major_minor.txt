@@ -1,0 +1,2 @@
+[    INFO] Loading items from koji:https://fakekoji.com?vmi_build=ami_build
+# Raised: Communication error with koji at https://fakekoji.com

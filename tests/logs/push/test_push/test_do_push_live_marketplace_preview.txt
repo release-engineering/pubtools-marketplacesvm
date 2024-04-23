@@ -1,6 +1,6 @@
 [    INFO] Loading items from koji:https://fakekoji.com?vmi_build=azure_build
 [    INFO] Retrieving the mappings for vhd_pushitem from https://starmap-example.com
-[    INFO] starmap query returned for vhd_pushitem : {"name": "test-build", "version": "7.0", "query_response": {"name": "fake-policy", "workflow": "stratosphere", "clouds": {"azure-na": [{"id": null, "meta": null, "architecture": null, "destination": "fake-offer/fake-plan", "overwrite": false, "stage_preview": true, "restrict_version": false, "provider": null, "tags": null}, {"id": null, "meta": null, "architecture": null, "destination": "do-not/publish-me", "overwrite": false, "stage_preview": false, "restrict_version": false, "provider": null, "tags": null}]}}} 
+[    INFO] starmap query returned for vhd_pushitem : {"name": "test-build", "version": "7.0", "query_response": {"name": "fake-policy", "workflow": "stratosphere", "clouds": {"azure-na": [{"id": null, "meta": null, "architecture": null, "destination": "fake-offer/fake-plan", "overwrite": false, "stage_preview": true, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "provider": null, "tags": null}, {"id": null, "meta": null, "architecture": null, "destination": "do-not/publish-me", "overwrite": false, "stage_preview": false, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "provider": null, "tags": null}]}}} 
 [ WARNING] Missing information for the attribute vhd_pushitem.src, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.build, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.description, leaving it unset.
@@ -15,9 +15,9 @@
 [ WARNING] Missing information for the attribute vhd_pushitem.sas_uri, leaving it unset.
 [    INFO] Uploading the item vhd_pushitem to AZURE-NA.
 [    INFO] Upload finished for vhd_pushitem on AZURE-NA
-[    INFO] Pushing "vhd_pushitem" (pre-push=True, preview=False, restrict_version=False) to fake-offer/fake-plan on AZURE-NA.
+[    INFO] Pushing "vhd_pushitem" (pre-push=True, preview=False) to fake-offer/fake-plan on AZURE-NA.
 [ WARNING] Ignoring push for offer do-not on AZURE-NA since it's not marked as `preview`.
-[    INFO] Pushing "vhd_pushitem" (pre-push=False, preview=False, restrict_version=False) to fake-offer/fake-plan on AZURE-NA.
+[    INFO] Pushing "vhd_pushitem" (pre-push=False, preview=False) to fake-offer/fake-plan on AZURE-NA.
 [ WARNING] Ignoring push for offer do-not on AZURE-NA since it's not marked as `preview`.
 [    INFO] Collecting results
 [    INFO] Marketplace VM push completed
