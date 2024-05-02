@@ -5,7 +5,7 @@ import logging
 import os
 import sys
 from copy import copy
-from typing import Any, Dict, Iterator, List, Optional, Union
+from typing import Any, Dict, Iterator, List, Optional, Tuple, Union
 
 from attrs import asdict, evolve
 from more_executors import Executors
@@ -230,20 +230,38 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
         # For other cases we must not publish
         return False
 
-    def _push_to_cloud(
+    def _push_upload(
         self, mapped_item: MappedVMIPushItem, starmap_query: QueryResponse
+    ) -> Tuple[MappedVMIPushItem, QueryResponse]:
+        """Upload the mapped item to the storage accounts for all its marketplaces."""
+        for marketplace in mapped_item.marketplaces:
+            # Upload the VM image to the marketplace
+            # In order to get the correct destinations we need to first pass the result of
+            # get_push_item_from_marketplace.
+
+            pi = self._upload(
+                marketplace,
+                mapped_item.get_push_item_for_marketplace(marketplace),
+                custom_tags=mapped_item.get_tags_for_marketplace(marketplace),
+                accounts=mapped_item.meta.get("sharing_accounts", []),
+            )
+            mapped_item.update_push_item_for_marketplace(marketplace, pi)
+        return mapped_item, starmap_query
+
+    def _push_publish(
+        self, upload_result: List[Tuple[MappedVMIPushItem, QueryResponse]]
     ) -> List[Dict[str, Any]]:
         """
-        Perform the whole workflow to upload and publish the VM images in a single thread.
+        Perform the publishing for the the VM images.
 
         Args:
-            mapped_item
-                The item to process.
+            upload_result
+                The items to process.
         Returns:
             Dictionary with the resulting operation for the Collector service.
         """
 
-        def push_function(marketplace) -> Dict[str, Any]:
+        def push_function(mapped_item, marketplace, starmap_query) -> Dict[str, Any]:
             # Get the push item for the current marketplace
             pi = mapped_item.get_push_item_for_marketplace(marketplace)
 
@@ -285,31 +303,25 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                 "starmap_query": starmap_query,
             }
 
-        for marketplace in mapped_item.marketplaces:
-            # Upload the VM image to the marketplace
-            # In order to get the correct destinations we need to first pass the result of
-            # get_push_item_from_marketplace.
-
-            pi = self._upload(
-                marketplace,
-                mapped_item.get_push_item_for_marketplace(marketplace),
-                custom_tags=mapped_item.get_tags_for_marketplace(marketplace),
-                accounts=mapped_item.meta.get("sharing_accounts", []),
-            )
-            mapped_item.update_push_item_for_marketplace(marketplace, pi)
-
         res_output = []
-        to_await = []
-        executor = Executors.thread_pool(
-            name="pubtools-marketplacesvm-push-regions",
-            max_workers=min(max(len(mapped_item.marketplaces), 1), self._PROCESS_THREADS),
-        )
 
-        for marketplace in mapped_item.marketplaces:
-            to_await.append(executor.submit(push_function, marketplace))
+        # Sequentially publish the uploaded items for each marketplace.
+        # It's recommended to do this operation sequentially since parallel publishing in the
+        # same marketplace may cause errors due to the change set already being applied.
+        for mapped_item, starmap_query in upload_result:
+            to_await = []
+            executor = Executors.thread_pool(
+                name="pubtools-marketplacesvm-push-regions",
+                max_workers=min(max(len(mapped_item.marketplaces), 1), self._PROCESS_THREADS),
+            )
 
-        for f_out in to_await:
-            res_output.append(f_out.result())
+            for marketplace in mapped_item.marketplaces:
+                to_await.append(
+                    executor.submit(push_function, mapped_item, marketplace, starmap_query)
+                )
+
+            for f_out in to_await:
+                res_output.append(f_out.result())
 
         return res_output
 
@@ -388,22 +400,28 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
 
     def run(self):
         """Execute the push command workflow."""
+        # 1 - Map items
         mapped_items = self.mapped_items
+
+        # 2 - Upload VM images to the marketplaces in parallel
         executor = Executors.thread_pool(
-            name="pubtools-marketplacesvm-push",
+            name="pubtools-marketplacesvm-push-upload",
             max_workers=min(max(len(mapped_items), 1), self._REQUEST_THREADS),
         )
 
-        to_await = []
-        result = []
+        to_upload = []
+        upload_result = []
         for item in mapped_items:
-            to_await.append(
-                executor.submit(self._push_to_cloud, item["item"], item["starmap_query"])
+            to_upload.append(
+                executor.submit(self._push_upload, item["item"], item["starmap_query"])
             )
 
-        # waiting for results
-        for f_out in to_await:
-            result.extend(f_out.result())
+        # waiting for upload results
+        for f_out in to_upload:
+            upload_result.append(f_out.result())
+
+        # 3 - Publish the uploaded images letting the external function to control the threads
+        result = self._push_publish(upload_result)
 
         # process result for failures
         failed = False
@@ -411,7 +429,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             if r.get("state", "") != State.PUSHED:
                 failed = True
 
-        # send to collector
+        # 4 - Send resulting data to collector
         log.info("Collecting results")
         self.collect_push_result(result)
 

@@ -510,11 +510,13 @@ def test_no_source(command_tester: CommandTester, capsys: CaptureFixture) -> Non
     assert "error: too few arguments" or "error: the following arguments are required" in err
 
 
-@mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush._push_to_cloud")
+@mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush._push_upload")
+@mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush._push_publish")
 @mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
 def test_empty_value_to_collect(
     mock_source: mock.MagicMock,
     mock_push: mock.MagicMock,
+    mock_upload: mock.MagicMock,
     fake_starmap: mock.MagicMock,
     ami_push_item: AmiPushItem,
     command_tester: CommandTester,
