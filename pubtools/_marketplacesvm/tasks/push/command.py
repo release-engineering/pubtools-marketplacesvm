@@ -18,6 +18,7 @@ from ...task import MarketplacesVMTask
 from ..push.items import MappedVMIPushItem, State
 
 log = logging.getLogger("pubtools.marketplacesvm")
+UPLOAD_RESULT = Tuple[MappedVMIPushItem, QueryResponse]
 
 
 class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, StarmapService):
@@ -232,7 +233,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
 
     def _push_upload(
         self, mapped_item: MappedVMIPushItem, starmap_query: QueryResponse
-    ) -> Tuple[MappedVMIPushItem, QueryResponse]:
+    ) -> UPLOAD_RESULT:
         """Upload the mapped item to the storage accounts for all its marketplaces."""
         for marketplace in mapped_item.marketplaces:
             # Upload the VM image to the marketplace
@@ -248,9 +249,37 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             mapped_item.update_push_item_for_marketplace(marketplace, pi)
         return mapped_item, starmap_query
 
-    def _push_publish(
-        self, upload_result: List[Tuple[MappedVMIPushItem, QueryResponse]]
-    ) -> List[Dict[str, Any]]:
+    def _push_pre_publish(self, upload_result: List[UPLOAD_RESULT]) -> List[UPLOAD_RESULT]:
+        """Perform the pre-publish routine call.
+
+        Args:
+            upload_result:
+                The items to process.
+
+        Returns:
+            The processed items.
+        """
+        res = []
+        for mapped_item, starmap_query in upload_result:
+            for marketplace in mapped_item.marketplaces:
+                pi = mapped_item.get_push_item_for_marketplace(marketplace)
+
+                if pi.state != State.UPLOADFAILED:
+                    log.info(
+                        "Preparing to publish the item %s to %s.", pi.name, marketplace.upper()
+                    )
+                    pi, _ = self.cloud_instance(marketplace).pre_publish(pi)
+                    mapped_item.update_push_item_for_marketplace(marketplace, pi)
+                    log.info(
+                        "Preparation complete for item %s to %s.",
+                        pi.name,
+                        marketplace.upper(),
+                    )
+
+            res.append((mapped_item, starmap_query))
+        return res
+
+    def _push_publish(self, upload_result: List[UPLOAD_RESULT]) -> List[Dict[str, Any]]:
         """
         Perform the publishing for the the VM images.
 
@@ -420,7 +449,10 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
         for f_out in to_upload:
             upload_result.append(f_out.result())
 
-        # 3 - Publish the uploaded images letting the external function to control the threads
+        # 3 - Execute any pre-publishing routine
+        upload_result = self._push_pre_publish(upload_result)
+
+        # 4 - Publish the uploaded images letting the external function to control the threads
         result = self._push_publish(upload_result)
 
         # process result for failures

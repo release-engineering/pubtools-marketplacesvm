@@ -241,12 +241,28 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
         push_item_with_sas = evolve(push_item, sas_uri=sas_uri)
         return push_item_with_sas, upload_result
 
+    def _pre_publish(self, push_item: VHDPushItem, **kwargs) -> Tuple[VHDPushItem, Any]:
+        """
+        Execute the ``self._publish`` with ``nochannel == True`` to only associate the images.
+
+        At this point we're not publishing, just adding the VHD's SAS URI into the Offer's draft.
+
+        Args:
+            push_item (VHDPushItem)
+                The push item to associate a VM image into Azure's product.
+
+        Returns:
+            The push item with the result of the operation.
+        """
+        return self._publish(push_item=push_item, nochannel=True, **kwargs)
+
     def _publish(
         self,
         push_item: VHDPushItem,
         nochannel: bool,
         overwrite: bool = False,
         preview_only: bool = False,
+        **kwargs,
     ) -> Tuple[VHDPushItem, Any]:
         """
         Associate and publish a VHD image into an Azure product.

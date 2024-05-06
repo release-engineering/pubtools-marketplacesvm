@@ -589,6 +589,11 @@ def test_upload_custom_tags(
     fake_aws_provider.publish_svc.publish.assert_not_called()
 
 
+def test_pre_publish(aws_push_item: AmiPushItem, fake_aws_provider: AWSProvider):
+    pi, res = fake_aws_provider._pre_publish(aws_push_item, param=True)
+    assert (pi, res) == (aws_push_item, {"param": True})
+
+
 @pytest.mark.parametrize("new_base_product", ["test-base", None])
 @patch("pubtools._marketplacesvm.cloud_providers.aws.AWSPublishMetadata")
 def test_publish(
