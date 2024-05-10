@@ -332,7 +332,11 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
         return result
 
     def _upload(
-        self, marketplace: str, push_item: VMIPushItem, custom_tags: Optional[Dict[str, str]] = None
+        self,
+        marketplace: str,
+        push_item: VMIPushItem,
+        custom_tags: Optional[Dict[str, str]] = None,
+        **kwargs,
     ) -> VMIPushItem:
         # First we do the AMI upload in a similar way of the base class
         ship = not self.args.pre_push
