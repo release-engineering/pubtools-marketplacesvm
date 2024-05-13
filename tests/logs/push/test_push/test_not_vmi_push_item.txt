@@ -1,7 +1,7 @@
 [    INFO] Loading items from koji:https://fakekoji.com?vmi_build=unknown_build,ami_build
 [ WARNING] Push Item foo at bar is not a VMIPushItem, dropping it from the queue.
 [    INFO] Retrieving the mappings for ami_pushitem from https://starmap-example.com
-[    INFO] starmap query returned for ami_pushitem : {"name": "test-build", "version": "7.0", "query_response": {"name": "sample-product", "workflow": "stratosphere", "clouds": {"aws-na": [{"id": null, "meta": {"tag1": "aws-na-value1", "tag2": "aws-na-value2"}, "architecture": "x86_64", "destination": "ffffffff-ffff-ffff-ffff-ffffffffffff", "overwrite": true, "stage_preview": false, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "provider": null, "tags": {"key1": "value1", "key2": "value2"}}], "aws-emea": [{"id": null, "meta": {"tag1": "aws-emea-value1", "tag2": "aws-emea-value2"}, "architecture": "x86_64", "destination": "00000000-0000-0000-0000-000000000000", "overwrite": true, "stage_preview": false, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "provider": null, "tags": {"key3": "value3", "key4": "value4"}}]}}} 
+[    INFO] starmap query returned for ami_pushitem : {"name": "test-build", "version": "7.0", "query_response": {"name": "sample-product", "workflow": "stratosphere", "clouds": {"aws-na": [{"id": null, "meta": {"tag1": "aws-na-value1", "tag2": "aws-na-value2"}, "architecture": "x86_64", "destination": "ffffffff-ffff-ffff-ffff-ffffffffffff", "overwrite": true, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "provider": null, "tags": {"key1": "value1", "key2": "value2"}}], "aws-emea": [{"id": null, "meta": {"tag1": "aws-emea-value1", "tag2": "aws-emea-value2"}, "architecture": "x86_64", "destination": "00000000-0000-0000-0000-000000000000", "overwrite": true, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "provider": null, "tags": {"key3": "value3", "key4": "value4"}}]}}} 
 [ WARNING] Missing information for the attribute ami_pushitem.src, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.build, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.description, leaving it unset.
@@ -32,9 +32,9 @@
 [    INFO] Upload finished for ami_pushitem on AWS-NA
 [    INFO] Uploading the item ami_pushitem to AWS-EMEA.
 [    INFO] Upload finished for ami_pushitem on AWS-EMEA
-[    INFO] Pushing "ami_pushitem" (pre-push=True, preview=False) to ffffffff-ffff-ffff-ffff-ffffffffffff on AWS-NA.
-[    INFO] Pushing "ami_pushitem" (pre-push=False, preview=False) to ffffffff-ffff-ffff-ffff-ffffffffffff on AWS-NA.
-[    INFO] Pushing "ami_pushitem" (pre-push=True, preview=False) to 00000000-0000-0000-0000-000000000000 on AWS-EMEA.
-[    INFO] Pushing "ami_pushitem" (pre-push=False, preview=False) to 00000000-0000-0000-0000-000000000000 on AWS-EMEA.
+[    INFO] Pushing "ami_pushitem" (pre-push=True) to ffffffff-ffff-ffff-ffff-ffffffffffff on AWS-NA.
+[    INFO] Pushing "ami_pushitem" (pre-push=False) to ffffffff-ffff-ffff-ffff-ffffffffffff on AWS-NA.
+[    INFO] Pushing "ami_pushitem" (pre-push=True) to 00000000-0000-0000-0000-000000000000 on AWS-EMEA.
+[    INFO] Pushing "ami_pushitem" (pre-push=False) to 00000000-0000-0000-0000-000000000000 on AWS-EMEA.
 [    INFO] Collecting results
 [    INFO] Marketplace VM push completed

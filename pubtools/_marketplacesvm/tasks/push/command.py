@@ -15,7 +15,7 @@ from starmap_client.models import Destination, QueryResponse
 from ...arguments import SplitAndExtend
 from ...services import CloudService, CollectorService, StarmapService
 from ...task import MarketplacesVMTask
-from ..push.items import MappedVMIPushItem, State, has_destination_stage_preview
+from ..push.items import MappedVMIPushItem, State
 
 log = logging.getLogger("pubtools.marketplacesvm")
 
@@ -184,22 +184,11 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                         "Push already done for offer %s on %s.", curr_dest, marketplace.upper()
                     )
                     continue
-                # This condition prevents a "--nochannel" publish whenever `stage_preview` is False
-                # for some destination(s) which has True for other ones in the same marketplace.
-                elif has_destination_stage_preview(push_item.dest) and not dest.stage_preview:
-                    log.warning(
-                        "Ignoring push for offer %s on %s since it's not marked as `preview`.",
-                        curr_dest,
-                        marketplace.upper(),
-                    )
-                    continue
 
-                stage_preview = self._check_stage_preview(dest.stage_preview)
                 log.info(
-                    "Pushing \"%s\" (pre-push=%s, preview=%s) to %s on %s.",
+                    "Pushing \"%s\" (pre-push=%s) to %s on %s.",
                     push_item.name,
                     pre_push,
-                    stage_preview,
                     dest.destination,
                     marketplace.upper(),
                 )
@@ -209,7 +198,6 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                     single_dest_item,
                     nochannel=pre_push,
                     overwrite=dest.overwrite,
-                    preview_only=stage_preview,
                     restrict_version=dest.restrict_version,
                     restrict_major=dest.restrict_major,
                     restrict_minor=dest.restrict_minor,
@@ -222,19 +210,12 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             log.exception(
                 "Failed to publish %s on %s: %s",
                 push_item.name,
-                str(exc),
                 marketplace.upper(),
+                str(exc),
                 stack_info=True,
             )
             pi = evolve(push_item, state=State.NOTPUSHED)
         return pi
-
-    def _check_stage_preview(self, stage_preview: bool) -> bool:
-        # We only want to possibly return True whenever
-        # "--pre-push" is set alongside "stage_preview"
-        if self.args.pre_push and stage_preview:
-            return stage_preview
-        return False
 
     def _allowed_to_publish(self, mapped_item: MappedVMIPushItem) -> bool:
         """
@@ -243,10 +224,8 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
         It uses the combination of `--pre-push` and StArMap's `stage-preview` to determine
         whether it's safe to proceed to publish or not.
         """
-        # The pre_push should only allow publishing when stage_preview is True
-        # or when it's not a pre_push
-        stage_prev = self.args.pre_push and has_destination_stage_preview(mapped_item.destinations)
-        if stage_prev or not self.args.pre_push:
+        # The pre_push should only allow publishing when it's not a pre_push
+        if not self.args.pre_push:
             return True
         # For other cases we must not publish
         return False

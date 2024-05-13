@@ -122,7 +122,6 @@ def test_do_push_ami_correct_id(
                     {
                         "destination": "NA-DESTINATION",
                         "overwrite": False,
-                        "stage_preview": True,
                         "restrict_version": True,
                         "restrict_major": 3,
                         "restrict_minor": 1,
@@ -132,7 +131,6 @@ def test_do_push_ami_correct_id(
                     {
                         "destination": "EMEA-DESTINATION",
                         "overwrite": False,
-                        "stage_preview": True,
                         "restrict_version": True,
                         "restrict_major": 3,
                         "restrict_minor": 1,
@@ -153,7 +151,6 @@ def test_do_push_ami_correct_id(
             "--credentials",
             "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
             "--debug",
-            "--pre-push",
             "koji:https://fakekoji.com?vmi_build=aws_build",
         ],
     )
@@ -202,7 +199,6 @@ def test_do_push_azure_correct_sas(
                     {
                         "destination": "NA-DESTINATION",
                         "overwrite": False,
-                        "stage_preview": True,
                         "restrict_version": False,
                     },
                 ],
@@ -210,7 +206,6 @@ def test_do_push_azure_correct_sas(
                     {
                         "destination": "EMEA-DESTINATION",
                         "overwrite": False,
-                        "stage_preview": True,
                         "restrict_version": False,
                     },
                 ],
@@ -229,7 +224,6 @@ def test_do_push_azure_correct_sas(
             "--credentials",
             "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
             "--debug",
-            "--pre-push",
             "koji:https://fakekoji.com?vmi_build=azure_build",
         ],
     )
@@ -264,115 +258,6 @@ def test_do_push_prepush(
     starmap_calls = [mock.call(name="test-build", version="7.0") for _ in range(2)]
     fake_starmap.query_image_by_name.assert_has_calls(starmap_calls)
     # get_provider and upload only calls for "aws-na", "aws-emea", "azure-na"
-    assert fake_cloud_instance.call_count == 3
-
-
-@mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
-@mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.starmap")
-def test_do_push_prepush_marketplace_preview(
-    mock_starmap: mock.MagicMock,
-    mock_source: mock.MagicMock,
-    vhd_push_item: VHDPushItem,
-    fake_cloud_instance: mock.MagicMock,
-    command_tester: CommandTester,
-) -> None:
-    """Test a successfull push to "preview" when --nochannel and `preview_stage` are given."""
-    qr = QueryResponse.from_json(
-        {
-            "name": "fake-policy",
-            "workflow": "stratosphere",
-            "mappings": {
-                "azure-na": [
-                    {
-                        "destination": "fake-offer/fake-plan",
-                        "overwrite": False,
-                        "stage_preview": True,
-                        "restrict_version": False,
-                    },
-                    {
-                        "destination": "do-not/publish-me",
-                        "overwrite": False,
-                        "stage_preview": False,
-                        "restrict_version": False,
-                    },
-                ]
-            },
-        }
-    )
-    mock_starmap.query_image_by_name.return_value = qr
-    mock_source.get.return_value.__enter__.return_value = [vhd_push_item]
-
-    command_tester.test(
-        lambda: entry_point(MarketplacesVMPush),
-        [
-            "test-push",
-            "--starmap-url",
-            "https://starmap-example.com",
-            "--credentials",
-            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
-            "--debug",
-            "--pre-push",
-            "koji:https://fakekoji.com?vmi_build=azure_build",
-        ],
-    )
-
-    mock_source.get.assert_called_once()
-    mock_starmap.query_image_by_name.assert_called_once_with(name="test-build", version="7.0")
-    # get_provider, upload and publish calls for "azure-na"
-    assert fake_cloud_instance.call_count == 3
-
-
-@mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
-@mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.starmap")
-def test_do_push_live_marketplace_preview(
-    mock_starmap: mock.MagicMock,
-    mock_source: mock.MagicMock,
-    vhd_push_item: VHDPushItem,
-    fake_cloud_instance: mock.MagicMock,
-    command_tester: CommandTester,
-) -> None:
-    """Test a successfull push to "live" when --nochannel is absent and `preview_stage` is given."""
-    qr = QueryResponse.from_json(
-        {
-            "name": "fake-policy",
-            "workflow": "stratosphere",
-            "mappings": {
-                "azure-na": [
-                    {
-                        "destination": "fake-offer/fake-plan",
-                        "overwrite": False,
-                        "stage_preview": True,
-                        "restrict_version": False,
-                    },
-                    {
-                        "destination": "do-not/publish-me",
-                        "overwrite": False,
-                        "stage_preview": False,
-                        "restrict_version": False,
-                    },
-                ]
-            },
-        }
-    )
-    mock_starmap.query_image_by_name.return_value = qr
-    mock_source.get.return_value.__enter__.return_value = [vhd_push_item]
-
-    command_tester.test(
-        lambda: entry_point(MarketplacesVMPush),
-        [
-            "test-push",
-            "--starmap-url",
-            "https://starmap-example.com",
-            "--credentials",
-            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
-            "--debug",
-            "koji:https://fakekoji.com?vmi_build=azure_build",
-        ],
-    )
-
-    mock_source.get.assert_called_once()
-    mock_starmap.query_image_by_name.assert_called_once_with(name="test-build", version="7.0")
-    # get_provider, upload and publish calls for "azure-na"
     assert fake_cloud_instance.call_count == 3
 
 
@@ -458,7 +343,6 @@ def test_push_item_no_mapped_arch(
                     {
                         "destination": "ffffffff-ffff-ffff-ffff-ffffffffffff",
                         "overwrite": False,
-                        "stage_preview": False,
                         "restrict_version": False,
                     }
                 ]
@@ -576,11 +460,11 @@ def test_push_overridden_destination(
             "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
             "--repo",
             "{"
-            "    \"aws-na\": {\"destination\": \"new_aws_na_destination\", \"stage_preview\": false, \"restrict_version\": false},"  # noqa: E501
-            "    \"aws-emea\": {\"destination\": \"new_aws_emea_destination\", \"overwrite\": true, \"stage_preview\": false, \"restrict_version\": false},"  # noqa: E501
+            "    \"aws-na\": {\"destination\": \"new_aws_na_destination\", \"restrict_version\": false},"  # noqa: E501
+            "    \"aws-emea\": {\"destination\": \"new_aws_emea_destination\", \"overwrite\": true, \"restrict_version\": false},"  # noqa: E501
             "    \"azure-na\": [ "
-            "    {\"destination\": \"new_azure_destination1\", \"overwrite\": true, \"stage_preview\": false, \"restrict_version\": false},"  # noqa: E501
-            "    {\"destination\": \"new_azure_destination2\", \"stage_preview\": false, \"restrict_version\": false}"  # noqa: E501
+            "    {\"destination\": \"new_azure_destination1\", \"overwrite\": true, \"restrict_version\": false},"  # noqa: E501
+            "    {\"destination\": \"new_azure_destination2\", \"restrict_version\": false}"  # noqa: E501
             "]"
             "}",
             "--debug",

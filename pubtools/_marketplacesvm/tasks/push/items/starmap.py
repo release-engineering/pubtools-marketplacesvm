@@ -9,20 +9,6 @@ from starmap_client.models import Destination
 log = logging.getLogger("pubtools.marketplacesvm")
 
 
-def has_destination_stage_preview(destinations: List[Destination]) -> bool:
-    """Return True when one or more destinations is marked with `stage_preview` as `True`.
-
-    Args:
-        destinations
-            List of destinations to check whether one or more of them has `stage_preview` set
-            as `True`
-    """
-    res = False
-    for dst in destinations:
-        res = res or dst.stage_preview
-    return res
-
-
 @define
 class MappedVMIPushItem:
     """Wrap a VMIPushItem and its variations with additional information from StArMap."""
