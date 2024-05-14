@@ -120,7 +120,6 @@ def starmap_response_aws(starmap_ami_meta) -> Dict[str, Any]:
                     "architecture": "x86_64",
                     "destination": dest,
                     "overwrite": False,
-                    "stage_preview": False,
                     "restrict_version": False,
                     "provider": "awstest",
                     "meta": starmap_ami_meta,

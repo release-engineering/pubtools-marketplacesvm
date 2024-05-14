@@ -1,6 +1,6 @@
 [    INFO] Loading items from koji:https://fakekoji.com?vmi_build=aws_build
 [    INFO] Retrieving the mappings for ami_pushitem from https://starmap-example.com
-[    INFO] starmap query returned for ami_pushitem : {"name": "test-build", "version": "7.0", "query_response": {"name": "fake-policy", "workflow": "stratosphere", "clouds": {"aws-na": [{"id": null, "meta": null, "architecture": null, "destination": "NA-DESTINATION", "overwrite": false, "stage_preview": true, "restrict_version": true, "restrict_major": 3, "restrict_minor": 1, "provider": null, "tags": null}], "aws-emea": [{"id": null, "meta": null, "architecture": null, "destination": "EMEA-DESTINATION", "overwrite": false, "stage_preview": true, "restrict_version": true, "restrict_major": 3, "restrict_minor": 1, "provider": null, "tags": null}]}}} 
+[    INFO] starmap query returned for ami_pushitem : {"name": "test-build", "version": "7.0", "query_response": {"name": "fake-policy", "workflow": "stratosphere", "clouds": {"aws-na": [{"id": null, "meta": null, "architecture": null, "destination": "NA-DESTINATION", "overwrite": false, "restrict_version": true, "restrict_major": 3, "restrict_minor": 1, "provider": null, "tags": null}], "aws-emea": [{"id": null, "meta": null, "architecture": null, "destination": "EMEA-DESTINATION", "overwrite": false, "restrict_version": true, "restrict_major": 3, "restrict_minor": 1, "provider": null, "tags": null}]}}} 
 [ WARNING] Missing information for the attribute ami_pushitem.src, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.build, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.description, leaving it unset.
@@ -31,13 +31,13 @@
 [    INFO] Upload finished for ami_pushitem on AWS-NA
 [    INFO] Uploading the item ami_pushitem to AWS-EMEA.
 [    INFO] Upload finished for ami_pushitem on AWS-EMEA
-[    INFO] Pushing "ami_pushitem" (pre-push=True, preview=True) to NA-DESTINATION on AWS-NA.
+[    INFO] Pushing "ami_pushitem" (pre-push=True) to NA-DESTINATION on AWS-NA.
 [   DEBUG] Pushing ami_pushitem with image: fake-ami-id-for-na
-[    INFO] Pushing "ami_pushitem" (pre-push=False, preview=True) to NA-DESTINATION on AWS-NA.
+[    INFO] Pushing "ami_pushitem" (pre-push=False) to NA-DESTINATION on AWS-NA.
 [   DEBUG] Pushing ami_pushitem with image: fake-ami-id-for-na
-[    INFO] Pushing "ami_pushitem" (pre-push=True, preview=True) to EMEA-DESTINATION on AWS-EMEA.
+[    INFO] Pushing "ami_pushitem" (pre-push=True) to EMEA-DESTINATION on AWS-EMEA.
 [   DEBUG] Pushing ami_pushitem with image: fake-ami-id-for-emea
-[    INFO] Pushing "ami_pushitem" (pre-push=False, preview=True) to EMEA-DESTINATION on AWS-EMEA.
+[    INFO] Pushing "ami_pushitem" (pre-push=False) to EMEA-DESTINATION on AWS-EMEA.
 [   DEBUG] Pushing ami_pushitem with image: fake-ami-id-for-emea
 [    INFO] Collecting results
 [    INFO] Marketplace VM push completed
