@@ -3,7 +3,6 @@ import datetime
 import json
 import logging
 import os
-import sys
 from copy import copy
 from typing import Any, Dict, Iterator, List, Optional, Tuple, Union
 
@@ -14,7 +13,7 @@ from starmap_client.models import Destination, QueryResponse
 
 from ...arguments import SplitAndExtend
 from ...services import CloudService, CollectorService, StarmapService
-from ...task import MarketplacesVMTask
+from ...task import RUN_RESULT, MarketplacesVMTask
 from ..push.items import MappedVMIPushItem, State
 
 log = logging.getLogger("pubtools.marketplacesvm")
@@ -427,7 +426,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             split_on=",",
         )
 
-    def run(self):
+    def run(self, collect_results: bool = True, allow_empty_targets: bool = False) -> RUN_RESULT:
         """Execute the push command workflow."""
         # 1 - Map items
         mapped_items = self.mapped_items
@@ -457,16 +456,22 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
 
         # process result for failures
         failed = False
-        for r in result:
-            if r.get("state", "") != State.PUSHED:
+        if not allow_empty_targets:
+            if not result:
                 failed = True
 
+            for r in result:
+                if r.get("state", "") != State.PUSHED:
+                    failed = True
+
         # 4 - Send resulting data to collector
-        log.info("Collecting results")
-        self.collect_push_result(result)
+        if collect_results:
+            log.info("Collecting results")
+            self.collect_push_result(result)
 
         if failed:
             log.error("Marketplace VM push failed")
-            sys.exit(30)
-
-        log.info("Marketplace VM push completed")
+        else:
+            log.info("Marketplace VM push completed")
+        skipped = True if (allow_empty_targets and not result) else False
+        return RUN_RESULT(not failed, skipped, result)

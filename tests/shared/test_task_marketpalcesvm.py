@@ -5,7 +5,7 @@ from unittest.mock import patch
 import pytest
 from _pytest.capture import CaptureFixture
 
-from pubtools._marketplacesvm.task import MarketplacesVMTask
+from pubtools._marketplacesvm.task import RUN_RESULT, MarketplacesVMTask
 
 step = MarketplacesVMTask.step
 
@@ -25,9 +25,10 @@ class TestMarketplacesVMTask(MarketplacesVMTask):
     def task2(self) -> None:
         print("task2")
 
-    def run(self) -> None:
+    def run(self, collect_results=True, allow_empty_target=False) -> RUN_RESULT:
         self.task1()
         self.task2()
+        return RUN_RESULT(collect_results, allow_empty_target, {})
 
 
 def test_skip(capsys: CaptureFixture) -> None:
