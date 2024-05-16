@@ -47,5 +47,11 @@
 [ WARNING] Missing information for the attribute vhd_pushitem.sas_uri, leaving it unset.
 [    INFO] Uploading the item vhd_pushitem to AZURE-NA.
 [    INFO] Upload finished for vhd_pushitem on AZURE-NA
+[    INFO] Preparing to publish the item ami_pushitem to AWS-NA.
+[    INFO] Preparation complete for item ami_pushitem to AWS-NA.
+[    INFO] Preparing to publish the item ami_pushitem to AWS-EMEA.
+[    INFO] Preparation complete for item ami_pushitem to AWS-EMEA.
+[    INFO] Preparing to publish the item vhd_pushitem to AZURE-NA.
+[    INFO] Preparation complete for item vhd_pushitem to AZURE-NA.
 [    INFO] Collecting results
 [    INFO] Marketplace VM push completed

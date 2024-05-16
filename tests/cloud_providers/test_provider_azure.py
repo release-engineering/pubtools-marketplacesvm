@@ -161,6 +161,17 @@ def test_upload_custom_tags(
     fake_azure_provider.publish_svc.publish.assert_not_called()
 
 
+def test_pre_publish(azure_push_item: VHDPushItem, fake_azure_provider: AzureProvider):
+    fake_publish = MagicMock()
+    fake_publish.return_value = [azure_push_item, {"param": True}]
+
+    with patch.object(fake_azure_provider, "_publish", fake_publish):
+        pi, res = fake_azure_provider._pre_publish(azure_push_item, param=True)
+
+    fake_publish.assert_called_once_with(push_item=azure_push_item, nochannel=True, param=True)
+    assert (pi, res) == (azure_push_item, {"param": True})
+
+
 @patch("pubtools._marketplacesvm.cloud_providers.ms_azure.AzurePublishMetadata")
 def test_publish(
     mock_metadata: MagicMock,

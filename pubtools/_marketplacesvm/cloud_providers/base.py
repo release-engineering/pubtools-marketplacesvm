@@ -104,12 +104,26 @@ class CloudProvider(ABC, Generic[T, C]):
         """
 
     @abstractmethod
+    def _pre_publish(self, push_item: T, **kwargs) -> Tuple[T, Any]:
+        """
+        Abstract method for optional routines before publishing.
+
+        Args:
+            push_item (VMIPushItem)
+                The push item process.
+
+        Returns:
+            The processed push item and the processing result.
+        """
+
+    @abstractmethod
     def _publish(
         self,
         push_item: T,
         nochannel: bool,
         overwrite: bool = False,
         preview_only: bool = False,
+        **kwargs,
     ) -> Tuple[T, Any]:
         """
         Abstract method for associating and publishing a VM image with a product.
@@ -195,6 +209,18 @@ class CloudProvider(ABC, Generic[T, C]):
         pi, res = self._upload(push_item, custom_tags=custom_tags, **kwargs)
         return self._post_upload(pi, res, **kwargs)
 
+    def pre_publish(self, push_item: T, **kwargs):
+        """
+        Execute an optional custom routine before publishing.
+
+        Args:
+            push_item (VMIPushItem)
+                The push item to process.
+        Returns:
+            The processed push item and the processing result.
+        """
+        return self._pre_publish(push_item, **kwargs)
+
     def publish(
         self,
         push_item: T,
@@ -220,7 +246,7 @@ class CloudProvider(ABC, Generic[T, C]):
         Returns:
             object: The publish result data.
         """
-        pi, res = self._publish(push_item, nochannel, overwrite, preview_only)
+        pi, res = self._publish(push_item, nochannel, overwrite, preview_only, **kwargs)
         return self._post_publish(pi, res, **kwargs)
 
 

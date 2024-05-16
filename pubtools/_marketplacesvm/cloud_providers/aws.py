@@ -406,12 +406,26 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         push_item_with_ami_id = evolve(push_item, image_id=upload_result.id)
         return push_item_with_ami_id, upload_result
 
+    def _pre_publish(self, push_item: AmiPushItem, **kwargs) -> Tuple[AmiPushItem, Any]:
+        """Return the push item as is since this step is not required for AWS.
+
+        Args:
+            push_item (AmiPushItem)
+                The incoming push item.
+
+        Returns:
+            Tuple[AmiPushItem, Any]
+                The incoming push item and the dict with received parameters.
+        """
+        return push_item, kwargs
+
     def _publish(
         self,
         push_item: AmiPushItem,
         nochannel: bool,
         overwrite: bool = False,
-        _=False,
+        preview_only=False,
+        **kwargs,
     ) -> Tuple[AmiPushItem, Any]:
         """
         Associate and publish a AMI image into an AWS product.

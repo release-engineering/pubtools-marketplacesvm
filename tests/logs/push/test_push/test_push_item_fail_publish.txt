@@ -33,14 +33,6 @@
 [    INFO] Upload finished for ami_pushitem on AWS-NA
 [    INFO] Uploading the item ami_pushitem to AWS-EMEA.
 [    INFO] Upload finished for ami_pushitem on AWS-EMEA
-[    INFO] Pushing "ami_pushitem" (pre-push=True) to ffffffff-ffff-ffff-ffff-ffffffffffff on AWS-NA.
-[   ERROR] Failed to publish ami_pushitem on AWS-NA: Random exception
-[    INFO] Pushing "ami_pushitem" (pre-push=False) to ffffffff-ffff-ffff-ffff-ffffffffffff on AWS-NA.
-[   ERROR] Failed to publish ami_pushitem on AWS-NA: Random exception
-[    INFO] Pushing "ami_pushitem" (pre-push=True) to 00000000-0000-0000-0000-000000000000 on AWS-EMEA.
-[   ERROR] Failed to publish ami_pushitem on AWS-EMEA: Random exception
-[    INFO] Pushing "ami_pushitem" (pre-push=False) to 00000000-0000-0000-0000-000000000000 on AWS-EMEA.
-[   ERROR] Failed to publish ami_pushitem on AWS-EMEA: Random exception
 [ WARNING] Missing information for the attribute vhd_pushitem.src, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.build, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.description, leaving it unset.
@@ -55,6 +47,20 @@
 [ WARNING] Missing information for the attribute vhd_pushitem.sas_uri, leaving it unset.
 [    INFO] Uploading the item vhd_pushitem to AZURE-NA.
 [    INFO] Upload finished for vhd_pushitem on AZURE-NA
+[    INFO] Preparing to publish the item ami_pushitem to AWS-NA.
+[    INFO] Preparation complete for item ami_pushitem to AWS-NA.
+[    INFO] Preparing to publish the item ami_pushitem to AWS-EMEA.
+[    INFO] Preparation complete for item ami_pushitem to AWS-EMEA.
+[    INFO] Preparing to publish the item vhd_pushitem to AZURE-NA.
+[    INFO] Preparation complete for item vhd_pushitem to AZURE-NA.
+[    INFO] Pushing "ami_pushitem" (pre-push=True) to ffffffff-ffff-ffff-ffff-ffffffffffff on AWS-NA.
+[   ERROR] Failed to publish ami_pushitem on AWS-NA: Random exception
+[    INFO] Pushing "ami_pushitem" (pre-push=False) to ffffffff-ffff-ffff-ffff-ffffffffffff on AWS-NA.
+[   ERROR] Failed to publish ami_pushitem on AWS-NA: Random exception
+[    INFO] Pushing "ami_pushitem" (pre-push=True) to 00000000-0000-0000-0000-000000000000 on AWS-EMEA.
+[   ERROR] Failed to publish ami_pushitem on AWS-EMEA: Random exception
+[    INFO] Pushing "ami_pushitem" (pre-push=False) to 00000000-0000-0000-0000-000000000000 on AWS-EMEA.
+[   ERROR] Failed to publish ami_pushitem on AWS-EMEA: Random exception
 [    INFO] Pushing "vhd_pushitem" (pre-push=True) to destination_offer_main/plan1 on AZURE-NA.
 [   ERROR] Failed to publish vhd_pushitem on AZURE-NA: Random exception
 [    INFO] Pushing "vhd_pushitem" (pre-push=False) to destination_offer_main/plan1 on AZURE-NA.

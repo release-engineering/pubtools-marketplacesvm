@@ -17,6 +17,10 @@
 [    INFO] Upload finished for vhd_pushitem on AZURE-NA
 [    INFO] Uploading the item vhd_pushitem to AZURE-EMEA.
 [    INFO] Upload finished for vhd_pushitem on AZURE-EMEA
+[    INFO] Preparing to publish the item vhd_pushitem to AZURE-NA.
+[    INFO] Preparation complete for item vhd_pushitem to AZURE-NA.
+[    INFO] Preparing to publish the item vhd_pushitem to AZURE-EMEA.
+[    INFO] Preparation complete for item vhd_pushitem to AZURE-EMEA.
 [    INFO] Pushing "vhd_pushitem" (pre-push=True) to NA-DESTINATION on AZURE-NA.
 [   DEBUG] Pushing vhd_pushitem with image: fake-azure-sas-for-na
 [    INFO] Pushing "vhd_pushitem" (pre-push=False) to NA-DESTINATION on AZURE-NA.

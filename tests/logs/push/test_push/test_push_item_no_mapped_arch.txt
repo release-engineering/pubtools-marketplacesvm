@@ -31,8 +31,6 @@
 [ WARNING] Missing information for the attribute ami_pushitem.access_endpoint_url, leaving it unset.
 [    INFO] Uploading the item ami_pushitem to AWS-NA.
 [    INFO] Upload finished for ami_pushitem on AWS-NA
-[    INFO] Pushing "ami_pushitem" (pre-push=True) to ffffffff-ffff-ffff-ffff-ffffffffffff on AWS-NA.
-[    INFO] Pushing "ami_pushitem" (pre-push=False) to ffffffff-ffff-ffff-ffff-ffffffffffff on AWS-NA.
 [ WARNING] Missing information for the attribute vhd_pushitem.src, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.build, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.description, leaving it unset.
@@ -47,6 +45,12 @@
 [ WARNING] Missing information for the attribute vhd_pushitem.sas_uri, leaving it unset.
 [    INFO] Uploading the item vhd_pushitem to AWS-NA.
 [    INFO] Upload finished for vhd_pushitem on AWS-NA
+[    INFO] Preparing to publish the item ami_pushitem to AWS-NA.
+[    INFO] Preparation complete for item ami_pushitem to AWS-NA.
+[    INFO] Preparing to publish the item vhd_pushitem to AWS-NA.
+[    INFO] Preparation complete for item vhd_pushitem to AWS-NA.
+[    INFO] Pushing "ami_pushitem" (pre-push=True) to ffffffff-ffff-ffff-ffff-ffffffffffff on AWS-NA.
+[    INFO] Pushing "ami_pushitem" (pre-push=False) to ffffffff-ffff-ffff-ffff-ffffffffffff on AWS-NA.
 [    INFO] Pushing "vhd_pushitem" (pre-push=True) to ffffffff-ffff-ffff-ffff-ffffffffffff on AWS-NA.
 [    INFO] Pushing "vhd_pushitem" (pre-push=False) to ffffffff-ffff-ffff-ffff-ffffffffffff on AWS-NA.
 [    INFO] Collecting results

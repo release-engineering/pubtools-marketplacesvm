@@ -35,6 +35,9 @@ class FakeCloudProvider(CloudProvider):
         time.sleep(2)
         return push_item, UploadResponse({"id": "foo", "name": "bar"})
 
+    def _pre_publish(self, push_item, **kwargs):
+        return push_item, kwargs
+
     def _publish(self, push_item, nochannel, overwrite, preview_only):
         return push_item, nochannel
 

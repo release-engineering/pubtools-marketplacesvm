@@ -27,7 +27,10 @@ class FakeCloudProvider(CloudProvider):
         time.sleep(2)
         return push_item, True
 
-    def _publish(self, push_item, nochannel, overwrite, preview_only):
+    def _pre_publish(self, push_item, **kwargs):
+        return push_item, kwargs
+
+    def _publish(self, push_item, nochannel, overwrite, preview_only, **kwargs):
         return push_item, nochannel
 
 
@@ -79,8 +82,8 @@ def test_do_push(
     fake_source.get.assert_called_once()
     starmap_calls = [mock.call(name="test-build", version="7.0") for _ in range(2)]
     fake_starmap.query_image_by_name.assert_has_calls(starmap_calls)
-    # get_provider, upload and publish calls for "aws-na", "aws-emea", "azure-na"
-    assert fake_cloud_instance.call_count == 11
+    # get_provider, upload, pre_publish and publish calls for "aws-na", "aws-emea", "azure-na"
+    assert fake_cloud_instance.call_count == 14
 
 
 @mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.cloud_instance")
@@ -106,7 +109,10 @@ def test_do_push_ami_correct_id(
             push_item = evolve(push_item, image_id=self.amis.pop(0))
             return push_item, True
 
-        def _publish(self, push_item, nochannel, overwrite, preview_only):
+        def _pre_publish(self, push_item, **kwargs):
+            return push_item, kwargs
+
+        def _publish(self, push_item, nochannel, overwrite, preview_only, **kwargs):
             # This log will allow us to identify whether the image_id is the expected
             self.log.debug(f"Pushing {push_item.name} with image: {push_item.image_id}")
             return push_item, nochannel
@@ -157,7 +163,7 @@ def test_do_push_ami_correct_id(
 
     mock_source.get.assert_called_once()
     mock_starmap.query_image_by_name.assert_called_once_with(name="test-build", version="7.0")
-    assert mock_cloud_instance.call_count == 6
+    assert mock_cloud_instance.call_count == 8
 
 
 @mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.cloud_instance")
@@ -183,7 +189,10 @@ def test_do_push_azure_correct_sas(
             push_item = evolve(push_item, sas_uri=self.vhds.pop(0))
             return push_item, True
 
-        def _publish(self, push_item, nochannel, overwrite, preview_only):
+        def _pre_publish(self, push_item, **kwargs):
+            return push_item, kwargs
+
+        def _publish(self, push_item, nochannel, overwrite, preview_only, **kwargs):
             # This log will allow us to identify whether the sas_uri is the expected
             self.log.debug(f"Pushing {push_item.name} with image: {push_item.sas_uri}")
             return push_item, nochannel
@@ -230,7 +239,7 @@ def test_do_push_azure_correct_sas(
 
     mock_source.get.assert_called_once()
     mock_starmap.query_image_by_name.assert_called_once_with(name="test-build", version="7.0")
-    assert mock_cloud_instance.call_count == 6
+    assert mock_cloud_instance.call_count == 8
 
 
 def test_do_push_prepush(
@@ -258,7 +267,7 @@ def test_do_push_prepush(
     starmap_calls = [mock.call(name="test-build", version="7.0") for _ in range(2)]
     fake_starmap.query_image_by_name.assert_has_calls(starmap_calls)
     # get_provider and upload only calls for "aws-na", "aws-emea", "azure-na"
-    assert fake_cloud_instance.call_count == 3
+    assert fake_cloud_instance.call_count == 6
 
 
 @mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
@@ -290,7 +299,7 @@ def test_not_vmi_push_item(
 
     fake_starmap.query_image_by_name.assert_called_once()
     # get_provider, upload and publish calls for "aws-na", "aws-emea"
-    assert fake_cloud_instance.call_count == 6
+    assert fake_cloud_instance.call_count == 8
 
 
 @mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
@@ -407,7 +416,7 @@ def test_push_item_fail_publish(
     """Test a push which fails on publish for AWS."""
 
     class FakePublish(FakeCloudProvider):
-        def _publish(self, push_item, nochannel, overwrite, preview_only):
+        def _publish(self, push_item, nochannel, overwrite, preview_only, **kwargs):
             raise Exception("Random exception")
 
     mock_cloud_instance.return_value = FakePublish()
@@ -428,7 +437,7 @@ def test_push_item_fail_publish(
     fake_starmap.query_image_by_name.assert_has_calls(starmap_calls)
     # get_provider, upload calls for "aws-na", "aws-emea", "azure-na" with
     # publish calls only for "aws-na" and "azure-na"
-    assert mock_cloud_instance.call_count == 9
+    assert mock_cloud_instance.call_count == 12
 
 
 @mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.cloud_instance")
@@ -444,6 +453,9 @@ def test_push_overridden_destination(
         def upload(self, push_item, custom_tags=None, **kwargs):
             time.sleep(2)
             return push_item, True
+
+        def pre_publish(self, push_item, **kwargs):
+            return push_item, kwargs
 
         def publish(self, push_item, nochannel, overwrite, **_):
             return push_item, True
@@ -510,11 +522,15 @@ def test_no_source(command_tester: CommandTester, capsys: CaptureFixture) -> Non
     assert "error: too few arguments" or "error: the following arguments are required" in err
 
 
-@mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush._push_to_cloud")
+@mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush._push_pre_publish")
+@mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush._push_upload")
+@mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush._push_publish")
 @mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
 def test_empty_value_to_collect(
     mock_source: mock.MagicMock,
     mock_push: mock.MagicMock,
+    mock_upload: mock.MagicMock,
+    mock_prepublish: mock.MagicMock,
     fake_starmap: mock.MagicMock,
     ami_push_item: AmiPushItem,
     command_tester: CommandTester,
