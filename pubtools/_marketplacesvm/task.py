@@ -1,7 +1,9 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 import logging
+import sys
 import textwrap
 from argparse import ArgumentParser, Namespace, RawDescriptionHelpFormatter
+from collections import namedtuple
 from typing import Optional
 
 from pubtools.pluggy import task_context
@@ -10,6 +12,9 @@ from .step import StepDecorator
 
 LOG = logging.getLogger("pubtools.marketplacesvm")
 LOG_FORMAT = "%(asctime)s [%(levelname)-8s] %(message)s"
+
+
+RUN_RESULT = namedtuple('RUN_RESULT', ['success', 'skipped', 'collected_result'])
 
 
 class MarketplacesVMTask(object):
@@ -148,15 +153,17 @@ class MarketplacesVMTask(object):
         from_super = getattr(super(MarketplacesVMTask, self), "add_args", lambda: None)
         from_super()
 
-    def run(self):
+    def run(self, collect_results: bool = True, allow_empty_targets: bool = False) -> RUN_RESULT:
         """Implement a specific task."""
         raise NotImplementedError()
 
-    def main(self):
+    def main(self, **kwargs):
         """Define the main method to be called by the entrypoint of the task."""
         with task_context():
             # setup the logging as required
             self._setup_logging()
 
-            self.run()
+            res = self.run(**kwargs)
+            if not res.success:
+                sys.exit(30)
             return 0

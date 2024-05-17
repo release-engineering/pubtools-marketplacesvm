@@ -7,13 +7,12 @@ from typing import Generator, Union
 import pytest
 from pytest import MonkeyPatch
 
-from pubtools._marketplacesvm.task import MarketplacesVMTask
+from pubtools._marketplacesvm.task import RUN_RESULT, MarketplacesVMTask
 
 
 class MyTask(MarketplacesVMTask):
-    def run(self) -> None:
-        # nothing to do
-        pass
+    def run(self, collect_results=True, allow_empty_target=False) -> RUN_RESULT:
+        return RUN_RESULT(collect_results, allow_empty_target, {})
 
 
 def simple_basic_config(level: Union[int, str], **_kwargs) -> None:

@@ -2,7 +2,6 @@
 import json
 import logging
 import os
-import sys
 from typing import Any, Dict, Iterator, List, Optional
 
 from attrs import asdict, evolve
@@ -15,6 +14,7 @@ from pubtools._marketplacesvm.tasks.community_push.items import enrich_push_item
 
 from ...cloud_providers.aws import name_from_push_item
 from ...services.rhsm import AwsRHSMClientService
+from ...task import RUN_RESULT
 from ..push import MarketplacesVMPush
 from ..push.items import MappedVMIPushItem, State
 
@@ -38,10 +38,6 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
         self._accts_dict: Dict[str, List[str]] = {}
         self._snapshot_accts_dict: Dict[str, List[str]] = {}
         super(CommunityVMPush, self).__init__(*args, **kwargs)
-
-    def _fail(self, *args, **kwargs):
-        log.error(*args, **kwargs)
-        sys.exit(30)
 
     @property
     def raw_items(self) -> Iterator[AmiPushItem]:
@@ -402,11 +398,13 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
         pi = evolve(pi, state=State.PUSHED)
         return pi
 
-    def _check_product_in_rhsm(self, enriched_push_items: List[EnrichedPushItem]) -> None:
+    def _check_product_in_rhsm(self, enriched_push_items: List[EnrichedPushItem]) -> bool:
         for enriched_item in enriched_push_items:
             for push_items in enriched_item.values():
                 if not self.items_in_metadata_service(push_items):
-                    self._fail("Pre-push verification of push items in metadata service failed")
+                    log.error("Pre-push verification of push items in metadata service failed")
+                    return False
+        return True
 
     def _push_to_community(self, enriched_push_item: EnrichedPushItem) -> List[Dict[str, Any]]:
         """
@@ -465,10 +463,11 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
             default="redhat-cloudimg",
         )
 
-    def run(self):
+    def run(self, collect_results: bool = True, allow_empty_targets: bool = False) -> RUN_RESULT:
         """Execute the community_push command workflow."""
         enriched_push_items = self.enrich_mapped_items(self.mapped_items)
-        self._check_product_in_rhsm(enriched_push_items)
+        if not self._check_product_in_rhsm(enriched_push_items):
+            return RUN_RESULT(False, False, {})  # Fail to push due to product missing on RHSM
 
         executor = Executors.thread_pool(
             name="pubtools-marketplacesvm-community-push",
@@ -486,19 +485,22 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
 
         # process result for failures
         failed = False
-        if len(result) == 0:
-            log.error("No push item was processed.")
-            failed = True
-        else:
+        if not allow_empty_targets:
+            if len(result) == 0:
+                log.error("No push item was processed.")
+                failed = True
             for r in result:
                 if r.get("state", "") != State.PUSHED:
                     failed = True
 
         # send to collector
-        log.info("Collecting results")
-        self.collect_push_result(result)
+        if collect_results:
+            log.info("Collecting results")
+            self.collect_push_result(result)
 
         if failed:
-            self._fail("Community VM push failed")
-
-        log.info("Community VM push completed")
+            log.error("Community VM push failed")
+        else:
+            log.info("Community VM push completed")
+        skipped = True if (allow_empty_targets and not result) else False
+        return RUN_RESULT(not failed, skipped, result)

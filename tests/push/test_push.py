@@ -562,6 +562,68 @@ def test_empty_value_to_collect(
     )
 
 
+@mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush._push_pre_publish")
+@mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush._push_upload")
+@mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush._push_publish")
+@mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
+def test_empty_items_not_allowed(
+    mock_source: mock.MagicMock,
+    mock_push: mock.MagicMock,
+    mock_upload: mock.MagicMock,
+    mock_prepublish: mock.MagicMock,
+    fake_starmap: mock.MagicMock,
+    command_tester: CommandTester,
+) -> None:
+    """Ensure the push fails when no push items are processed and skip is not allowed."""
+    mock_source.get.return_value.__enter__.return_value = []
+    mock_push.return_value = []
+
+    command_tester.test(
+        lambda: entry_point(MarketplacesVMPush),
+        [
+            "test-push",
+            "--starmap-url",
+            "https://starmap-example.com",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--debug",
+            "koji:https://fakekoji.com?vmi_build=ami_build",
+        ],
+    )
+
+
+@mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush._push_pre_publish")
+@mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush._push_upload")
+@mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush._push_publish")
+@mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
+def test_empty_items_allowed(
+    mock_source: mock.MagicMock,
+    mock_push: mock.MagicMock,
+    mock_upload: mock.MagicMock,
+    mock_prepublish: mock.MagicMock,
+    fake_starmap: mock.MagicMock,
+    command_tester: CommandTester,
+) -> None:
+    """Ensure the push succeeds when no push items are processed and skip is allowed."""
+    mock_source.get.return_value.__enter__.return_value = []
+    mock_push.return_value = []
+
+    mp = MarketplacesVMPush()
+
+    command_tester.test(
+        lambda: mp.main(allow_empty_targets=True),
+        [
+            "test-push",
+            "--starmap-url",
+            "https://starmap-example.com",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--debug",
+            "koji:https://fakekoji.com?vmi_build=ami_build",
+        ],
+    )
+
+
 @mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
 def test_push_item_rhcos_gov(
     mock_source: mock.MagicMock,
