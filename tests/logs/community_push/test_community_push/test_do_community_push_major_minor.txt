@@ -1,2 +1,48 @@
 [    INFO] Loading items from koji:https://fakekoji.com?vmi_build=ami_build
-# Raised: Communication error with koji at https://fakekoji.com
+[    INFO] Retrieving the mappings for ami_pushitem from https://starmap-example.com using the community workflow.
+[    INFO] starmap query returned for ami_pushitem : {"name": "test-build", "version": "7.0", "query_response": {"name": "sample-product", "workflow": "community", "clouds": {"aws_storage": [{"id": null, "meta": {}, "architecture": "x86_64", "destination": "fake-destination-access", "overwrite": false, "restrict_version": false, "restrict_major": 2, "restrict_minor": 2, "provider": "awstest", "tags": null}]}}} 
+[ WARNING] No accounts definition in StArMap, leaving the defaults from credentials.
+[ WARNING] No snapshot_accounts definition in StArMap, leaving the defaults from credentials.
+[    INFO] Processing the storage account aws_storage
+[ WARNING] Missing information for the attribute ami_pushitem.build, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.description, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.boot_mode, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.marketplace_title_template, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.marketplace_name, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.region, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.volume, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.root_device, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.sriov_net_support, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.ena_support, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.uefi_support, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.billing_codes, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.release_notes, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.usage_instructions, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.recommended_instance_type, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.marketplace_entity_type, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.image_id, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.public_image, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.scanning_port, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.user_name, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.version_title, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.security_groups, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.access_endpoint_url, leaving it unset.
+[   DEBUG] Mapped push item for aws_storage: AmiPushItem(name='ami_pushitem', state='PENDING', src='/foo/bar/sample_product_test.raw', dest=[Destination(id=None, meta={}, architecture='x86_64', destination='fake-destination-access', overwrite=False, restrict_version=False, restrict_major=2, restrict_minor=2, provider='awstest', tags=None)], md5sum=None, sha256sum=None, origin=None, build=None, build_info=KojiBuildInfo(name='test-build', version='7.0', release='20230101', id=None), signing_key=None, release=AmiRelease(product='sample_product', date=datetime.datetime(2023, 12, 12, 0, 0), arch='x86_64', respin=1, version='7.0', base_product='sample_base', base_version='1.0', variant='variant', type='ga'), description='', boot_mode=None, marketplace_title_template=None, marketplace_name=None, type='hourly', region=None, virtualization='hvm', volume=None, root_device=None, sriov_net_support=None, ena_support=None, uefi_support=None, billing_codes=None, release_notes=None, usage_instructions=None, recommended_instance_type=None, marketplace_entity_type=None, image_id=None, public_image=None, scanning_port=None, user_name=None, version_title=None, security_groups=[], access_endpoint_url=None)
+[ WARNING] BILLING CODES REQUIREMENT IS CURRENTLY DISABLED!
+[   DEBUG] Enriched push item for aws_storage: AmiPushItem(name='ami_pushitem', state='PENDING', src='/foo/bar/sample_product_test.raw', dest=['fake-destination-access'], md5sum=None, sha256sum=None, origin=None, build=None, build_info=KojiBuildInfo(name='test-build', version='7.0', release='20230101', id=None), signing_key=None, release=AmiRelease(product='sample_product', date=datetime.datetime(2023, 12, 12, 0, 0), arch='x86_64', respin=1, version='7.0', base_product='sample_base', base_version='1.0', variant='variant', type='ga'), description='', boot_mode=None, marketplace_title_template=None, marketplace_name=None, type='access', region='fake-destination', virtualization='hvm', volume=None, root_device=None, sriov_net_support=None, ena_support=None, uefi_support=None, billing_codes=None, release_notes=None, usage_instructions=None, recommended_instance_type=None, marketplace_entity_type='awstest', image_id=None, public_image=False, scanning_port=None, user_name=None, version_title=None, security_groups=[], access_endpoint_url=None)
+[    INFO] Adding push item "ami_pushitem" with destination "fake-destination-access" and type "access" to the queue.
+[   DEBUG] Searching for product sample_product for provider awstest in rhsm
+[   DEBUG] Fetching product from https://rhsm.com/v1/internal/cloud_access_providers/amazon/provider_image_groups
+[   DEBUG] 4 Products(AWS provider) in rhsm: RHEL_HA(awstest), SAP(awstest), sample_product(awstest), sample_product_HOURLY(awstest)
+[    INFO] Uploading to the storage account aws_storage
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region fake-destination (type: access, ship: True)
+[    INFO] Upload finished for ami_pushitem on fake-destination
+[    INFO] Creating region fake-destination [awstest]
+[    INFO] Registering image foo with RHSM
+[   DEBUG] Searching for product sample_product for provider awstest in rhsm
+[    INFO] Attempting to update the existing image foo in RHSM
+[   DEBUG] {'image_id': 'foo', 'image_name': 'bar', 'arch': 'x86_64', 'product_name': 'sample_product', 'version': '7.0', 'variant': 'variant'}
+[    INFO] Successfully registered image foo with RHSM
+[    INFO] Successfully uploaded ami_pushitem [fake-destination] [foo]
+[    INFO] Collecting results
+[    INFO] Community VM push completed

@@ -53,17 +53,21 @@
 [    INFO] Upload finished for vhd_pushitem on AWS-NA
 [    INFO] Uploading the item vhd_pushitem to AWS-EMEA.
 [    INFO] Upload finished for vhd_pushitem on AWS-EMEA
-[    INFO] Preparing to publish the item ami_pushitem to AWS-NA.
+[    INFO] Preparing to publish the item ami_pushitem to new_aws_na_destination on AWS-NA.
 [    INFO] Preparation complete for item ami_pushitem to AWS-NA.
-[    INFO] Preparing to publish the item ami_pushitem to AWS-EMEA.
+[    INFO] Preparing to publish the item ami_pushitem to new_aws_emea_destination on AWS-EMEA.
 [    INFO] Preparation complete for item ami_pushitem to AWS-EMEA.
-[    INFO] Preparing to publish the item ami_pushitem to AZURE-NA.
+[    INFO] Preparing to publish the item ami_pushitem to new_azure_destination1 on AZURE-NA.
 [    INFO] Preparation complete for item ami_pushitem to AZURE-NA.
-[    INFO] Preparing to publish the item vhd_pushitem to AZURE-NA.
+[    INFO] Preparing to publish the item ami_pushitem to new_azure_destination2 on AZURE-NA.
+[    INFO] Preparation complete for item ami_pushitem to AZURE-NA.
+[    INFO] Preparing to publish the item vhd_pushitem to new_azure_destination1 on AZURE-NA.
 [    INFO] Preparation complete for item vhd_pushitem to AZURE-NA.
-[    INFO] Preparing to publish the item vhd_pushitem to AWS-NA.
+[    INFO] Preparing to publish the item vhd_pushitem to new_azure_destination2 on AZURE-NA.
+[    INFO] Preparation complete for item vhd_pushitem to AZURE-NA.
+[    INFO] Preparing to publish the item vhd_pushitem to new_aws_na_destination on AWS-NA.
 [    INFO] Preparation complete for item vhd_pushitem to AWS-NA.
-[    INFO] Preparing to publish the item vhd_pushitem to AWS-EMEA.
+[    INFO] Preparing to publish the item vhd_pushitem to new_aws_emea_destination on AWS-EMEA.
 [    INFO] Preparation complete for item vhd_pushitem to AWS-EMEA.
 [    INFO] Pushing "ami_pushitem" (pre-push=True) to new_aws_na_destination on AWS-NA.
 [    INFO] Pushing "ami_pushitem" (pre-push=False) to new_aws_na_destination on AWS-NA.

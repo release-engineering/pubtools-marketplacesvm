@@ -83,7 +83,7 @@ def test_do_push(
     starmap_calls = [mock.call(name="test-build", version="7.0") for _ in range(2)]
     fake_starmap.query_image_by_name.assert_has_calls(starmap_calls)
     # get_provider, upload, pre_publish and publish calls for "aws-na", "aws-emea", "azure-na"
-    assert fake_cloud_instance.call_count == 14
+    assert fake_cloud_instance.call_count == 16
 
 
 @mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.cloud_instance")
@@ -267,7 +267,7 @@ def test_do_push_prepush(
     starmap_calls = [mock.call(name="test-build", version="7.0") for _ in range(2)]
     fake_starmap.query_image_by_name.assert_has_calls(starmap_calls)
     # get_provider and upload only calls for "aws-na", "aws-emea", "azure-na"
-    assert fake_cloud_instance.call_count == 6
+    assert fake_cloud_instance.call_count == 3
 
 
 @mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
@@ -437,7 +437,7 @@ def test_push_item_fail_publish(
     fake_starmap.query_image_by_name.assert_has_calls(starmap_calls)
     # get_provider, upload calls for "aws-na", "aws-emea", "azure-na" with
     # publish calls only for "aws-na" and "azure-na"
-    assert mock_cloud_instance.call_count == 12
+    assert mock_cloud_instance.call_count == 14
 
 
 @mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.cloud_instance")

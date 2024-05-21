@@ -262,19 +262,25 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
         for mapped_item, starmap_query in upload_result:
             for marketplace in mapped_item.marketplaces:
                 pi = mapped_item.get_push_item_for_marketplace(marketplace)
-
-                if pi.state != State.UPLOADFAILED:
-                    log.info(
-                        "Preparing to publish the item %s to %s.", pi.name, marketplace.upper()
-                    )
-                    pi, _ = self.cloud_instance(marketplace).pre_publish(pi)
+                if pi.state != State.UPLOADFAILED and self._allowed_to_publish(mapped_item):
+                    destination_list = pi.dest
+                    for dest in pi.dest:
+                        log.info(
+                            "Preparing to publish the item %s to %s on %s.",
+                            pi.name,
+                            dest.destination,
+                            marketplace.upper(),
+                        )
+                        pi = evolve(pi, dest=[dest.destination])
+                        pi, _ = self.cloud_instance(marketplace).pre_publish(pi)
+                        log.info(
+                            "Preparation complete for item %s to %s.",
+                            pi.name,
+                            marketplace.upper(),
+                        )
+                    # Set back the original destinations after processing
+                    pi = evolve(pi, dest=destination_list)
                     mapped_item.update_push_item_for_marketplace(marketplace, pi)
-                    log.info(
-                        "Preparation complete for item %s to %s.",
-                        pi.name,
-                        marketplace.upper(),
-                    )
-
             res.append((mapped_item, starmap_query))
         return res
 
