@@ -11,6 +11,7 @@ import pytest
     params=[
         "pubtools._marketplacesvm.tasks.push",
         "pubtools._marketplacesvm.tasks.community_push",
+        "pubtools._marketplacesvm.tasks.combined_push",
     ]
 )
 def task_module(request: pytest.FixtureRequest):
