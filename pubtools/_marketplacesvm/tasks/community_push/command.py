@@ -485,13 +485,13 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
 
         # process result for failures
         failed = False
-        if not allow_empty_targets:
-            if len(result) == 0:
-                log.error("No push item was processed.")
+        for r in result:
+            if r.get("state", "") != State.PUSHED:
                 failed = True
-            for r in result:
-                if r.get("state", "") != State.PUSHED:
-                    failed = True
+
+        if not allow_empty_targets and len(result) == 0:
+            log.error("No push item was processed.")
+            failed = True
 
         # send to collector
         if collect_results:
