@@ -239,6 +239,8 @@ def test_do_community_push_no_billing_config(
 @mock.patch("pubtools._marketplacesvm.tasks.community_push.CommunityVMPush.starmap")
 def test_do_community_push_major_minor(
     mock_starmap: mock.MagicMock,
+    fake_source: mock.MagicMock,
+    fake_cloud_instance: mock.MagicMock,
     command_tester: CommandTester,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
