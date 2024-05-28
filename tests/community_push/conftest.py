@@ -20,8 +20,8 @@ def monkeysession():
 
 
 @pytest.fixture(scope="session", autouse=True)
-def marketplaces_vm_push(monkeysession: pytest.MonkeyPatch) -> None:
-    """Set a single-thread for MarketplacesVMPush."""
+def community_vm_push(monkeysession: pytest.MonkeyPatch) -> None:
+    """Set a single-thread for CommunityVMPush."""
     monkeysession.setattr(CommunityVMPush, '_REQUEST_THREADS', 1)
     monkeysession.setattr(CommunityVMPush, '_PROCESS_THREADS', 1)
 

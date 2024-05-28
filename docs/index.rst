@@ -12,3 +12,4 @@ Virtual Machine images to various cloud marketplaces.
 
    push
    community_push
+   combined_push

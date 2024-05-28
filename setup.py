@@ -42,7 +42,8 @@ setup(
     install_requires=get_requirements(),
     entry_points={
         "console_scripts": [
-            "pubtools-marketplacesvm-push = pubtools._marketplacesvm.tasks.push:entry_point",
+            "pubtools-marketplacesvm-push = pubtools._marketplacesvm.tasks.combined_push:entry_point",
+            "pubtools-marketplacesvm-marketplace-push = pubtools._marketplacesvm.tasks.push:entry_point",
             "pubtools-marketplacesvm-community-push = pubtools._marketplacesvm.tasks.community_push:entry_point",
         ]
     },

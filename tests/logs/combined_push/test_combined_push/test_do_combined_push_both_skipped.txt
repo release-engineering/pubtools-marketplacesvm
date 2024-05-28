@@ -1,0 +1,7 @@
+[    INFO] Loading items from koji:https://fakekoji.com?vmi_build=ami_build
+[    INFO] Marketplace VM push completed
+[    INFO] Loading items from koji:https://fakekoji.com?vmi_build=ami_build
+[    INFO] Community VM push completed
+[    INFO] Collecting results
+[    INFO] Combined VM push failed: both workflows were empty.
+# Raised: 30

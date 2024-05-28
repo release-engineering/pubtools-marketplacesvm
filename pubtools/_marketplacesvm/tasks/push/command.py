@@ -462,13 +462,12 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
 
         # process result for failures
         failed = False
-        if not allow_empty_targets:
-            if not result:
+        for r in result:
+            if r.get("state", "") != State.PUSHED:
                 failed = True
 
-            for r in result:
-                if r.get("state", "") != State.PUSHED:
-                    failed = True
+        if not allow_empty_targets and not result:
+            failed = True
 
         # 4 - Send resulting data to collector
         if collect_results:
