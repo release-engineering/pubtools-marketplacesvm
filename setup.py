@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-from setuptools import setup, find_packages
+from setuptools import setup, find_namespace_packages
 
 
 def get_description():
@@ -23,7 +23,8 @@ def get_requirements():
 setup(
     name="pubtools-marketplacesvm",
     version="0.11.3",
-    packages=find_packages(exclude=["tests"]),
+    packages=find_namespace_packages(where="src"),
+    package_dir={"": "src"},
     url="https://gitlab.cee.redhat.com/stratosphere/pubtools-marketplacesvm",
     license="GPLv3+",
     description=get_description(),
