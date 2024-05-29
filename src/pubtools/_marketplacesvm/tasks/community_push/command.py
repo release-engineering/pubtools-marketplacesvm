@@ -7,7 +7,7 @@ from typing import Any, Dict, Iterator, List, Optional
 from attrs import asdict, evolve
 from more_executors import Executors
 from pushsource import AmiPushItem, Source, VMIPushItem
-from requests import Response
+from requests import HTTPError, Response
 from starmap_client.models import Workflow
 
 from pubtools._marketplacesvm.tasks.community_push.items import enrich_push_item
@@ -155,7 +155,7 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
         """
         try:
             self.get_rhsm_product(product, image_type, aws_provider_name)
-        except RuntimeError as er:
+        except (RuntimeError, HTTPError) as er:
             log.error(er)
             return False
         return True
