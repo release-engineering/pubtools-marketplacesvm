@@ -424,6 +424,8 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
             Tuple[AmiPushItem, Any]
                 The incoming push item and the dict with received parameters.
         """
+        LOG.info("Checking for active changesets in: %s", push_item.dest[0])
+        self.publish_svc.wait_active_changesets(push_item.dest[0])
         return push_item, kwargs
 
     def _publish(

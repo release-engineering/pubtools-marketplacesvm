@@ -605,6 +605,9 @@ def test_upload_custom_tags(
 
 def test_pre_publish(aws_push_item: AmiPushItem, fake_aws_provider: AWSProvider):
     pi, res = fake_aws_provider._pre_publish(aws_push_item, param=True)
+    fake_aws_provider.publish_svc.wait_active_changesets.assert_called_once_with(
+        aws_push_item.dest[0]
+    )
     assert (pi, res) == (aws_push_item, {"param": True})
 
 
