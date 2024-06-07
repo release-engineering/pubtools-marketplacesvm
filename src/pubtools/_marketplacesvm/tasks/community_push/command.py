@@ -81,16 +81,23 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                 version=binfo.version,
                 workflow=Workflow.community,
             )
-            log.info(
-                "starmap query returned for %s : %s ",
-                item.name,
-                json.dumps(
-                    {"name": binfo.name, "version": binfo.version, "query_response": asdict(query)},
-                    default=str,
-                ),
-            )
-            item = MappedVMIPushItem(item, query.clouds)
-            mapped_items.append(item)
+            if query:
+                log.info(
+                    "starmap query returned for %s : %s ",
+                    item.name,
+                    json.dumps(
+                        {
+                            "name": binfo.name,
+                            "version": binfo.version,
+                            "query_response": asdict(query),
+                        },
+                        default=str,
+                    ),
+                )
+                item = MappedVMIPushItem(item, query.clouds)
+                mapped_items.append(item)
+            else:
+                log.error(f"No mappings found for {binfo.name}")
         return mapped_items
 
     @property
