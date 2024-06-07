@@ -110,6 +110,31 @@ def test_do_community_push(
     )
 
 
+@mock.patch("pubtools._marketplacesvm.tasks.community_push.CommunityVMPush.starmap")
+def test_do_community_push_no_mappings(
+    mock_starmap: mock.MagicMock,
+    fake_source: mock.MagicMock,
+    fake_cloud_instance: mock.MagicMock,
+    command_tester: CommandTester,
+) -> None:
+    """Test a community-push with no mappings definition from StArMap."""
+    mock_starmap.query_image_by_name.return_value = None
+    command_tester.test(
+        lambda: entry_point(CommunityVMPush),
+        [
+            "test-push",
+            "--starmap-url",
+            "https://starmap-example.com",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--rhsm-url",
+            "https://rhsm.com/test/api/",
+            "--debug",
+            "koji:https://fakekoji.com?vmi_build=ami_build",
+        ],
+    )
+
+
 def test_do_community_push_skip_billing_codes(
     fake_source: mock.MagicMock,
     fake_starmap: mock.MagicMock,
