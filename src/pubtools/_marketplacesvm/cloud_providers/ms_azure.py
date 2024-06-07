@@ -210,6 +210,15 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
         if custom_tags:
             LOG.debug(f"Setting up custom tags: {custom_tags}")
             tags.update(custom_tags)
+
+        # For Coreos-Assembler images change the version and nvra tag
+        # so it have the full version like "414.92.202405282322"
+        # instead of 4.14
+        if push_item.src.startswith("https://"):
+            tags["version"] = push_item.build.split("-")[2]
+            tags["nvra"] = (
+                f"{binfo.name}-{tags['version']}-{binfo.release}.{push_item.release.arch}"  # noqa: E501
+            )
         upload_metadata_kwargs = {
             "image_path": push_item.src,
             "image_name": self._name_from_push_item(push_item),

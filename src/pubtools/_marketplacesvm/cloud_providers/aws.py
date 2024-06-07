@@ -254,7 +254,7 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         creds = AWSCredentials(**auth_data)
         return cls(creds)
 
-    def _copy_image_from_ami_catalog(self, push_item: AmiPushItem):
+    def _copy_image_from_ami_catalog(self, push_item: AmiPushItem, tags: Dict[str, str]):
         """
         Copy AMI from AMI-Catalog (AWS-Marketplace AMIs and Community-AMIs) to account.
 
@@ -285,6 +285,7 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
                 image_id=push_item.src,
                 image_name=push_item.build,
                 image_region=push_item.region,
+                tags=tags,
             )
             result = UploadResult(copy_result["ImageId"])
         return result
@@ -331,10 +332,6 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
             The EC2 image with the data from uploaded image.
         """
         # Check if the AMI is already created for this push item.
-        if push_item.src.startswith("ami"):
-            result = self._copy_image_from_ami_catalog(push_item)
-            return push_item, result
-
         name = name_from_push_item(push_item)
         binfo = push_item.build_info
         default_groups = self.aws_groups or []
@@ -357,6 +354,16 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         if custom_tags:
             LOG.debug(f"Setting up custom tags: {custom_tags}")
             tags.update(custom_tags)
+
+        if push_item.src.startswith("ami"):
+            tags["version"] = push_item.build.split("-")[2]
+            tags["nvra"] = (
+                f"{binfo.name}-{tags['version']}-{binfo.release}.{push_item.release.arch}"  # noqa: E501
+            )
+
+            result = self._copy_image_from_ami_catalog(push_item, tags=tags)
+            return push_item, result
+
         upload_metadata_kwargs = {
             "image_path": push_item.src,
             "image_name": name,
