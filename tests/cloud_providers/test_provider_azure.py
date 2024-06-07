@@ -128,6 +128,39 @@ def test_upload(
 
 
 @patch("pubtools._marketplacesvm.cloud_providers.ms_azure.AzureUploadMetadata")
+def test_rhcos_upload(
+    mock_metadata: MagicMock, azure_push_item: VHDPushItem, fake_azure_provider: AzureProvider
+) -> None:
+    azure_push_item = evolve(azure_push_item, src="https://rhcos_data.windows.net")
+    azure_push_item = evolve(azure_push_item, build='rhcos-x86_64-414.92.202405201754-0')
+    binfo = azure_push_item.build_info
+
+    tags = {
+        "arch": azure_push_item.release.arch,
+        "buildid": str(azure_push_item.build_info.id),
+        "name": azure_push_item.build_info.name,
+        "nvra": f"{binfo.name}-{'414.92.202405201754'}-{binfo.release}.{azure_push_item.release.arch}",  # noqa: E501
+        "release": azure_push_item.build_info.release,
+        "version": "414.92.202405201754",
+    }
+    metadata = {
+        "arch": azure_push_item.release.arch,
+        "container": UPLOAD_CONTAINER_NAME,
+        "description": azure_push_item.description,
+        "image_name": fake_azure_provider._name_from_push_item(azure_push_item),
+        "image_path": azure_push_item.src,
+        "tags": tags,
+    }
+
+    fake_azure_provider.upload_svc.get_blob_sas_uri.return_value = "FAKE_SAS_URI"
+    fake_azure_provider.upload(azure_push_item)
+    mock_metadata.assert_called_once_with(**metadata)
+
+    fake_azure_provider.upload_svc.publish.assert_called_once()
+    fake_azure_provider.publish_svc.publish.assert_not_called()
+
+
+@patch("pubtools._marketplacesvm.cloud_providers.ms_azure.AzureUploadMetadata")
 def test_upload_custom_tags(
     mock_metadata: MagicMock, azure_push_item: VHDPushItem, fake_azure_provider: AzureProvider
 ) -> None:

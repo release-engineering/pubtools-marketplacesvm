@@ -123,7 +123,7 @@ def aws_rhcos_push_item(ami_release: AmiRelease, security_group: AmiSecurityGrou
         "description": "foo",
         "src": "ami-01",
         "dest": ["product-uuid"],
-        "build": "sample_product-1.0.1-1-x86_64",
+        "build": "rhcos-x86_64-414.92.202405201754-0",
         "build_info": KojiBuildInfo(
             name="test-build", version="1.0.1", release="20230101", id=1234
         ),
@@ -232,6 +232,17 @@ def test_upload_of_rhcos_image(
     aws_rhcos_push_item: AmiPushItem,
     fake_aws_provider: AWSProvider,
 ):
+    binfo = aws_rhcos_push_item.build_info
+
+    tags = {
+        "arch": aws_rhcos_push_item.release.arch,
+        "buildid": str(aws_rhcos_push_item.build_info.id),
+        "name": aws_rhcos_push_item.build_info.name,
+        "nvra": f"{binfo.name}-{'414.92.202405201754'}-{binfo.release}.{aws_rhcos_push_item.release.arch}",  # noqa: E501
+        "release": aws_rhcos_push_item.build_info.release,
+        "version": "414.92.202405201754",
+    }
+
     fake_aws_provider.upload_svc_partial.return_value.get_image_from_ami_catalog.return_value = FakeImageResp()  # type: ignore [attr-defined] # noqa: E501
     fake_aws_provider.upload_svc_partial.return_value.copy_ami.return_value = {  # type: ignore [attr-defined] # noqa: E501
         "ImageId": "fake-ami-02"
@@ -245,6 +256,9 @@ def test_upload_of_rhcos_image(
     fake_aws_provider.upload_svc_partial.return_value.get_image_from_ami_catalog.assert_called_once()  # type: ignore [attr-defined] # noqa: E501
     fake_aws_provider.upload_svc_partial.return_value.get_image_by_name.assert_called_once()  # type: ignore [attr-defined] # noqa: E501
     fake_aws_provider.upload_svc_partial.return_value.copy_ami.assert_called_once()  # type: ignore [attr-defined] # noqa: E501
+    assert (
+        tags == fake_aws_provider.upload_svc_partial.return_value.copy_ami.call_args.kwargs["tags"]
+    )
 
 
 def test_upload_of_rhcos_image_not_found(
