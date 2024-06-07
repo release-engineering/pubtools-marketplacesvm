@@ -77,7 +77,7 @@ def test_update_image(requests_mocker, caplog: LogCaptureFixture) -> None:
         "https://example.com", cert=("client.crt", "client.key"), max_retry_sleep=0.001
     )
     with patch("pubtools._marketplacesvm.services.rhsm.datetime") as now:
-        now.utcnow().replace().isoformat.return_value = date_now
+        now.now().replace().isoformat.return_value = date_now
         out = client.aws_update_image(
             "ami-123", "ami-rhel", "x86_64", "RHEL", version="7.3", variant="Server"
         )
@@ -123,7 +123,7 @@ def test_create_image(requests_mocker, caplog: LogCaptureFixture) -> None:
         "https://example.com", cert=("client.crt", "client.key"), max_retry_sleep=0.001
     )
     with patch("pubtools._marketplacesvm.services.rhsm.datetime") as now:
-        now.utcnow().replace().isoformat.return_value = date_now
+        now.now().replace().isoformat.return_value = date_now
         out = client.aws_create_image("ami-123", "ami-rhel", "x86_64", "RHEL", "us-east-1")
     assert out.result().ok
     assert m_create_image.call_count == 1
