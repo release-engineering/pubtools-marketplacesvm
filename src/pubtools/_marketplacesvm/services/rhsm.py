@@ -9,7 +9,7 @@ import sys
 import threading
 from argparse import ArgumentParser
 from concurrent.futures import Future
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Generic, NoReturn, Optional, Set, TypeVar
 from urllib.parse import urljoin
 
@@ -174,7 +174,7 @@ class AwsRHSMClient(RHSMClient):
         """
         url = urljoin(self._url, self.AMIS_URL)
 
-        now = datetime.utcnow().replace(microsecond=0).isoformat()
+        now = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
         rhsm_image = {
             "amiID": image_id,
             "arch": arch.lower(),
@@ -218,7 +218,7 @@ class AwsRHSMClient(RHSMClient):
         """
         url = urljoin(self._url, self.AMIS_URL)
 
-        now = datetime.utcnow().replace(microsecond=0).isoformat()
+        now = datetime.now(timezone.utc).replace(microsecond=0).isoformat()
         rhsm_image = {
             "amiID": image_id,
             "region": region,
