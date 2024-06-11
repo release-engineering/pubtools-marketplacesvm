@@ -325,7 +325,7 @@ def test_post_publish(
     name = os.path.basename(azure_push_item.src).rstrip(".xz")
     container = UPLOAD_CONTAINER_NAME
 
-    fake_azure_provider._post_publish(azure_push_item, "publish_result")
+    fake_azure_provider._post_publish(azure_push_item, "publish_result", False)
 
     fake_azure_provider.upload_svc.get_object_by_name.assert_called_once_with(container, name)
 
@@ -334,3 +334,24 @@ def test_post_publish(
 
     test_dict = {"release_date": "20230623"}
     mock_blob.set_blob_tags.assert_called_once_with(test_dict)
+
+
+@patch("pubtools._marketplacesvm.cloud_providers.ms_azure.datetime")
+def test_post_publish_nochannel(
+    mock_datetime: MagicMock,
+    azure_push_item: VHDPushItem,
+    fake_azure_provider: AzureProvider,
+) -> None:
+    mock_blob = MagicMock()
+    mock_blob.get_blob_tags.return_value = {}
+    mock_datetime.now.return_value.strftime.return_value = "20230623"
+
+    fake_azure_provider.upload_svc.get_object_by_name.return_value = mock_blob
+
+    fake_azure_provider._post_publish(azure_push_item, "publish_result", True)
+
+    fake_azure_provider.upload_svc.get_object_by_name.assert_not_called()
+
+    mock_blob.get_blob_tags.assert_not_called()
+    mock_datetime.now.return_value.strftime.assert_not_called()
+    mock_blob.set_blob_tags.assert_not_called()

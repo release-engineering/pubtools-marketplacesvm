@@ -518,7 +518,7 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         return push_item, res
 
     def _post_publish(
-        self, push_item: AmiPushItem, publish_result: Any, **kwargs
+        self, push_item: AmiPushItem, publish_result: Any, nochannel: bool, **kwargs
     ) -> Tuple[AmiPushItem, Any]:
         """
         Post publishing activities currently restricts older versions.
@@ -528,6 +528,8 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
                 The original push item for uploading the AMI image.
             publish_result (str)
                 The AMI publish properties
+            nochannel (bool)
+                Is this a nochannel publish.
             restrict_version (bool, Optional)
                 Whether to restrict the version and remove the accompanying AMI/Snapshot.
             restrict_major (int, Optional)
@@ -538,6 +540,8 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         Returns:
             Tuple of PushItem and Publish results.
         """
+        if nochannel:
+            return push_item, publish_result
         region = push_item.region or self.default_region
 
         upload_svc = self.upload_svc_partial(region=region)

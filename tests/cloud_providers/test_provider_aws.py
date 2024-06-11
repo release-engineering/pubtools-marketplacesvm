@@ -763,20 +763,13 @@ def test_publish_version_exists(
 
     fake_aws_provider.publish_svc.restrict_versions.return_value = ["ami-1", "ami-2"]
 
-    _, res = fake_aws_provider.publish(
-        updated_aws_push_item, nochannel=False, overwrite=False, restrict_version=True
-    )
+    _, res = fake_aws_provider.publish(updated_aws_push_item, nochannel=False, overwrite=False)
 
     assert res == {}
 
     mock_metadata.assert_not_called()
     fake_aws_provider.publish_svc.publish.assert_not_called()
     fake_aws_provider.upload_svc_partial.upload.assert_not_called()  # type: ignore [attr-defined] # noqa: E501
-
-    called_args = fake_aws_provider.upload_svc_partial.return_value.delete.call_args_list  # type: ignore [attr-defined] # noqa: E501
-
-    assert called_args[0][0][0].image_id == "ami-1"
-    assert called_args[1][0][0].image_id == "ami-2"
 
 
 @pytest.mark.parametrize("aws_fake_version", ["19.11.111", "19.11", "19.11.3333"])
@@ -795,7 +788,12 @@ def test_post_publish(
     fake_aws_provider.publish_svc.restrict_versions.return_value = ["ami-1", "ami-2"]
 
     fake_pi_return, fake_result_return = fake_aws_provider._post_publish(
-        updated_aws_push_item, None, restrict_version=True, restrict_major=2, restrict_minor=2
+        updated_aws_push_item,
+        None,
+        False,
+        restrict_version=True,
+        restrict_major=2,
+        restrict_minor=2,
     )
     fake_aws_provider.publish_svc.restrict_versions.assert_called_once_with(
         'product-uuid', 'FakeProduct', 2, 2
@@ -816,3 +814,22 @@ def test_post_publish(
 
     assert called_args[0][0][0].image_id == "ami-1"
     assert called_args[1][0][0].image_id == "ami-2"
+
+
+def test_post_publish_nochannel(aws_push_item: AmiPushItem, fake_aws_provider: AWSProvider):
+    fake_aws_provider.image_id = "ami-97969874573"
+    fake_image = FakeImageResp()
+    fake_aws_provider.upload_svc_partial.return_value.get_image_by_id.return_value = fake_image  # type: ignore [attr-defined] # noqa: E501
+    fake_aws_provider.upload_svc_partial.return_value.tag_image.return_value = FakeImageTag()  # type: ignore [attr-defined] # noqa: E501
+
+    fake_aws_provider.publish_svc.restrict_versions.return_value = ["ami-1", "ami-2"]
+
+    fake_aws_provider._post_publish(
+        aws_push_item,
+        None,
+        True,
+        restrict_version=True,
+        restrict_major=2,
+        restrict_minor=2,
+    )
+    fake_aws_provider.publish_svc.restrict_versions.assert_not_called()
