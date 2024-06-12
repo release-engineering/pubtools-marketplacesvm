@@ -312,7 +312,7 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
         return push_item, res
 
     def _post_publish(
-        self, push_item: VHDPushItem, publish_result: Any, **kwargs
+        self, push_item: VHDPushItem, publish_result: Any, nochannel, **kwargs
     ) -> Tuple[VHDPushItem, Any]:
         """
         Add release_date with after image is published.
@@ -322,10 +322,14 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
                 The original push item for uploading the image.
             publish_result (Any)
                 The publish result.
+            nochannel (bool)
+                Is this a nochannel publish.
 
         Returns:
             Tuple of PushItem and Publish results.
         """
+        if nochannel:
+            return push_item, publish_result
         container = UPLOAD_CONTAINER_NAME
         name = os.path.basename(push_item.src).rstrip(".xz")
 

@@ -53,4 +53,10 @@ class TestCloudProvider:
         push_item = PushItem(name="test")
 
         assert (push_item, "Upload") == fake_provider._post_upload(push_item, "Upload")
-        assert (push_item, "Publish") == fake_provider._post_publish(push_item, "Publish")
+        assert (push_item, "Publish") == fake_provider._post_publish(push_item, "Publish", False)
+
+    def test_default_pre_actions(self, fake_provider: FakeProvider) -> None:
+        """Test the default behavior for `_post_upload` and `_post_publish`."""
+        push_item = PushItem(name="test")
+
+        assert (push_item, {}) == fake_provider._pre_publish(push_item)

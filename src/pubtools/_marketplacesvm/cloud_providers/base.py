@@ -159,7 +159,9 @@ class CloudProvider(ABC, Generic[T, C]):
         """
         return push_item, upload_result
 
-    def _post_publish(self, push_item: T, publish_result: Any, **kwargs) -> Tuple[T, Any]:
+    def _post_publish(
+        self, push_item: T, publish_result: Any, nochannel: bool, **kwargs
+    ) -> Tuple[T, Any]:
         """
         Define the default method for post publishing actions.
 
@@ -168,6 +170,8 @@ class CloudProvider(ABC, Generic[T, C]):
                 The push item to associate and publish a VM image into a product.
             publish_result (Any)
                 The resulting data from publish.
+            nochannel (bool)
+                Is this a nochannel publish.
         Returns:
             The publish result data.
         """
@@ -247,7 +251,7 @@ class CloudProvider(ABC, Generic[T, C]):
             object: The publish result data.
         """
         pi, res = self._publish(push_item, nochannel, overwrite, preview_only, **kwargs)
-        return self._post_publish(pi, res, **kwargs)
+        return self._post_publish(pi, res, nochannel, **kwargs)
 
 
 P = TypeVar('P', bound=CloudProvider)
