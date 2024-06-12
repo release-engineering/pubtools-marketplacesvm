@@ -90,7 +90,7 @@ def test_do_combined_push(
     ami_push_item: AmiPushItem,
     command_tester: CommandTester,
 ) -> None:
-    """Test a successfull combined push."""
+    """Test a successfull combined push for marketplaces and community workflows."""
     marketplace_source.get.return_value.__enter__.return_value = [ami_push_item]
     community_source.get.return_value.__enter__.return_value = [ami_push_item]
 
@@ -163,7 +163,6 @@ def test_do_combined_push_fail_one_workflow(
 def test_do_combined_push_both_skipped(
     marketplace_source: mock.MagicMock,
     community_source: mock.MagicMock,
-    monkeypatch: pytest.MonkeyPatch,
     command_tester: CommandTester,
 ) -> None:
     """Test a combined push which fails as both workflows are empty."""
@@ -186,9 +185,11 @@ def test_do_combined_push_both_skipped(
     )
 
 
+@mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
 @mock.patch("pubtools._marketplacesvm.tasks.community_push.command.Source")
 def test_do_community_push(
     community_source: mock.MagicMock,
+    marketplace_source: mock.MagicMock,
     ami_push_item: AmiPushItem,
     starmap_query_aws_community: QueryResponse,
     monkeypatch: pytest.MonkeyPatch,
@@ -219,24 +220,27 @@ def test_do_community_push(
             "koji:https://fakekoji.com?vmi_build=ami_build",
         ],
     )
+    marketplace_source.get.assert_not_called()
 
 
+@mock.patch("pubtools._marketplacesvm.tasks.community_push.command.Source")
 @mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
 def test_do_marketplace_push(
     marketplace_source: mock.MagicMock,
+    community_source: mock.MagicMock,
     ami_push_item: AmiPushItem,
     starmap_query_aws_marketplace: QueryResponse,
     monkeypatch: pytest.MonkeyPatch,
     command_tester: CommandTester,
 ) -> None:
-    """Test a successfull community push using the CombinedVMPush."""
+    """Test a successfull marketplace push using the CombinedVMPush."""
     marketplace_source.get.return_value.__enter__.return_value = [ami_push_item]
 
     mock_starmap = mock.MagicMock()
     mock_starmap.query_image_by_name.side_effect = [
         starmap_query_aws_marketplace,
     ]
-    monkeypatch.setattr(CommunityVMPush, 'starmap', mock_starmap)
+    monkeypatch.setattr(MarketplacesVMPush, 'starmap', mock_starmap)
 
     command_tester.test(
         lambda: entry_point(CombinedVMPush),
@@ -254,3 +258,4 @@ def test_do_marketplace_push(
             "koji:https://fakekoji.com?vmi_build=ami_build",
         ],
     )
+    community_source.get.assert_not_called()
