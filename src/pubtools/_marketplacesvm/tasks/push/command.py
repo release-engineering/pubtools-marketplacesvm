@@ -25,6 +25,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
 
     _REQUEST_THREADS = int(os.environ.get("MARKETPLACESVM_PUSH_REQUEST_THREADS", "5"))
     _PROCESS_THREADS = int(os.environ.get("MARKETPLACESVM_PUSH_PROCESS_THREADS", "2"))
+    _SKIPPED = False
 
     @property
     def raw_items(self) -> Iterator[VMIPushItem]:
@@ -93,6 +94,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                     continue
                 mapped_items.append({"item": item, "starmap_query": query_returned_from_starmap})
             else:
+                self._SKIPPED = True
                 log.error(f"No mappings found for {binfo.name}")
         return mapped_items
 
@@ -485,5 +487,6 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             log.error("Marketplace VM push failed")
         else:
             log.info("Marketplace VM push completed")
-        skipped = True if (allow_empty_targets and not result) else False
-        return RUN_RESULT(not failed, skipped, result)
+        if not self._SKIPPED and (allow_empty_targets and not result):
+            self._SKIPPED = True
+        return RUN_RESULT(not failed, self._SKIPPED, result)
