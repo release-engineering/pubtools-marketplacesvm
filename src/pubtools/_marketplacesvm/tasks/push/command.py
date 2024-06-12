@@ -73,20 +73,27 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                 name=name,
                 version=binfo.version,
             )
-            query_returned_from_starmap = query
-            log.info(
-                "starmap query returned for %s : %s ",
-                item.name,
-                json.dumps(
-                    {"name": binfo.name, "version": binfo.version, "query_response": asdict(query)}
-                ),
-            )
-            query = self._apply_starmap_overrides(query)
-            item = MappedVMIPushItem(item, query.clouds)
-            if not item.destinations:
-                log.info("Filtering out archive with no destinations: %s", item.push_item.src)
-                continue
-            mapped_items.append({"item": item, "starmap_query": query_returned_from_starmap})
+            if query:
+                query_returned_from_starmap = query
+                log.info(
+                    "starmap query returned for %s : %s ",
+                    item.name,
+                    json.dumps(
+                        {
+                            "name": binfo.name,
+                            "version": binfo.version,
+                            "query_response": asdict(query),
+                        }
+                    ),
+                )
+                query = self._apply_starmap_overrides(query)
+                item = MappedVMIPushItem(item, query.clouds)
+                if not item.destinations:
+                    log.info("Filtering out archive with no destinations: %s", item.push_item.src)
+                    continue
+                mapped_items.append({"item": item, "starmap_query": query_returned_from_starmap})
+            else:
+                log.error(f"No mappings found for {binfo.name}")
         return mapped_items
 
     def _apply_starmap_overrides(self, query: QueryResponse) -> QueryResponse:
