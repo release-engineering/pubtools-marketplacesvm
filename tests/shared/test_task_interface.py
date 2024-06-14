@@ -1,10 +1,15 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 """Tests ensuring all task modules have a consistent interface."""
 import argparse
+import contextlib
+import io
 import sys
 from typing import Any, Dict
+from unittest import mock
 
 import pytest
+
+from pubtools._marketplacesvm.task import MarketplacesVMTask
 
 
 @pytest.fixture(
@@ -39,3 +44,24 @@ def test_entry_point(task_module: Dict[str, Any]) -> None:
     # Default action for all entry points without parameters is to exit
     with pytest.raises(SystemExit):
         fn()
+
+
+@mock.patch("pubtools._marketplacesvm.task.sys")
+def test_exception_traceback(
+    mock_sys: mock.MagicMock, task_module: Dict[str, Any], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Ensure the traceback is properly caught in case of an unexpected exception."""
+    # Since we're not using a CommandTester we must ensure that only `run` is called within `main`
+    # as it will raise `NotImplementedError` which will be caught by the `try/except` in `main`.
+    monkeypatch.setattr(MarketplacesVMTask, "_setup_logging", mock.MagicMock())
+
+    output = io.StringIO()
+    fn = getattr(task_module, "entry_point")
+
+    with contextlib.redirect_stderr(output):
+        fn(cls=MarketplacesVMTask)
+
+    assert "Traceback (most recent call last)" in output.getvalue()
+    assert "NotImplementedError" in output.getvalue()
+
+    mock_sys.exit.assert_called_once_with(30)

@@ -2,6 +2,7 @@
 import logging
 import sys
 import textwrap
+import traceback
 from argparse import ArgumentParser, Namespace, RawDescriptionHelpFormatter
 from collections import namedtuple
 from typing import Optional
@@ -163,7 +164,11 @@ class MarketplacesVMTask(object):
             # setup the logging as required
             self._setup_logging()
 
-            res = self.run(**kwargs)
-            if not res.success:
+            try:
+                res = self.run(**kwargs)
+                if not res.success:
+                    sys.exit(30)
+            except:  # noqa: E722
+                traceback.print_exc()
                 sys.exit(30)
-            return 0
+        return 0
