@@ -1,4 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
+import contextlib
+import io
 import re
 import time
 from typing import Any, Dict, Generator
@@ -218,9 +220,11 @@ def test_do_community_push_skip_houly_sap_ha(
     )
 
 
+@mock.patch("pubtools._marketplacesvm.task.sys")
 @mock.patch("pubtools._marketplacesvm.tasks.community_push.CommunityVMPush.starmap")
 def test_do_community_push_no_billing_config(
     mock_starmap: mock.MagicMock,
+    mock_sys: mock.MagicMock,
     fake_source: mock.MagicMock,
     ami_push_item: AmiPushItem,
     command_tester: CommandTester,
@@ -245,20 +249,27 @@ def test_do_community_push_no_billing_config(
     mock_starmap.query_image_by_name.return_value = QueryResponse.from_json(policy)
 
     # Test
-    command_tester.test(
-        lambda: entry_point(CommunityVMPush),
-        [
-            "test-push",
-            "--starmap-url",
-            "https://starmap-example.com",
-            "--credentials",
-            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
-            "--rhsm-url",
-            "https://rhsm.com/test/api/",
-            "--debug",
-            "koji:https://fakekoji.com?vmi_build=ami_build",
-        ],
+    output = io.StringIO()
+    with contextlib.redirect_stderr(output):
+        command_tester.test(
+            lambda: entry_point(CommunityVMPush),
+            [
+                "test-push",
+                "--starmap-url",
+                "https://starmap-example.com",
+                "--credentials",
+                "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+                "--rhsm-url",
+                "https://rhsm.com/test/api/",
+                "--debug",
+                "koji:https://fakekoji.com?vmi_build=ami_build",
+            ],
+        )
+    assert (
+        r"RuntimeError: ('No billing code configuration provided for %s on %s.', 'ami_pushitem', 'fake-destination-access')"  # noqa: E501
+        in output.getvalue()
     )
+    mock_sys.exit.assert_called_once_with(30)
 
 
 @mock.patch("pubtools._marketplacesvm.tasks.community_push.CommunityVMPush.starmap")
@@ -379,27 +390,31 @@ def test_no_source(command_tester: CommandTester, capsys: CaptureFixture) -> Non
     assert "error: too few arguments" or "error: the following arguments are required" in err
 
 
+@mock.patch("pubtools._marketplacesvm.task.sys")
 def test_no_rhsm_url(
+    mock_sys: mock.MagicMock,
     fake_source: mock.MagicMock,
     fake_starmap: mock.MagicMock,
     command_tester: CommandTester,
     capsys: CaptureFixture,
 ) -> None:
     """Checks that exception is raised when the rhsm-url is missing."""
-    command_tester.test(
-        lambda: entry_point(CommunityVMPush),
-        [
-            "test-push",
-            "--starmap-url",
-            "https://starmap-example.com",
-            "--credentials",
-            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
-            "--debug",
-            "koji:https://fakekoji.com?vmi_build=ami_build",
-        ],
-    )
-    _, err = capsys.readouterr()
-    assert "RHSM URL not provided for the RHSM client" in err
+    output = io.StringIO()
+    with contextlib.redirect_stderr(output):
+        command_tester.test(
+            lambda: entry_point(CommunityVMPush),
+            [
+                "test-push",
+                "--starmap-url",
+                "https://starmap-example.com",
+                "--credentials",
+                "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+                "--debug",
+                "koji:https://fakekoji.com?vmi_build=ami_build",
+            ],
+        )
+    assert "RHSM URL not provided for the RHSM client" in output.getvalue()
+    mock_sys.exit.assert_called_once_with(30)
 
 
 def test_not_in_rhsm(
