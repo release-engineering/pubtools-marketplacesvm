@@ -31,6 +31,7 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
     _REQUIRE_BC = bool(
         os.environ.get("COMMUNITY_PUSH_REQUIRE_BILLING_CODES", "true").lower() == "true"
     )
+    _SKIPPED = False
 
     def __init__(self, *args, **kwargs):
         """Initialize the CommunityVMPush instance."""
@@ -97,6 +98,7 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                 item = MappedVMIPushItem(item, query.clouds)
                 mapped_items.append(item)
             else:
+                self._SKIPPED = True
                 log.error(f"No mappings found for {binfo.name}")
         return mapped_items
 
@@ -509,5 +511,6 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
             log.error("Community VM push failed")
         else:
             log.info("Community VM push completed")
-        skipped = True if (allow_empty_targets and not result) else False
-        return RUN_RESULT(not failed, skipped, result)
+        if not self._SKIPPED and (allow_empty_targets and not result):
+            self._SKIPPED = True
+        return RUN_RESULT(not failed, self._SKIPPED, result)

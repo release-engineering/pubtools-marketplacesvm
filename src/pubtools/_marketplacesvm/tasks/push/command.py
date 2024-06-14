@@ -25,6 +25,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
 
     _REQUEST_THREADS = int(os.environ.get("MARKETPLACESVM_PUSH_REQUEST_THREADS", "5"))
     _PROCESS_THREADS = int(os.environ.get("MARKETPLACESVM_PUSH_PROCESS_THREADS", "2"))
+    _SKIPPED = False
 
     @property
     def raw_items(self) -> Iterator[VMIPushItem]:
@@ -73,20 +74,28 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                 name=name,
                 version=binfo.version,
             )
-            query_returned_from_starmap = query
-            log.info(
-                "starmap query returned for %s : %s ",
-                item.name,
-                json.dumps(
-                    {"name": binfo.name, "version": binfo.version, "query_response": asdict(query)}
-                ),
-            )
-            query = self._apply_starmap_overrides(query)
-            item = MappedVMIPushItem(item, query.clouds)
-            if not item.destinations:
-                log.info("Filtering out archive with no destinations: %s", item.push_item.src)
-                continue
-            mapped_items.append({"item": item, "starmap_query": query_returned_from_starmap})
+            if query:
+                query_returned_from_starmap = query
+                log.info(
+                    "starmap query returned for %s : %s ",
+                    item.name,
+                    json.dumps(
+                        {
+                            "name": binfo.name,
+                            "version": binfo.version,
+                            "query_response": asdict(query),
+                        }
+                    ),
+                )
+                query = self._apply_starmap_overrides(query)
+                item = MappedVMIPushItem(item, query.clouds)
+                if not item.destinations:
+                    log.info("Filtering out archive with no destinations: %s", item.push_item.src)
+                    continue
+                mapped_items.append({"item": item, "starmap_query": query_returned_from_starmap})
+            else:
+                self._SKIPPED = True
+                log.error(f"No mappings found for {binfo.name}")
         return mapped_items
 
     def _apply_starmap_overrides(self, query: QueryResponse) -> QueryResponse:
@@ -478,5 +487,6 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             log.error("Marketplace VM push failed")
         else:
             log.info("Marketplace VM push completed")
-        skipped = True if (allow_empty_targets and not result) else False
-        return RUN_RESULT(not failed, skipped, result)
+        if not self._SKIPPED and (allow_empty_targets and not result):
+            self._SKIPPED = True
+        return RUN_RESULT(not failed, self._SKIPPED, result)
