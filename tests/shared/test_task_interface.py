@@ -46,10 +46,7 @@ def test_entry_point(task_module: Dict[str, Any]) -> None:
         fn()
 
 
-@mock.patch("pubtools._marketplacesvm.task.sys")
-def test_exception_traceback(
-    mock_sys: mock.MagicMock, task_module: Dict[str, Any], monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_exception_traceback(task_module: Dict[str, Any], monkeypatch: pytest.MonkeyPatch) -> None:
     """Ensure the traceback is properly caught in case of an unexpected exception."""
     # Since we're not using a CommandTester we must ensure that only `run` is called within `main`
     # as it will raise `NotImplementedError` which will be caught by the `try/except` in `main`.
@@ -59,9 +56,8 @@ def test_exception_traceback(
     fn = getattr(task_module, "entry_point")
 
     with contextlib.redirect_stderr(output):
-        fn(cls=MarketplacesVMTask)
+        with pytest.raises(NotImplementedError):
+            fn(cls=MarketplacesVMTask)
 
     assert "Traceback (most recent call last)" in output.getvalue()
     assert "NotImplementedError" in output.getvalue()
-
-    mock_sys.exit.assert_called_once_with(30)

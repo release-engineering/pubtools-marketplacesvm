@@ -170,5 +170,5 @@ class MarketplacesVMTask(object):
                     sys.exit(30)
             except:  # noqa: E722
                 traceback.print_exc()
-                sys.exit(30)
+                raise
         return 0

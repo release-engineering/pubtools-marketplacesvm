@@ -220,11 +220,9 @@ def test_do_community_push_skip_houly_sap_ha(
     )
 
 
-@mock.patch("pubtools._marketplacesvm.task.sys")
 @mock.patch("pubtools._marketplacesvm.tasks.community_push.CommunityVMPush.starmap")
 def test_do_community_push_no_billing_config(
     mock_starmap: mock.MagicMock,
-    mock_sys: mock.MagicMock,
     fake_source: mock.MagicMock,
     ami_push_item: AmiPushItem,
     command_tester: CommandTester,
@@ -269,7 +267,6 @@ def test_do_community_push_no_billing_config(
         r"RuntimeError: ('No billing code configuration provided for %s on %s.', 'ami_pushitem', 'fake-destination-access')"  # noqa: E501
         in output.getvalue()
     )
-    mock_sys.exit.assert_called_once_with(30)
 
 
 @mock.patch("pubtools._marketplacesvm.tasks.community_push.CommunityVMPush.starmap")
@@ -390,9 +387,7 @@ def test_no_source(command_tester: CommandTester, capsys: CaptureFixture) -> Non
     assert "error: too few arguments" or "error: the following arguments are required" in err
 
 
-@mock.patch("pubtools._marketplacesvm.task.sys")
 def test_no_rhsm_url(
-    mock_sys: mock.MagicMock,
     fake_source: mock.MagicMock,
     fake_starmap: mock.MagicMock,
     command_tester: CommandTester,
@@ -414,7 +409,6 @@ def test_no_rhsm_url(
             ],
         )
     assert "RHSM URL not provided for the RHSM client" in output.getvalue()
-    mock_sys.exit.assert_called_once_with(30)
 
 
 def test_not_in_rhsm(
