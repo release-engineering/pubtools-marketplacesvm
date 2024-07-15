@@ -256,8 +256,8 @@ def test_upload_of_rhcos_image(
     fake_aws_provider.upload_svc_partial.return_value.get_image_from_ami_catalog.assert_called_once()  # type: ignore [attr-defined] # noqa: E501
     fake_aws_provider.upload_svc_partial.return_value.get_image_by_name.assert_called_once()  # type: ignore [attr-defined] # noqa: E501
     fake_aws_provider.upload_svc_partial.return_value.copy_ami.assert_called_once()  # type: ignore [attr-defined] # noqa: E501
-    assert (
-        tags == fake_aws_provider.upload_svc_partial.return_value.copy_ami.call_args.kwargs["tags"]
+    fake_aws_provider.upload_svc_partial.return_value.tag_image.assert_called_once_with(
+        "fake-ami-02", tags
     )
 
 

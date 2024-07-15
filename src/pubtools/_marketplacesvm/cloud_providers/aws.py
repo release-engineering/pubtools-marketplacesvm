@@ -18,6 +18,7 @@ from pushsource import AmiPushItem
 from .base import UPLOAD_CONTAINER_NAME, CloudCredentials, CloudProvider, register_provider
 
 LOG = logging.getLogger("pubtools.marketplacesvm")
+UploadResult = namedtuple("UploadResult", "id")  # NOSONAR
 
 
 def name_from_push_item(push_item: AmiPushItem) -> str:
@@ -270,8 +271,6 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         img = upload_svc.get_image_from_ami_catalog(push_item.src)
         if img is None:
             raise RuntimeError("AMI not found.")
-        # Create a named tuple to store the ami-id of image
-        UploadResult = namedtuple("UploadResult", "id")  # NOSONAR
 
         # Search if the AMI is already in the Account
         ami = upload_svc.get_image_by_name(push_item.build)
@@ -285,9 +284,9 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
                 image_id=push_item.src,
                 image_name=push_item.build,
                 image_region=push_item.region,
-                tags=tags,
             )
             result = UploadResult(copy_result["ImageId"])
+        upload_svc.tag_image(result.id, tags)
         return result
 
     def _upload(
