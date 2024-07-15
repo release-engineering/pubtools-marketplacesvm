@@ -374,6 +374,38 @@ def test_push_item_no_mapped_arch(
     )
 
 
+@mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.starmap")
+def test_push_item_no_destinations(
+    mock_starmap: mock.MagicMock,
+    fake_source: mock.MagicMock,
+    fake_cloud_instance: mock.MagicMock,
+    ami_push_item: AmiPushItem,
+    command_tester: CommandTester,
+) -> None:
+    """Ensure the push item with no destinations is filtered out."""
+    qr = QueryResponse.from_json(
+        {
+            "name": "fake-policy",
+            "workflow": "stratosphere",
+            "mappings": {"aws-na": []},
+        }
+    )
+    mock_starmap.query_image_by_name.return_value = qr
+
+    command_tester.test(
+        lambda: entry_point(MarketplacesVMPush),
+        [
+            "test-push",
+            "--starmap-url",
+            "https://starmap-example.com",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--debug",
+            "koji:https://fakekoji.com?vmi_build=ami_build",
+        ],
+    )
+
+
 @mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.cloud_instance")
 def test_push_item_fail_upload(
     mock_cloud_instance: mock.MagicMock,
