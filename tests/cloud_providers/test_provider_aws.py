@@ -247,17 +247,21 @@ def test_upload_of_rhcos_image(
     fake_aws_provider.upload_svc_partial.return_value.copy_ami.return_value = {  # type: ignore [attr-defined] # noqa: E501
         "ImageId": "fake-ami-02"
     }
-    fake_aws_provider.upload_svc_partial.return_value.get_image_by_name.return_value = (  # type: ignore [attr-defined] # noqa: E501
-        None
-    )
+    fake_aws_provider.upload_svc_partial.return_value.get_image_by_name.return_value = None
+    fake_aws_provider.upload_svc_partial.return_value.get_image_by_id.return_value = "test_image"
 
     _, result = fake_aws_provider.upload(aws_rhcos_push_item)
     assert result.id == "fake-ami-02"
     fake_aws_provider.upload_svc_partial.return_value.get_image_from_ami_catalog.assert_called_once()  # type: ignore [attr-defined] # noqa: E501
-    fake_aws_provider.upload_svc_partial.return_value.get_image_by_name.assert_called_once()  # type: ignore [attr-defined] # noqa: E501
+    fake_aws_provider.upload_svc_partial.return_value.get_image_by_name.assert_called_once_with(
+        "rhcos-x86_64-414.92.202405201754-0"
+    )
+    fake_aws_provider.upload_svc_partial.return_value.get_image_by_id.assert_called_once_with(
+        "fake-ami-02"
+    )
     fake_aws_provider.upload_svc_partial.return_value.copy_ami.assert_called_once()  # type: ignore [attr-defined] # noqa: E501
     fake_aws_provider.upload_svc_partial.return_value.tag_image.assert_called_once_with(
-        "fake-ami-02", tags
+        "test_image", tags
     )
 
 
