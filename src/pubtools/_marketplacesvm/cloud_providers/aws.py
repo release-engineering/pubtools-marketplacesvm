@@ -286,7 +286,8 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
                 image_region=push_item.region,
             )
             result = UploadResult(copy_result["ImageId"])
-        upload_svc.tag_image(result.id, tags)
+        image = upload_svc.get_image_by_id(result.id)
+        upload_svc.tag_image(image, tags)
         return result
 
     def _upload(
