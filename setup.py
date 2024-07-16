@@ -22,7 +22,7 @@ def get_requirements():
 
 setup(
     name="pubtools-marketplacesvm",
-    version="0.12.4",
+    version="0.12.5",
     packages=find_namespace_packages(where="src"),
     package_dir={"": "src"},
     url="https://gitlab.cee.redhat.com/stratosphere/pubtools-marketplacesvm",
