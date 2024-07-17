@@ -29,7 +29,6 @@ class FakeProvider(CloudProvider):
         push_item: T,
         nochannel: bool,
         overwrite: bool = False,
-        preview_only: bool = False,
         **kwargs,
     ) -> Tuple[T, Any]:
         return push_item, True

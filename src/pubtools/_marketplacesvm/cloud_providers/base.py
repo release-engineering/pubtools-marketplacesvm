@@ -122,7 +122,6 @@ class CloudProvider(ABC, Generic[T, C]):
         push_item: T,
         nochannel: bool,
         overwrite: bool = False,
-        preview_only: bool = False,
         **kwargs,
     ) -> Tuple[T, Any]:
         """
@@ -136,9 +135,6 @@ class CloudProvider(ABC, Generic[T, C]):
             overwrite (bool, optional)
                 Whether to replace every image in the product with the given one or not.
                 Defaults to ``False``
-            preview_only (bool, optional)
-                Whether to publish with the final state as "preview" instead of "live"
-                when applicable.
         """
 
     #
@@ -230,7 +226,6 @@ class CloudProvider(ABC, Generic[T, C]):
         push_item: T,
         nochannel: bool,
         overwrite: bool = False,
-        preview_only: bool = False,
         **kwargs,
     ) -> Tuple[T, Any]:
         """
@@ -244,13 +239,10 @@ class CloudProvider(ABC, Generic[T, C]):
                 set to `False`.
             overwrite (bool, optional)
                 Whether set only the requested image and erase everything else or not.
-            preview_only (bool, optional)
-                Whether to publish with the final state as "preview" instead of "live"
-                when applicable.
         Returns:
             object: The publish result data.
         """
-        pi, res = self._publish(push_item, nochannel, overwrite, preview_only, **kwargs)
+        pi, res = self._publish(push_item, nochannel, overwrite, **kwargs)
         return self._post_publish(pi, res, nochannel, **kwargs)
 
 

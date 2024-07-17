@@ -40,7 +40,7 @@ class FakeCloudProvider(CloudProvider):
     def _pre_publish(self, push_item, **kwargs):
         return push_item, kwargs
 
-    def _publish(self, push_item, nochannel, overwrite, preview_only):
+    def _publish(self, push_item, nochannel, overwrite, **kwargs):
         return push_item, nochannel
 
 

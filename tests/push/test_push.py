@@ -30,7 +30,7 @@ class FakeCloudProvider(CloudProvider):
     def _pre_publish(self, push_item, **kwargs):
         return push_item, kwargs
 
-    def _publish(self, push_item, nochannel, overwrite, preview_only, **kwargs):
+    def _publish(self, push_item, nochannel, overwrite, **kwargs):
         return push_item, nochannel
 
 
@@ -112,7 +112,7 @@ def test_do_push_ami_correct_id(
         def _pre_publish(self, push_item, **kwargs):
             return push_item, kwargs
 
-        def _publish(self, push_item, nochannel, overwrite, preview_only, **kwargs):
+        def _publish(self, push_item, nochannel, overwrite, **kwargs):
             # This log will allow us to identify whether the image_id is the expected
             self.log.debug(f"Pushing {push_item.name} with image: {push_item.image_id}")
             return push_item, nochannel
@@ -192,7 +192,7 @@ def test_do_push_azure_correct_sas(
         def _pre_publish(self, push_item, **kwargs):
             return push_item, kwargs
 
-        def _publish(self, push_item, nochannel, overwrite, preview_only, **kwargs):
+        def _publish(self, push_item, nochannel, overwrite, **kwargs):
             # This log will allow us to identify whether the sas_uri is the expected
             self.log.debug(f"Pushing {push_item.name} with image: {push_item.sas_uri}")
             return push_item, nochannel
@@ -448,7 +448,7 @@ def test_push_item_fail_publish(
     """Test a push which fails on publish for AWS."""
 
     class FakePublish(FakeCloudProvider):
-        def _publish(self, push_item, nochannel, overwrite, preview_only, **kwargs):
+        def _publish(self, push_item, nochannel, overwrite, **kwargs):
             raise Exception("Random exception")
 
     mock_cloud_instance.return_value = FakePublish()
