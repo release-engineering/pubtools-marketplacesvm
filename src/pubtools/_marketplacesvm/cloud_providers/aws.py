@@ -433,7 +433,6 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         push_item: AmiPushItem,
         nochannel: bool,
         overwrite: bool = False,
-        preview_only=False,
         **kwargs,
     ) -> Tuple[AmiPushItem, Any]:
         """
