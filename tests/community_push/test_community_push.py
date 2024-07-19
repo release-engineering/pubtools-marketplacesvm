@@ -656,3 +656,115 @@ def test_do_community_push_different_sharing_accounts(
             ),
         ]
     )
+
+
+@mock.patch("pubtools._marketplacesvm.tasks.community_push.CommunityVMPush.starmap")
+def test_sharing_accounts_community_format(
+    mock_starmap: mock.MagicMock,
+    fake_source: mock.MagicMock,
+    starmap_ami_billing_config: Dict[str, Any],
+    fake_cloud_instance: mock.MagicMock,
+    command_tester: CommandTester,
+    monkeypatch: pytest.MonkeyPatch,
+):
+    """Ensure the ``accounts`` value from StArMap translates into sharing accounts."""
+    accounts = [
+        "account1",
+        "account2",
+        "account3",
+    ]
+    # Create a fake mapping
+    policy = {
+        "name": "test-product",
+        "workflow": "community",
+        "mappings": {
+            "aws_storage": [
+                {
+                    "architecture": "x86_64",
+                    "destination": "fake-destination-access",
+                    "overwrite": False,
+                    "restrict_version": False,
+                    "provider": "awstest",
+                    "meta": {
+                        "billing-code-config": starmap_ami_billing_config,
+                        "accounts": {
+                            "default": accounts,
+                        },
+                    },
+                }
+            ]
+        },
+    }
+    mock_starmap.query_image_by_name.return_value = QueryResponse.from_json(policy)
+    monkeypatch.setattr
+
+    command_tester.test(
+        lambda: entry_point(CommunityVMPush),
+        [
+            "test-push",
+            "--starmap-url",
+            "https://starmap-example.com",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--rhsm-url",
+            "https://rhsm.com/test/api/",
+            "--debug",
+            "--beta",
+            "koji:https://fakekoji.com?vmi_build=ami_build",
+        ],
+    )
+
+
+@mock.patch("pubtools._marketplacesvm.tasks.community_push.CommunityVMPush.starmap")
+def test_sharing_accounts_marketplace_format(
+    mock_starmap: mock.MagicMock,
+    fake_source: mock.MagicMock,
+    starmap_ami_billing_config: Dict[str, Any],
+    fake_cloud_instance: mock.MagicMock,
+    command_tester: CommandTester,
+    monkeypatch: pytest.MonkeyPatch,
+):
+    """Ensure the ``sharing_accounts`` value from StArMap translates into sharing accounts."""
+    accounts = [
+        "account1",
+        "account2",
+        "account3",
+    ]
+    # Create a fake mapping
+    policy = {
+        "name": "test-product",
+        "workflow": "community",
+        "mappings": {
+            "aws_storage": [
+                {
+                    "architecture": "x86_64",
+                    "destination": "fake-destination-access",
+                    "overwrite": False,
+                    "restrict_version": False,
+                    "provider": "awstest",
+                    "meta": {
+                        "billing-code-config": starmap_ami_billing_config,
+                        "sharing_accounts": accounts,
+                    },
+                }
+            ]
+        },
+    }
+    mock_starmap.query_image_by_name.return_value = QueryResponse.from_json(policy)
+    monkeypatch.setattr
+
+    command_tester.test(
+        lambda: entry_point(CommunityVMPush),
+        [
+            "test-push",
+            "--starmap-url",
+            "https://starmap-example.com",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--rhsm-url",
+            "https://rhsm.com/test/api/",
+            "--debug",
+            "--beta",
+            "koji:https://fakekoji.com?vmi_build=ami_build",
+        ],
+    )

@@ -5,6 +5,7 @@
 [    INFO] Loading accounts from StArMap.
 [   DEBUG] Loaded "accounts": "000000".
 [   DEBUG] Loaded "accounts": "121212".
+[ WARNING] No sharing_accounts definition in StArMap, leaving the defaults from credentials.
 [    INFO] Loading snapshot_accounts from StArMap.
 [   DEBUG] Loaded "snapshot_accounts": "111111".
 [   DEBUG] Loaded "snapshot_accounts": "121212".
