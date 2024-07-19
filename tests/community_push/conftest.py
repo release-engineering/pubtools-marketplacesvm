@@ -49,6 +49,7 @@ def push_item_params() -> Dict[str, str]:
         "description": "",
         "type": "hourly",
         "virtualization": "hvm",
+        "volume": "/dev/sda1",
         "build_info": KojiBuildInfo(name="test-build", version="7.0", release="20230101"),
     }
 
