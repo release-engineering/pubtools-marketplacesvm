@@ -333,11 +333,13 @@ def test_upload(
 
     fake_aws_provider.upload_svc_partial.return_value.publish.return_value = FakeImageResp()  # type: ignore [attr-defined] # noqa: E501
 
-    fake_aws_provider.upload(aws_push_item)
+    updated_push_item, _ = fake_aws_provider.upload(aws_push_item)
 
     mock_metadata.assert_called_once_with(**metadata)
     fake_aws_provider.upload_svc_partial.return_value.publish.assert_called_once_with(meta_obj)  # type: ignore [attr-defined] # noqa: E501
     fake_aws_provider.publish_svc.publish.assert_not_called()
+    assert updated_push_item.name == "base_product-1.1-sample_product-1.0_VIRT_GA-20230130-x86_64-0"
+    assert updated_push_item.region == "us-east-1"
 
 
 @pytest.mark.parametrize("region", ["us-gov-west-1", "eu-north-1", "cn-north-1"])

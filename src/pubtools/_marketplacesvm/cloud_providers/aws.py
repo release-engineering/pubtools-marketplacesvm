@@ -342,6 +342,10 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         snapshot_accounts = kwargs.get("snapshot_accounts") or default_snapshot_accounts
         container = kwargs.get("container") or self.s3_bucket
         LOG.info("Image name: %s | Sharing groups: %s", name, groups)
+        # Update some items in push_item
+        region = push_item.region or self.default_region
+        push_item = evolve(push_item, region=region)
+        push_item = evolve(push_item, name=name)
 
         tags = {
             "nvra": f"{binfo.name}-{binfo.version}-{binfo.release}.{push_item.release.arch}",
@@ -390,8 +394,7 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         LOG.debug("%s", upload_metadata_kwargs)
         metadata = AWSUploadMetadata(**upload_metadata_kwargs)
 
-        region = push_item.region or self.default_region
-        res = self.upload_svc_partial(region=region).publish(metadata)
+        res = self.upload_svc_partial(region=push_item.region).publish(metadata)
         return push_item, res
 
     def _post_upload(
