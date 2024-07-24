@@ -47,11 +47,11 @@
 [    INFO] Retrieving the mappings for second_push_item from https://starmap-example.com using the community workflow.
 [   ERROR] No mappings found for second-build
 [    INFO] Loading accounts from StArMap.
-[   DEBUG] Loaded region "default" with accounts "000000".
-[   DEBUG] Loaded region "us-east-1" with accounts "121212".
+[   DEBUG] Loaded "accounts": "000000".
+[   DEBUG] Loaded "accounts": "121212".
 [    INFO] Loading snapshot_accounts from StArMap.
-[   DEBUG] Loaded region "default" with accounts "111111".
-[   DEBUG] Loaded region "us-east-1" with accounts "121212".
+[   DEBUG] Loaded "snapshot_accounts": "111111".
+[   DEBUG] Loaded "snapshot_accounts": "121212".
 [    INFO] Processing the storage account aws_storage
 [   DEBUG] Merging original release information with data from StArMap
 [   DEBUG] Creating a VMIRelease object with {'product': 'sample_product', 'date': datetime.datetime(2023, 12, 12, 0, 0), 'arch': 'x86_64', 'respin': 1, 'version': '7.0', 'base_product': 'sample_base', 'base_version': '1.0', 'variant': 'variant', 'type': 'ga'}

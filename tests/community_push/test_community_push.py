@@ -74,6 +74,7 @@ def fake_rhsm_api(requests_mocker):
             "body": [
                 {"name": "sample_product_HOURLY", "providerShortName": "awstest"},
                 {"name": "sample_product", "providerShortName": "awstest"},
+                {"name": "sample_product", "providerShortName": "anotherprovider"},
                 {"name": "RHEL_HA", "providerShortName": "awstest"},
                 {"name": "SAP", "providerShortName": "awstest"},
             ]
@@ -548,4 +549,110 @@ def test_beta_images_live_push(
             "--beta",
             "koji:https://fakekoji.com?vmi_build=ami_build",
         ],
+    )
+
+
+@mock.patch("pubtools._marketplacesvm.tasks.community_push.command.Source")
+@mock.patch("pubtools._marketplacesvm.tasks.community_push.CommunityVMPush.starmap")
+def test_do_community_push_different_sharing_accounts(
+    mock_starmap: mock.MagicMock,
+    mock_source: mock.MagicMock,
+    ami_push_item: AmiPushItem,
+    starmap_ami_billing_config: Dict[str, Any],
+    command_tester: CommandTester,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test a community-push with two push-items, each one having different sharing accounts."""
+    mock_ami = mock.MagicMock()
+    mock_ami.id = "ami-00000000000000000"
+    mock_ami.name = "fake-name"
+    mock_cloud_instance = mock.MagicMock()
+    mock_cloud_instance.return_value.upload.return_value = (ami_push_item, mock_ami)
+    monkeypatch.setattr(CommunityVMPush, "cloud_instance", mock_cloud_instance)
+    mock_source.get.return_value.__enter__.return_value = [ami_push_item for _ in range(2)]
+    policy1 = {
+        "name": "test-product",
+        "workflow": "community",
+        "mappings": {
+            "aws_storage": [
+                {
+                    "architecture": "x86_64",
+                    "destination": "fake-destination-access",
+                    "overwrite": False,
+                    "restrict_version": False,
+                    "provider": "awstest",
+                    "volume": "/dev/sda1",
+                    "meta": {
+                        "billing-code-config": starmap_ami_billing_config,
+                        "accounts": [
+                            "first_account",
+                            "second_account",
+                        ],
+                    },
+                }
+            ]
+        },
+    }
+    policy2 = {
+        "name": "test-product2",
+        "workflow": "community",
+        "mappings": {
+            "aws_storage": [
+                {
+                    "architecture": "x86_64",
+                    "destination": "fake-destination-access2",
+                    "overwrite": True,
+                    "restrict_version": True,
+                    "provider": "anotherprovider",
+                    "volume": "/dev/sda1",
+                    "meta": {
+                        "billing-code-config": starmap_ami_billing_config,
+                        "accounts": [
+                            "third_account",
+                            "fourth_account",
+                        ],
+                    },
+                }
+            ]
+        },
+    }
+    mock_starmap.query_image_by_name.side_effect = [
+        QueryResponse.from_json(pol) for pol in [policy1, policy2]
+    ]
+
+    # Test
+    command_tester.test(
+        lambda: entry_point(CommunityVMPush),
+        [
+            "test-push",
+            "--starmap-url",
+            "https://starmap-example.com",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--rhsm-url",
+            "https://rhsm.com/test/api/",
+            "--debug",
+            "koji:https://fakekoji.com?vmi_build=ami_build,ami_build_2",
+        ],
+    )
+
+    # Since the push item get updated with destination and some stuff it's easier to just
+    # change it to "mock.ANY" as we just want to test here whether the sharing accounts are correct
+    mock_cloud_instance.return_value.upload.assert_has_calls(
+        [
+            mock.call(
+                mock.ANY,
+                custom_tags=None,
+                container='redhat-cloudimg-fake-destination',
+                accounts=['first_account', 'second_account'],
+                snapshot_accounts=None,
+            ),
+            mock.call(
+                mock.ANY,
+                custom_tags=None,
+                container='redhat-cloudimg-fake-destination',
+                accounts=['third_account', 'fourth_account'],
+                snapshot_accounts=None,
+            ),
+        ]
     )

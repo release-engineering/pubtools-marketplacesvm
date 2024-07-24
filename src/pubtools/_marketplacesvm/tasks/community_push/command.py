@@ -2,6 +2,7 @@
 import json
 import logging
 import os
+from collections import namedtuple
 from typing import Any, Dict, Iterator, List, Optional
 
 from attrs import asdict, evolve
@@ -20,7 +21,9 @@ from ..push.items import MappedVMIPushItem, State
 
 log = logging.getLogger("pubtools.marketplacesvm")
 
-EnrichedPushItem = Dict[str, List[AmiPushItem]]
+SharingAccounts = Dict[str, List[str]]
+PushItemAndSA = namedtuple("PushItemAndSA", ["push_items", "sharing_accounts"])
+EnrichedPushItem = Dict[str, PushItemAndSA]
 
 
 class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
@@ -36,8 +39,6 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
     def __init__(self, *args, **kwargs):
         """Initialize the CommunityVMPush instance."""
         self._rhsm_products: Optional[List[Dict[str, Any]]] = None
-        self._accts_dict: Dict[str, List[str]] = {}
-        self._snapshot_accts_dict: Dict[str, List[str]] = {}
         super(CommunityVMPush, self).__init__(*args, **kwargs)
 
     @property
@@ -259,17 +260,19 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                 response.raise_for_status()
         log.info("Successfully registered image %s with RHSM", image.id)
 
-    def _update_accounts(self, mapped_item: MappedVMIPushItem) -> None:
-        """Update the "accounts" and "snapshot_accounts" configuration when provided by StArMap.
+    def _get_sharing_accounts(self, mapped_item: MappedVMIPushItem) -> SharingAccounts:
+        """Return the sharing acconts configuration when provided by StArMap.
 
         Args:
             mapped_item (MappedVMIPushItem): The mapped item to retrieve the accounts from meta.
+        Returns:
+            SharingAccounts: The dictionary containing the respective sharing accounts.
         """
 
         def set_accounts(
             acct_name: str, mapped_item: MappedVMIPushItem, acct_dict: Dict[str, List[str]]
         ) -> None:
-            accts: Optional[Dict[str, List[str]]] = mapped_item.meta.get(acct_name)
+            accts = mapped_item.meta.get(acct_name)
             if not accts:
                 log.warning(
                     "No %s definition in StArMap, leaving the defaults from credentials.", acct_name
@@ -277,12 +280,20 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                 return
 
             log.info("Loading %s from StArMap.", acct_name)
-            for name, accounts in accts.items():
-                log.debug("Loaded region \"%s\" with accounts \"%s\".", name, accounts)
-                acct_dict.setdefault(name, accounts)
+            if isinstance(accts, dict):
+                combined_accts = []
+                for _, accounts in accts.items():  # expected format: Dict[str, List[str]]
+                    combined_accts.append(accounts)
+                    log.debug("Loaded \"%s\": \"%s\".", acct_name, accounts)
+                acct_dict.setdefault(acct_name, combined_accts)
+            elif isinstance(accts, list):  # expected format: List[str]
+                log.debug("Loaded the following accounts as \"%s\": %s", acct_name, accts)
+                acct_dict.setdefault(acct_name, accts)
 
-        set_accounts("accounts", mapped_item, self._accts_dict)
-        set_accounts("snapshot_accounts", mapped_item, self._snapshot_accts_dict)
+        result: SharingAccounts = {}
+        set_accounts("accounts", mapped_item, result)
+        set_accounts("snapshot_accounts", mapped_item, result)
+        return result
 
     def enrich_mapped_items(self, mapped_items: List[MappedVMIPushItem]) -> List[EnrichedPushItem]:
         """Load all missing information for each mapped item.
@@ -298,7 +309,7 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
         """
         result: List[EnrichedPushItem] = []
         for mapped_item in mapped_items:
-            self._update_accounts(mapped_item)
+            sharing_accounts = self._get_sharing_accounts(mapped_item)
             account_dict: EnrichedPushItem = {}
             for storage_account, destinations in mapped_item.clouds.items():
                 log.info("Processing the storage account %s", storage_account)
@@ -332,7 +343,7 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                         epi.type,
                     )
                     enriched_pi_list.append(epi)
-                account_dict[storage_account] = enriched_pi_list
+                account_dict[storage_account] = PushItemAndSA(enriched_pi_list, sharing_accounts)
             result.append(account_dict)
         return result
 
@@ -354,12 +365,8 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                 push_item.type,
                 ship,
             )
-            default_accounts = self._accts_dict.get("default")
-            default_snapshot_accounts = self._snapshot_accts_dict.get("default")
-            accounts = self._accts_dict.get(push_item.region, default_accounts)
-            snapshot_accounts = self._snapshot_accts_dict.get(
-                push_item.region, default_snapshot_accounts
-            )
+            accounts = kwargs.get("accounts")
+            snapshot_accounts = kwargs.get("snapshot_accounts")
             pi, image = self.cloud_instance(marketplace).upload(
                 push_item,
                 custom_tags=custom_tags,
@@ -409,7 +416,7 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
 
     def _check_product_in_rhsm(self, enriched_push_items: List[EnrichedPushItem]) -> bool:
         for enriched_item in enriched_push_items:
-            for push_items in enriched_item.values():
+            for push_items, _ in enriched_item.values():
                 if not self.items_in_metadata_service(push_items):
                     log.error("Pre-push verification of push items in metadata service failed")
                     return False
@@ -426,19 +433,31 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
             Dictionary with the resulting operation for the Collector service.
         """
         result = []
-        for storage_account, push_items in enriched_push_item.items():
+        for storage_account, push_items_and_sa in enriched_push_item.items():
             # Setup the threading
             to_await = []
             out_pi = []
+            push_items = push_items_and_sa.push_items
             executor = Executors.thread_pool(
                 name="pubtools-marketplacesvm-community-push-regions",
                 max_workers=min(max(len(push_items), 1), self._PROCESS_THREADS),
             )
 
+            # Prepare the sharing accounts
+            sharing_accts: SharingAccounts = push_items_and_sa.sharing_accounts
+            additional_args = {}
+            extra_args = ["accounts", "snapshot_accounts"]
+            for arg in extra_args:
+                content = sharing_accts.get(arg)
+                if content:
+                    additional_args[arg] = content
+
             # Upload the push items in parallel
             log.info("Uploading to the storage account %s", storage_account)
             for pi in push_items:
-                to_await.append(executor.submit(self._upload, storage_account, pi))
+                to_await.append(
+                    executor.submit(self._upload, storage_account, pi, **additional_args)
+                )
 
             # Wait for all results
             for f_out in to_await:
