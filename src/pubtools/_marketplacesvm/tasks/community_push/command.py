@@ -267,8 +267,27 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
             mapped_item (MappedVMIPushItem): The mapped item to retrieve the accounts from meta.
         Returns:
             SharingAccounts: The dictionary containing the respective sharing accounts.
-        """
+        """  # noqa: D202
 
+        # Marketplace workflow has the accounts in the following format:
+        #
+        # # ...
+        # # meta:
+        # #   sharing_accounts:
+        # #      - ACCOUNT_STR
+        #
+        # However this workflow has been originally implemented similarly to pubtools-ami
+        # with the following_format:
+        #
+        # # meta:
+        # #   accounts:
+        # #     default|REGION_NAME:
+        # #       - ACCONT_STR
+        #
+        # To support a common format for sharing accounts this method was updated to support
+        # both ways:
+        # The `sharing_accounts` in a similar way of the marketplace workflow, while maintaining the
+        # previous `accounts` format for retrocompatibility.
         def set_accounts(
             acct_name: str, mapped_item: MappedVMIPushItem, acct_dict: Dict[str, List[str]]
         ) -> None:
@@ -292,6 +311,7 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
 
         result: SharingAccounts = {}
         set_accounts("accounts", mapped_item, result)
+        set_accounts("sharing_accounts", mapped_item, result)
         set_accounts("snapshot_accounts", mapped_item, result)
         return result
 
@@ -365,7 +385,7 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                 push_item.type,
                 ship,
             )
-            accounts = kwargs.get("accounts")
+            accounts = kwargs.get("accounts") or kwargs.get("sharing_accounts")
             snapshot_accounts = kwargs.get("snapshot_accounts")
             pi, image = self.cloud_instance(marketplace).upload(
                 push_item,
@@ -446,7 +466,7 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
             # Prepare the sharing accounts
             sharing_accts: SharingAccounts = push_items_and_sa.sharing_accounts
             additional_args = {}
-            extra_args = ["accounts", "snapshot_accounts"]
+            extra_args = ["accounts", "sharing_accounts", "snapshot_accounts"]
             for arg in extra_args:
                 content = sharing_accts.get(arg)
                 if content:
