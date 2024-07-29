@@ -97,6 +97,15 @@ def _update_destination(push_item: AmiPushItem, destination: Destination) -> Ami
     return evolve(push_item, dest=[destination.destination])
 
 
+def _fix_arm64_arch(push_item: AmiPushItem) -> AmiPushItem:
+    # RHSM doesn't accept the value `aarch64` so we must rename it to `arm64`
+    release: AmiRelease = push_item.release
+    if release.arch.lower() == "aarch64":
+        release = evolve(release, arch="arm64")
+        push_item = evolve(push_item, release=release)
+    return push_item
+
+
 def enrich_push_item(
     push_item: AmiPushItem, destination: Destination, beta: bool, require_bc: bool = True
 ) -> AmiPushItem:
@@ -128,6 +137,9 @@ def enrich_push_item(
         log.warning("BILLING CODES REQUIREMENT IS CURRENTLY DISABLED!")
     pi = _get_push_item_rhsm_provider(pi, destination)
     pi = _get_push_item_public_image(pi)
+
+    # Rename aarch64 to arm64 if needed
+    pi = _fix_arm64_arch(pi)
 
     # Set the release type
     rel_type = "beta" if beta else "ga"

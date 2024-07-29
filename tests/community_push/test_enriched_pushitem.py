@@ -5,6 +5,7 @@ from pushsource import AmiPushItem
 from starmap_client.models import Destination
 
 from pubtools._marketplacesvm.tasks.community_push.items import (
+    _fix_arm64_arch,
     _get_push_item_billing_code,
     _get_push_item_public_image,
 )
@@ -43,3 +44,13 @@ def test_get_push_item_billing_code_no_name(ami_push_item: AmiPushItem) -> None:
 
     res_bcode = res.billing_codes
     assert res_bcode.name == "Hourly2"
+
+
+def test_rename_aarch64_to_arm64(ami_push_item: AmiPushItem) -> None:
+    release = ami_push_item.release
+    release = evolve(release, arch="aarch64")
+    ami_push_item = evolve(ami_push_item, release=release)
+
+    pi = _fix_arm64_arch(ami_push_item)
+
+    assert pi.release.arch == "arm64"
