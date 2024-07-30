@@ -504,13 +504,15 @@ def test_push_overridden_destination(
             "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
             "--repo",
             "{"
-            "    \"aws-na\": {\"destination\": \"new_aws_na_destination\", \"restrict_version\": false},"  # noqa: E501
-            "    \"aws-emea\": {\"destination\": \"new_aws_emea_destination\", \"overwrite\": true, \"restrict_version\": false},"  # noqa: E501
+            "\"mappings\": {"
+            "    \"aws-na\": [{\"destination\": \"new_aws_na_destination\", \"overwrite\": false, \"restrict_version\": false}],"  # noqa: E501
+            "    \"aws-emea\": [{\"destination\": \"new_aws_emea_destination\", \"overwrite\": true, \"restrict_version\": false}],"  # noqa: E501
             "    \"azure-na\": [ "
             "    {\"destination\": \"new_azure_destination1\", \"overwrite\": true, \"restrict_version\": false},"  # noqa: E501
-            "    {\"destination\": \"new_azure_destination2\", \"restrict_version\": false}"  # noqa: E501
+            "    {\"destination\": \"new_azure_destination2\", \"overwrite\": false, \"restrict_version\": false}"  # noqa: E501
             "]"
-            "}",
+            "},"
+            "\"name\": \"sample-product\", \"workflow\": \"stratosphere\"}",
             "--debug",
             "koji:https://fakekoji.com?vmi_build=ami_build,azure_build",
         ],
