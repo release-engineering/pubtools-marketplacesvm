@@ -1,7 +1,10 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
+import json
 import os
 from argparse import Action
 from typing import Callable, Optional
+
+from starmap_client.models import QueryResponse
 
 
 def from_environ(key, delegate_converter=lambda x: x):
@@ -156,3 +159,29 @@ class SplitAndExtend(Action):
     def split_on(self):
         """Return the split delimiter."""
         return self.__split_on
+
+
+class RepoQueryLoad(Action):
+    """
+    Argparse Action subclass for loading StArMap mappings from the ``repo`` argument.
+
+    This action is intended to allow the optional load of mappings righ in the command call
+    instead of having to request data from server.
+
+    It will evaluate the input data and set it as a StArMap's QueryResponse.
+    """
+
+    def __init__(self, *args, **kwargs):
+        """Instantiate the RepoQueryLoad action."""
+        super(RepoQueryLoad, self).__init__(*args, **kwargs)
+
+    def __call__(self, parser, namespace, values, options=None):
+        """Convert the received args into QueryResponse."""
+        items = getattr(namespace, self.dest, None) or []
+        if values and isinstance(values, str):
+            data = json.loads(values)
+            if isinstance(data, list):
+                items.extend([QueryResponse.from_json(x) for x in data])
+            else:
+                items.append(QueryResponse.from_json(data))
+        setattr(namespace, self.dest, items)
