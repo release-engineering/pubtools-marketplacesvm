@@ -10,7 +10,7 @@ from more_executors import Executors
 from pushsource import Source, VMIPushItem
 from starmap_client.models import QueryResponse
 
-from ...arguments import RepoQueryLoad, SplitAndExtend
+from ...arguments import SplitAndExtend
 from ...services import CloudService, CollectorService, StarmapService
 from ...task import RUN_RESULT, MarketplacesVMTask
 from ..push.items import MappedVMIPushItem, State
@@ -86,7 +86,6 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                         }
                     ),
                 )
-                query = self._apply_starmap_overrides(query)
                 item = MappedVMIPushItem(item, query.clouds)
                 if not item.destinations:
                     log.info("Filtering out archive with no destinations: %s", item.push_item.src)
@@ -96,36 +95,6 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                 self._SKIPPED = True
                 log.error(f"No mappings found for {binfo.name}")
         return mapped_items
-
-    def _apply_starmap_overrides(self, query: QueryResponse) -> QueryResponse:
-        """
-        Override the StArMap destinations when they're given by command line args.
-
-        Args:
-            query
-                The original StArMap response
-
-        Returns:
-            The original response if no destinations are provided by command line or
-            a new response with the changed destinations.
-        """
-        if not self.args.repo:  # No destinations given by command line args
-            return query
-
-        # FIXME: At the moment we will only load a single QueryResponse from the
-        # list, as the feature to iterate over all items and fetch the proper mapping
-        # for the package name will be implemented in the starmap_client library.
-        # Once it's ready it will be possible to iterate over multiple mappings
-        # in the list
-        repo_query: QueryResponse = self.args.repo[0]
-        if query.name == repo_query.name and query.workflow == repo_query.workflow:
-            mapping = repo_query.clouds
-            for cloud_name in mapping:
-                destinations = mapping[cloud_name]
-                # NOTE: dictionary is mutable thus we can do this even though
-                # QueryResponse is frozen.
-                query.clouds[cloud_name] = destinations
-        return query
 
     def _upload(
         self,
@@ -418,15 +387,6 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                 "available to end-users, then stop. May be used to improve the "
                 "performance of a subsequent full push."
             ),
-        )
-
-        self.parser.add_argument(
-            "--repo",
-            help="Override the destinations of a cloud marketplace account for all push items. "
-            "e.g: {'aws-na': [{'destination': 'c39fd...', overwrite: true}, ...]}",
-            type=str,
-            default={},
-            action=RepoQueryLoad,
         )
 
         self.parser.add_argument(

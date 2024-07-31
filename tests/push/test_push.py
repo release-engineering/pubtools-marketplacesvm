@@ -7,7 +7,7 @@ from unittest import mock
 import pytest
 from _pytest.capture import CaptureFixture
 from attrs import evolve
-from pushsource import AmiPushItem, PushItem, VHDPushItem
+from pushsource import AmiPushItem, KojiBuildInfo, PushItem, VHDPushItem
 from starmap_client.models import QueryResponse
 
 from pubtools._marketplacesvm.cloud_providers.base import CloudProvider
@@ -472,27 +472,19 @@ def test_push_item_fail_publish(
     assert mock_cloud_instance.call_count == 14
 
 
-@mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.cloud_instance")
+@mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
 def test_push_overridden_destination(
+    mock_source: mock.MagicMock,
     fake_cloud_instance: mock.MagicMock,
-    fake_source: mock.MagicMock,
-    fake_starmap: mock.MagicMock,
     command_tester: CommandTester,
+    ami_push_item: AmiPushItem,
+    vhd_push_item: VHDPushItem,
 ) -> None:
     """Test a push success with the destinations overriden from command line."""
-
-    class FakeCloudInstance:
-        def upload(self, push_item, custom_tags=None, **kwargs):
-            time.sleep(2)
-            return push_item, True
-
-        def pre_publish(self, push_item, **kwargs):
-            return push_item, kwargs
-
-        def publish(self, push_item, nochannel, overwrite, **_):
-            return push_item, True
-
-    fake_cloud_instance.return_value = FakeCloudInstance()
+    binfo = KojiBuildInfo(name="sample-product", version="7.0", release="20230101")
+    ami_push_item = evolve(ami_push_item, build_info=binfo)
+    vhd_push_item = evolve(vhd_push_item, build_info=binfo)
+    mock_source.get.return_value.__enter__.return_value = [ami_push_item, vhd_push_item]
 
     command_tester.test(
         lambda: entry_point(MarketplacesVMPush),

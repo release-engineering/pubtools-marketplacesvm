@@ -1,6 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 import contextlib
 import io
+import json
 import re
 import time
 from typing import Any, Dict, Generator
@@ -9,7 +10,7 @@ from unittest import mock
 import pytest
 from _pytest.capture import CaptureFixture
 from attrs import evolve
-from pushsource import AmiPushItem, VHDPushItem
+from pushsource import AmiPushItem, KojiBuildInfo, VHDPushItem
 from starmap_client.models import QueryResponse, Workflow
 
 from pubtools._marketplacesvm.cloud_providers import CloudProvider
@@ -165,6 +166,49 @@ def test_do_community_push_skip_billing_codes(
     fake_source.get.assert_called_once()
     fake_starmap.query_image_by_name.assert_called_once_with(
         name="test-build", version="7.0", workflow=Workflow.community
+    )
+
+
+@mock.patch("pubtools._marketplacesvm.tasks.community_push.command.Source")
+def test_do_community_push_overridden_destination(
+    mock_source: mock.MagicMock,
+    fake_cloud_instance: mock.MagicMock,
+    command_tester: CommandTester,
+    starmap_ami_billing_config: Dict[str, Any],
+    ami_push_item: AmiPushItem,
+) -> None:
+    """Test a community push success with the destinations overriden from command line."""
+    b_conf_str = json.dumps(starmap_ami_billing_config)
+    binfo = KojiBuildInfo(name="sample-product", version="7.0", release="20230101")
+    ami_push_item = evolve(ami_push_item, build_info=binfo)
+    mock_source.get.return_value.__enter__.return_value = [ami_push_item]
+
+    command_tester.test(
+        lambda: entry_point(CommunityVMPush),
+        [
+            "test-push",
+            "--starmap-url",
+            "https://starmap-example.com",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--repo",
+            "{"
+            "\"mappings\": {"
+            "    \"aws-na\": [{\"destination\": \"new_aws-na_destination\","
+            "                  \"overwrite\": false, \"restrict_version\": false,"
+            "                  \"provider\": \"awstest\","
+            "                  \"meta\": {\"billing-code-config\": " + b_conf_str + "} }],"
+            "    \"aws-emea\": [{\"destination\": \"new_aws-emea_destination\","
+            "                  \"overwrite\": true, \"restrict_version\": false,"
+            "                  \"provider\": \"awstest\","
+            "                  \"meta\": {\"billing-code-config\": " + b_conf_str + "} }]"
+            "},"
+            "\"name\": \"sample-product\", \"workflow\": \"community\"}",
+            "--rhsm-url",
+            "https://rhsm.com/test/api/",
+            "--debug",
+            "koji:https://fakekoji.com?vmi_build=ami_build",
+        ],
     )
 
 
