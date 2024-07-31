@@ -1,13 +1,15 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
+import json
 import os
 import sys
 from argparse import ArgumentParser
-from typing import List
+from typing import Any, Dict, List
 from unittest.mock import patch
 
 import pytest
+from starmap_client.models import QueryResponse
 
-from pubtools._marketplacesvm.arguments import SplitAndExtend, from_environ
+from pubtools._marketplacesvm.arguments import RepoQueryLoad, SplitAndExtend, from_environ
 
 
 @pytest.fixture
@@ -58,3 +60,102 @@ def test_from_environ(parser: ArgumentParser) -> None:
     sys.argv = ["command"]
     args = parser.parse_args()
     assert args.secret == "PASSWORD"
+
+
+@pytest.fixture
+def qr1() -> Dict[str, Any]:
+    return {
+        "name": "test",
+        "workflow": "stratosphere",
+        "mappings": {
+            "aws-na": [
+                {
+                    "architecture": "x86_64",
+                    "destination": "185380b0-4e79-11ef-ae6c-3e3c9dfa9194",
+                    "overwrite": False,
+                    "restrict_version": True,
+                }
+            ]
+        },
+    }
+
+
+@pytest.fixture
+def qr2() -> Dict[str, Any]:
+    return {
+        "name": "test",
+        "workflow": "community",
+        "mappings": {
+            "aws-us-storage": [
+                {
+                    "architecture": "x86_64",
+                    "destination": "test1",
+                    "overwrite": False,
+                    "restrict_version": False,
+                },
+                {
+                    "architecture": "x86_64",
+                    "destination": "test2",
+                    "overwrite": False,
+                    "restrict_version": False,
+                },
+                {
+                    "architecture": "x86_64",
+                    "destination": "test3",
+                    "overwrite": False,
+                    "restrict_version": False,
+                },
+            ]
+        },
+    }
+
+
+@pytest.fixture
+def qr1_input(qr1) -> str:
+    return json.dumps(qr1)
+
+
+@pytest.fixture
+def qr1_output(qr1) -> List[QueryResponse]:
+    return [QueryResponse.from_json(qr1)]
+
+
+@pytest.fixture
+def qr2_input(qr2) -> str:
+    return json.dumps(qr2)
+
+
+@pytest.fixture
+def qr2_output(qr2) -> List[QueryResponse]:
+    return [QueryResponse.from_json(qr2)]
+
+
+@pytest.fixture
+def qr3_input(qr1, qr2) -> str:
+    return json.dumps([qr1, qr2])
+
+
+@pytest.fixture
+def qr3_output(qr1_output, qr2_output) -> List[QueryResponse]:
+    return qr1_output + qr2_output
+
+
+@pytest.mark.parametrize(
+    "input, expected",
+    [
+        ('qr1_input', 'qr1_output'),
+        ('qr2_input', 'qr2_output'),
+        ('qr3_input', 'qr3_output'),
+    ],
+)
+def test_repo_query_load(
+    parser: ArgumentParser,
+    input: str,
+    expected: str,
+    request: pytest.FixtureRequest,
+) -> None:
+    """Test RepoQueryLoad argparse Action."""
+    parser.add_argument("--repo", type=str, action=RepoQueryLoad)
+    sys.argv = ["command", "--repo", request.getfixturevalue(input)]
+    args = parser.parse_args()
+    assert args.repo == request.getfixturevalue(expected)
