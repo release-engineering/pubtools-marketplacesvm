@@ -1,5 +1,4 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-import json
 import logging
 from typing import Any, Dict, List
 
@@ -50,14 +49,6 @@ class CombinedVMPush(MarketplacesVMTask, CloudService, StarmapService, AwsRHSMCl
                 "available to end-users, then stop. May be used to improve the "
                 "performance of a subsequent full push."
             ),
-        )
-
-        marketplace.add_argument(
-            "--repo",
-            help="Override the destinations of a cloud marketplace account for all push items. "
-            "e.g: {'aws-na': [{'destination': 'c39fd...', overwrite: true}, ...]}",
-            type=json.loads,
-            default={},
         )
 
         marketplace.add_argument(
