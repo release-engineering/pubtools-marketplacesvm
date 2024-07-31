@@ -37,8 +37,8 @@
 <p><p>Push and publish content to various cloud marketplaces.</p>
 </p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">pubtools</span><span class="o">-</span><span class="n">marketplacesvm</span><span class="o">-</span><span class="n">push</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">debug</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">starmap</span><span class="o">-</span><span class="n">url</span> <span class="n">STARMAP_URL</span><span class="p">]</span>
-                                    <span class="p">[</span><span class="o">--</span><span class="n">credentials</span> <span class="n">CREDENTIALS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">skip</span> <span class="n">SKIP</span><span class="p">]</span>
-                                    <span class="p">[</span><span class="o">--</span><span class="n">pre</span><span class="o">-</span><span class="n">push</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">repo</span> <span class="n">REPO</span><span class="p">]</span>
+                                    <span class="p">[</span><span class="o">--</span><span class="n">repo</span> <span class="n">REPO</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">credentials</span> <span class="n">CREDENTIALS</span><span class="p">]</span>
+                                    <span class="p">[</span><span class="o">--</span><span class="n">skip</span> <span class="n">SKIP</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">pre</span><span class="o">-</span><span class="n">push</span><span class="p">]</span>
                                     <span class="n">source</span> <span class="p">[</span><span class="n">source</span> <span class="o">...</span><span class="p">]</span>
 </pre></div>
 </div>
@@ -65,10 +65,6 @@
 <dd><p>Pre-push mode: do as much as possible without making content available to end-users, then stop. May be used to improve the performance of a subsequent full push.</p>
 <p>Default: False</p>
 </dd>
-<dt><kbd>--repo</kbd></dt>
-<dd><p>Override the destinations of a cloud marketplace account for all push items. e.g: {‘aws-na’: [{‘destination’: ‘c39fd…’, overwrite: true}, …]}</p>
-<p>Default: {}</p>
-</dd>
 </dl>
 </section>
 <section id="starmap-service">
@@ -77,6 +73,10 @@
 <dt><kbd>--starmap-url</kbd></dt>
 <dd><p>Base URL for the StArMap server.</p>
 <p>Default: “<a class="reference external" href="https://starmap.engineering.redhat.com">https://starmap.engineering.redhat.com</a>”</p>
+</dd>
+<dt><kbd>--repo</kbd></dt>
+<dd><p>Override the StArMap mappings for push items. e.g: {‘name’: ‘foo’, ‘workflow’: ‘stratosphere’: {‘aws-na’: [{‘destination’: ‘c39fd…’}, …]},…}</p>
+<p>Default: {}</p>
 </dd>
 </dl>
 </section>
