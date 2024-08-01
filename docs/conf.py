@@ -34,7 +34,7 @@ html_theme = 'alabaster'
 html_theme_options = {
     "description": "Publishing tools for various cloud marketplaces",
     "extra_nav_links": {
-        "Source": "https://gitlab.cee.redhat.com/stratosphere/pubtools-marketplacesvm",
+        "Source": "https://github.com/release-engineering/pubtools-marketplacesvm",
         "Index": "genindex.html",
     },
     # default is 940px which seems to be a little too small to display 88 chars code
