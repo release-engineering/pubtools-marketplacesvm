@@ -25,7 +25,7 @@ setup(
     version="1.0.0",
     packages=find_namespace_packages(where="src"),
     package_dir={"": "src"},
-    url="https://gitlab.cee.redhat.com/stratosphere/pubtools-marketplacesvm",
+    url="https://github.com/release-engineering/pubtools-marketplacesvm",
     license="GPLv3+",
     description=get_description(),
     long_description=get_long_description(),
