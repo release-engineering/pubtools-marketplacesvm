@@ -67,7 +67,7 @@ class CloudProvider(ABC, Generic[T, C]):
     Each subclass must implement all private abstract methods and optionally
     implement the other private methods.
 
-    The public methods are not inteded to be overriden.
+    The public methods are not intended to be overridden.
     """
 
     #
@@ -196,7 +196,7 @@ class CloudProvider(ABC, Generic[T, C]):
         self, push_item: T, custom_tags: Optional[Dict[str, str]] = None, **kwargs
     ) -> Tuple[T, Any]:
         """
-        Upload the VM image into a pulic cloud provider.
+        Upload the VM image into a public cloud provider.
 
         Args:
             push_item (VMIPushItem)

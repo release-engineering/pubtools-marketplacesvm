@@ -165,7 +165,7 @@ class RepoQueryLoad(Action):
     """
     Argparse Action subclass for loading StArMap mappings from the ``repo`` argument.
 
-    This action is intended to allow the optional load of mappings righ in the command call
+    This action is intended to allow the optional load of mappings right in the command call
     instead of having to request data from server.
 
     It will evaluate the input data and set it as a StArMap's QueryResponse.

@@ -139,7 +139,7 @@ class MappedVMIPushItem:
 
     def get_push_item_for_marketplace(self, account: str) -> VMIPushItem:
         """
-        Return a VMIPushItem with the destinations for just a given marketplace acconut.
+        Return a VMIPushItem with the destinations for just a given marketplace account.
 
         Args:
             account:

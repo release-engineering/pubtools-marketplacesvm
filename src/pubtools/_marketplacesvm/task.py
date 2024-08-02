@@ -69,7 +69,7 @@ class MarketplacesVMTask(object):
         """
         Store the parsed args from the cli.
 
-        returns the args if avaialble from previous parse
+        returns the args if available from previous parse
         else parses with defined options and return the args.
         """
         if not self._args:

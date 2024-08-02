@@ -261,7 +261,7 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
         log.info("Successfully registered image %s with RHSM", image.id)
 
     def _get_sharing_accounts(self, mapped_item: MappedVMIPushItem) -> SharingAccounts:
-        """Return the sharing acconts configuration when provided by StArMap.
+        """Return the sharing accounts configuration when provided by StArMap.
 
         Args:
             mapped_item (MappedVMIPushItem): The mapped item to retrieve the accounts from meta.
