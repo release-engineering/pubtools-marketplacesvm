@@ -16,7 +16,7 @@ def aws_security_groups_converter(value: List[Dict[str, Any]]) -> List[AmiSecuri
         value
             List of security groups to convert.
     Returns:
-        List of converted dicionaries to ``AmiSecurityGroup``.
+        List of converted dictionaries to ``AmiSecurityGroup``.
     """
     log.debug("Converting data to AmiSecurityGroup: %s", value)
     return [AmiSecurityGroup._from_data(x) for x in value]

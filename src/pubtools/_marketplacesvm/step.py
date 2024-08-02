@@ -151,7 +151,7 @@ class StepLogger(object):
         Start the logging for futures and generators.
 
         Args:
-            args (list, optinal)
+            args (list, optional)
                 List of arguments with future/generator to start the logging.
         Returns:
             The input args.
