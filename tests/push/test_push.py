@@ -511,6 +511,79 @@ def test_push_overridden_destination(
     )
 
 
+@mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
+def test_push_offline_starmap(
+    mock_source: mock.MagicMock,
+    fake_cloud_instance: mock.MagicMock,
+    command_tester: CommandTester,
+    ami_push_item: AmiPushItem,
+    vhd_push_item: VHDPushItem,
+) -> None:
+    """Test a push success without connection to the Starmap Server using --repo mappings."""
+    binfo = KojiBuildInfo(name="sample-product", version="7.0", release="20230101")
+    ami_push_item = evolve(ami_push_item, build_info=binfo)
+    vhd_push_item = evolve(vhd_push_item, build_info=binfo)
+    mock_source.get.return_value.__enter__.return_value = [ami_push_item, vhd_push_item]
+
+    command_tester.test(
+        lambda: entry_point(MarketplacesVMPush),
+        [
+            "test-push",
+            "--starmap-url",
+            "https://starmap-example.com",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--repo",
+            "{"
+            "\"mappings\": {"
+            "    \"aws-na\": [{\"destination\": \"new_aws_na_destination\", \"overwrite\": false, \"restrict_version\": false}],"  # noqa: E501
+            "    \"aws-emea\": [{\"destination\": \"new_aws_emea_destination\", \"overwrite\": true, \"restrict_version\": false}],"  # noqa: E501
+            "    \"azure-na\": [ "
+            "    {\"destination\": \"new_azure_destination1\", \"overwrite\": true, \"restrict_version\": false},"  # noqa: E501
+            "    {\"destination\": \"new_azure_destination2\", \"overwrite\": false, \"restrict_version\": false}"  # noqa: E501
+            "]"
+            "},"
+            "\"name\": \"sample-product\", \"workflow\": \"stratosphere\"}",
+            "--offline",
+            "--debug",
+            "koji:https://fakekoji.com?vmi_build=ami_build,azure_build",
+        ],
+    )
+
+
+@mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
+def test_push_offline_no_repo(
+    mock_source: mock.MagicMock,
+    fake_cloud_instance: mock.MagicMock,
+    command_tester: CommandTester,
+    ami_push_item: AmiPushItem,
+    vhd_push_item: VHDPushItem,
+    capsys: CaptureFixture,
+) -> None:
+    """Test whether tooling shows error when trying to use the StArMap offline without --repo."""
+    binfo = KojiBuildInfo(name="sample-product", version="7.0", release="20230101")
+    ami_push_item = evolve(ami_push_item, build_info=binfo)
+    vhd_push_item = evolve(vhd_push_item, build_info=binfo)
+    mock_source.get.return_value.__enter__.return_value = [ami_push_item, vhd_push_item]
+
+    command_tester.test(
+        lambda: entry_point(MarketplacesVMPush),
+        [
+            "test-push",
+            "--starmap-url",
+            "https://starmap-example.com",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--offline",
+            "--debug",
+            "koji:https://fakekoji.com?vmi_build=ami_build,azure_build",
+        ],
+    )
+
+    _, err = capsys.readouterr()
+    assert "Cannot use \"--offline\" without defining \"--repo\" mappings." in err
+
+
 def test_no_credentials(
     fake_source: mock.MagicMock,
     fake_starmap: mock.MagicMock,
