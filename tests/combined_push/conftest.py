@@ -52,7 +52,7 @@ def push_item_params() -> Dict[str, str]:
         "name": "name",
         "src": "/foo/bar/sample_product_test.raw",
         "description": "",
-        "build_info": KojiBuildInfo(name="test-build", version="7.0", release="20230101"),
+        "build_info": KojiBuildInfo(id=1, name="test-build", version="7.0", release="20230101"),
     }
 
 
