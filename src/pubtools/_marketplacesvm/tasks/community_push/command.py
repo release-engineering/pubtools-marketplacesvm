@@ -60,6 +60,7 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                             item.src,
                         )
                         continue
+                    self.builds_borg.received_builds.add(item.build_info.id)
                     yield item
 
     @property
@@ -536,6 +537,10 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
         for r in result:
             if r.get("state", "") != State.PUSHED:
                 failed = True
+            else:
+                # Store the successful build ID for future evaluation if needed
+                build_id = r["push_item"].build_info.id
+                self.builds_borg.processed_builds.add(build_id)
 
         if not allow_empty_targets and len(result) == 0:
             log.error("No push item was processed.")

@@ -83,9 +83,26 @@ class CombinedVMPush(MarketplacesVMTask, CloudService, StarmapService, AwsRHSMCl
             help="The workflow to be executed",
         )
 
-    @staticmethod
+    def _unprocessed_builds(self) -> bool:
+        """Return true whenever a build from collected data wasn't processed at all.
+
+        This method uses the ``builds_borg``  to check whether there's a build which
+        wasn't processed by any workflow.
+        """
+        # If we didn't process anything we can't return False
+        if not self.builds_borg.received_builds:
+            return True
+
+        # Check for any unprocessed builds
+        for bid in self.builds_borg.received_builds:
+            if bid not in self.builds_borg.processed_builds:
+                return True
+
+        # Processed everything
+        return False
+
     def _evaluate_push_results(
-        push_results: List[RUN_RESULT], collected_data: List[Dict[str, Any]]
+        self, push_results: List[RUN_RESULT], collected_data: List[Dict[str, Any]]
     ) -> RUN_RESULT:
         workflow1 = push_results.pop()
         workflow2 = push_results.pop()
@@ -96,7 +113,7 @@ class CombinedVMPush(MarketplacesVMTask, CloudService, StarmapService, AwsRHSMCl
             return RUN_RESULT(False, False, collected_data)
 
         # Failure condition 2: Both workflows were empty
-        if workflow1.skipped and workflow2.skipped:
+        if workflow1.skipped and workflow2.skipped and self._unprocessed_builds():
             log.info("Combined VM push failed: both workflows were empty.")
             return RUN_RESULT(False, True, collected_data)
 

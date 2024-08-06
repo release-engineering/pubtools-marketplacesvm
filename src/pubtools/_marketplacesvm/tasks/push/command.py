@@ -51,6 +51,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                     ):
                         log.info("Skipping PushItem %s for region %s", item.name, item.region)
                         continue
+                    self.builds_borg.received_builds.add(item.build_info.id)
                     yield item
 
     @property
@@ -430,6 +431,10 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
         for r in result:
             if r.get("state", "") != State.PUSHED:
                 failed = True
+            else:
+                # Store the successful build ID for future evaluation if needed
+                build_id = r["push_item"].build_info.id
+                self.builds_borg.processed_builds.add(build_id)
 
         if not allow_empty_targets and not result:
             failed = True

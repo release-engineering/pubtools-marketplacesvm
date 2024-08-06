@@ -10,6 +10,7 @@ from typing import Optional
 from pubtools.pluggy import task_context
 
 from .step import StepDecorator
+from .utils import BuildIdBorg
 
 LOG = logging.getLogger("pubtools.marketplacesvm")
 LOG_FORMAT = "%(asctime)s [%(levelname)-8s] %(message)s"
@@ -38,6 +39,7 @@ class MarketplacesVMTask(object):
         self.parser = ArgumentParser(
             description=self.description, formatter_class=RawDescriptionHelpFormatter
         )
+        self.builds_borg = BuildIdBorg()
         self._basic_args()
         self.add_args()
 
