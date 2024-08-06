@@ -41,7 +41,7 @@
                                               <span class="p">[</span><span class="o">--</span><span class="n">rhsm</span><span class="o">-</span><span class="n">cert</span> <span class="n">RHSM_CERT</span><span class="p">]</span>
                                               <span class="p">[</span><span class="o">--</span><span class="n">rhsm</span><span class="o">-</span><span class="n">key</span> <span class="n">RHSM_KEY</span><span class="p">]</span>
                                               <span class="p">[</span><span class="o">--</span><span class="n">starmap</span><span class="o">-</span><span class="n">url</span> <span class="n">STARMAP_URL</span><span class="p">]</span>
-                                              <span class="p">[</span><span class="o">--</span><span class="n">repo</span> <span class="n">REPO</span><span class="p">]</span>
+                                              <span class="p">[</span><span class="o">--</span><span class="n">repo</span> <span class="n">REPO</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">offline</span><span class="p">]</span>
                                               <span class="p">[</span><span class="o">--</span><span class="n">credentials</span> <span class="n">CREDENTIALS</span><span class="p">]</span>
                                               <span class="p">[</span><span class="o">--</span><span class="n">skip</span> <span class="n">SKIP</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">pre</span><span class="o">-</span><span class="n">push</span><span class="p">]</span>
                                               <span class="p">[</span><span class="o">--</span><span class="n">beta</span><span class="p">]</span>
@@ -106,6 +106,10 @@
 <dt><kbd>--repo</kbd></dt>
 <dd><p>Override the StArMap mappings for push items. e.g: {‘name’: ‘foo’, ‘workflow’: ‘stratosphere’: {‘aws-na’: [{‘destination’: ‘c39fd…’}, …]},…}</p>
 <p>Default: {}</p>
+</dd>
+<dt><kbd>--offline</kbd></dt>
+<dd><p>Do not connect to a real StArMap server, use a mock session instead. It requires –repo to be set.</p>
+<p>Default: False</p>
 </dd>
 </dl>
 </section>
