@@ -212,6 +212,81 @@ def test_do_community_push_overridden_destination(
     )
 
 
+@mock.patch("pubtools._marketplacesvm.tasks.community_push.command.Source")
+def test_do_community_push_offline_starmap(
+    mock_source: mock.MagicMock,
+    fake_cloud_instance: mock.MagicMock,
+    command_tester: CommandTester,
+    starmap_ami_billing_config: Dict[str, Any],
+    ami_push_item: AmiPushItem,
+) -> None:
+    """Test a community push success without connection to the Starmap Server using --repo mappings."""  # noqa: E501
+    b_conf_str = json.dumps(starmap_ami_billing_config)
+    binfo = KojiBuildInfo(name="sample-product", version="7.0", release="20230101")
+    ami_push_item = evolve(ami_push_item, build_info=binfo)
+    mock_source.get.return_value.__enter__.return_value = [ami_push_item]
+
+    command_tester.test(
+        lambda: entry_point(CommunityVMPush),
+        [
+            "test-push",
+            "--starmap-url",
+            "https://starmap-example.com",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--repo",
+            "{"
+            "\"mappings\": {"
+            "    \"aws-na\": [{\"destination\": \"new_aws-na_destination\","
+            "                  \"overwrite\": false, \"restrict_version\": false,"
+            "                  \"provider\": \"awstest\","
+            "                  \"meta\": {\"billing-code-config\": " + b_conf_str + "} }],"
+            "    \"aws-emea\": [{\"destination\": \"new_aws-emea_destination\","
+            "                  \"overwrite\": true, \"restrict_version\": false,"
+            "                  \"provider\": \"awstest\","
+            "                  \"meta\": {\"billing-code-config\": " + b_conf_str + "} }]"
+            "},"
+            "\"name\": \"sample-product\", \"workflow\": \"community\"}",
+            "--offline",
+            "--rhsm-url",
+            "https://rhsm.com/test/api/",
+            "--debug",
+            "koji:https://fakekoji.com?vmi_build=ami_build",
+        ],
+    )
+
+
+@mock.patch("pubtools._marketplacesvm.tasks.community_push.command.Source")
+def test_community_push_offline_no_repo(
+    mock_source: mock.MagicMock,
+    fake_cloud_instance: mock.MagicMock,
+    command_tester: CommandTester,
+    ami_push_item: AmiPushItem,
+    capsys: CaptureFixture,
+) -> None:
+    """Test whether tooling shows error when trying to use the StArMap offline without --repo."""
+    binfo = KojiBuildInfo(name="sample-product", version="7.0", release="20230101")
+    ami_push_item = evolve(ami_push_item, build_info=binfo)
+    mock_source.get.return_value.__enter__.return_value = [ami_push_item]
+
+    command_tester.test(
+        lambda: entry_point(CommunityVMPush),
+        [
+            "test-push",
+            "--starmap-url",
+            "https://starmap-example.com",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--offline",
+            "--debug",
+            "koji:https://fakekoji.com?vmi_build=ami_build",
+        ],
+    )
+
+    _, err = capsys.readouterr()
+    assert "Cannot use \"--offline\" without defining \"--repo\" mappings." in err
+
+
 @pytest.mark.parametrize("product_name", ["RHEL_HA", "SAP"])
 @mock.patch("pubtools._marketplacesvm.tasks.community_push.CommunityVMPush.starmap")
 @mock.patch("pubtools._marketplacesvm.tasks.community_push.command.Source")
