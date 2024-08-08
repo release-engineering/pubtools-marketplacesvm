@@ -10,6 +10,15 @@ Virtual Machine images to various cloud marketplaces.
    :maxdepth: 1
    :caption: Command Reference:
 
-   push
-   community_push
    combined_push
+   marketplace_push
+   community_push
+
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Common arguments and parameters:
+
+   common/credentials
+   common/mappings
+   common/sources
