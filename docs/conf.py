@@ -7,7 +7,7 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'pubtools-marketplacesvm'
-copyright = '2023, Red Hat'
+copyright = '2024, Red Hat'
 author = 'Red Hat'
 
 # -- General configuration ---------------------------------------------------
