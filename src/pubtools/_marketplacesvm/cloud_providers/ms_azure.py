@@ -86,7 +86,7 @@ class AzureDestinationBorg:
 class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
     """The Azure marketplace provider."""
 
-    def __init__(self, credentials: AzureCredentials) -> None:
+    def __init__(self, credentials: AzureCredentials, **kwargs) -> None:
         """
         Create an instance of AzureProvider.
 
@@ -94,6 +94,8 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
             credentials (AzureCredentials)
                 credentials to use the Azure API.
         """
+        default_allow_draft = os.environ.get("AZURE_ALLOW_DRAFT_PUSH", "false").lower() == "true"
+        self.allow_draft_push = bool(kwargs.get("allow_draft_push", default_allow_draft))
         self.upload_svc = AzureUploadService.from_connection_string(
             credentials.azure_storage_connection_string
         )
@@ -289,7 +291,8 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
             push_item = evolve(push_item, disk_version=self._generate_disk_version(push_item))
 
         destination = push_item.dest[0]
-        self.ensure_offer_is_writable(destination, nochannel)
+        if not self.allow_draft_push:
+            self.ensure_offer_is_writable(destination, nochannel)
 
         publish_metadata_kwargs = {
             "disk_version": push_item.disk_version,
