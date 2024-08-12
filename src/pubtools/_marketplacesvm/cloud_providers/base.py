@@ -38,6 +38,15 @@ class MarketplaceAuth(TypedDict):
 class CloudCredentials:
     """The base class for a cloud provider credentials."""
 
+    def __init__(self, **kwargs):
+        """Initialize the CloudCredentials by filtering out extra args."""
+        filtered = {
+            attribute.alias: kwargs[attribute.alias]
+            for attribute in self.__attrs_attrs__
+            if attribute.alias in kwargs
+        }
+        self.__attrs_init__(**filtered)
+
     cloud_name: str = field(
         validator=instance_of(str),
         converter=lambda x: x.lower() if isinstance(x, str) else x,
