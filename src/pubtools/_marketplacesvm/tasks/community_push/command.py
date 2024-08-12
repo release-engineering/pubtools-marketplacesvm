@@ -30,7 +30,6 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
     """Upload an AMI to S3 and update RHSM."""
 
     _REQUEST_THREADS = int(os.environ.get("COMMUNITY_PUSH_REQUEST_THREADS", "5"))
-    _PROCESS_THREADS = int(os.environ.get("COMMUNITY_PUSH_PROCESS_THREADS", "10"))
     _REQUIRE_BC = bool(
         os.environ.get("COMMUNITY_PUSH_REQUIRE_BILLING_CODES", "true").lower() == "true"
     )
@@ -455,14 +454,8 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
         """
         result = []
         for storage_account, push_items_and_sa in enriched_push_item.items():
-            # Setup the threading
-            to_await = []
             out_pi = []
             push_items = push_items_and_sa.push_items
-            executor = Executors.thread_pool(
-                name="pubtools-marketplacesvm-community-push-regions",
-                max_workers=min(max(len(push_items), 1), self._PROCESS_THREADS),
-            )
 
             # Prepare the sharing accounts
             sharing_accts: SharingAccounts = push_items_and_sa.sharing_accounts
@@ -473,16 +466,10 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                 if content:
                     additional_args[arg] = content
 
-            # Upload the push items in parallel
+            # Upload the push items
             log.info("Uploading to the storage account %s", storage_account)
             for pi in push_items:
-                to_await.append(
-                    executor.submit(self._upload, storage_account, pi, **additional_args)
-                )
-
-            # Wait for all results
-            for f_out in to_await:
-                out_pi.append(f_out.result())
+                out_pi.append(self._upload(storage_account, pi, **additional_args))  # type: ignore
 
             # Append the data for collection
             for pi in out_pi:
