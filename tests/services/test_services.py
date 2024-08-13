@@ -97,6 +97,14 @@ def test_azure_provider_service(
             # Single AzureProvider instance per thread
             assert instance.cloud_instance("azure-na") == provider
 
+    # Test allow draft push
+    with patch("pubtools._marketplacesvm.services.cloud.get_provider") as mock_getprvdr:
+        instance = MarketplacesVMPush()
+        arg = ["", "--credentials", str(creds_file), "--azure-allow-draft-push", "fakesource"]
+        with patch.object(sys, "argv", arg):
+            provider = instance.cloud_instance("azure-na")
+            mock_getprvdr.assert_called_once_with(fake_auth, allow_draft_push=True)
+
     # Test invalidcredentials
     with caplog.at_level(logging.INFO):
         with pytest.raises(ValueError, match="Invalid credentials"):

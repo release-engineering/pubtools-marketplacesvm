@@ -245,7 +245,7 @@ def test_publish(
 
 
 @patch("pubtools._marketplacesvm.cloud_providers.ms_azure.AzurePublishMetadata")
-def test_publish_allow_draft(
+def test_publish_allow_draft_from_env(
     mock_metadata: MagicMock,
     fake_credentials: AzureCredentials,
     azure_push_item: VHDPushItem,
@@ -272,6 +272,44 @@ def test_publish_allow_draft(
     # Set environment to allow draft push and create a provider with the patched data
     monkeypatch.setenv("AZURE_ALLOW_DRAFT_PUSH", "true")
     provider = AzureProvider(fake_credentials)
+    monkeypatch.setattr(provider, 'upload_svc', MagicMock())
+    monkeypatch.setattr(provider, 'publish_svc', MagicMock())
+    monkeypatch.setattr(provider, '_generate_disk_version', mock_generate_dv)
+    monkeypatch.setattr(provider, 'ensure_offer_is_writable', mock_ensure_offer_writable)
+
+    # Test
+    provider.publish(azure_push_item, nochannel=False, overwrite=False)
+
+    # Ensure the draft lock was not called
+    mock_ensure_offer_writable.assert_not_called()
+
+
+@patch("pubtools._marketplacesvm.cloud_providers.ms_azure.AzurePublishMetadata")
+def test_publish_allow_draft_from_init(
+    mock_metadata: MagicMock,
+    fake_credentials: AzureCredentials,
+    azure_push_item: VHDPushItem,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    azure_push_item = evolve(azure_push_item, disk_version=None)
+    mock_generate_dv = MagicMock()
+    mock_generate_dv.return_value = "7.0.202301010000"
+    metadata = {
+        "sku_id": azure_push_item.sku_id,
+        "generation": azure_push_item.generation or "V2",
+        "support_legacy": azure_push_item.support_legacy or False,
+        "recommended_sizes": azure_push_item.recommended_sizes or [],
+        "legacy_sku_id": azure_push_item.legacy_sku_id,
+        "image_path": azure_push_item.sas_uri,
+        "architecture": azure_push_item.release.arch,
+        "destination": azure_push_item.dest[0],
+        "keepdraft": False,
+        "overwrite": False,
+    }
+    mock_metadata.return_value = MagicMock(**metadata)
+    mock_ensure_offer_writable = MagicMock()
+
+    provider = AzureProvider(fake_credentials, allow_draft_push=True)
     monkeypatch.setattr(provider, 'upload_svc', MagicMock())
     monkeypatch.setattr(provider, 'publish_svc', MagicMock())
     monkeypatch.setattr(provider, '_generate_disk_version', mock_generate_dv)
