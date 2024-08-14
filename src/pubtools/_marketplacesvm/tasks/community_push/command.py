@@ -303,7 +303,7 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
             if isinstance(accts, dict):
                 combined_accts = []
                 for _, accounts in accts.items():  # expected format: Dict[str, List[str]]
-                    combined_accts.append(accounts)
+                    combined_accts.extend(accounts)
                     log.debug("Loaded \"%s\": \"%s\".", acct_name, accounts)
                 acct_dict.setdefault(acct_name, combined_accts)
             elif isinstance(accts, list):  # expected format: List[str]
