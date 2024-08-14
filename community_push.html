@@ -13,8 +13,8 @@
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="combined-push" href="combined_push.html" />
-    <link rel="prev" title="push" href="push.html" />
+    <link rel="next" title="Credentials" href="common/credentials.html" />
+    <link rel="prev" title="marketplace-push" href="marketplace_push.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -134,11 +134,98 @@
 </pre></div>
 </div>
 </section>
-<section id="credentials-format">
-<h3>Credentials Format<a class="headerlink" href="#credentials-format" title="Link to this heading">¶</a></h3>
+<section id="credentials">
+<h3>Credentials<a class="headerlink" href="#credentials" title="Link to this heading">¶</a></h3>
+<p>This section describes the supported values for the <code class="docutils literal notranslate"><span class="pre">--credentials</span></code> command line argument.</p>
+<section id="expected-format">
+<h4>Expected format<a class="headerlink" href="#expected-format" title="Link to this heading">¶</a></h4>
+<section id="overall-format">
+<h5>Overall format<a class="headerlink" href="#overall-format" title="Link to this heading">¶</a></h5>
 <p>Each credential file must be in the following format:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;marketplace_account&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;aws-XX&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;marketplace_account&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CLOUD_ALIAS&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;auth&quot;</span><span class="p">:</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;KEY&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;VALUE&quot;</span><span class="p">,</span><span class="w"> </span><span class="c1">// ...</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The supported values for the key <code class="docutils literal notranslate"><span class="pre">marketplace_account</span></code> are described below:</p>
+</section>
+<section id="marketplace-accounts-push">
+<h5>Marketplace accounts (push)<a class="headerlink" href="#marketplace-accounts-push" title="Link to this heading">¶</a></h5>
+<p>Required when using the “marketplace” or “combined” workflow</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">aws-na</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">aws-emea</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">azure-na</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">azure-emea</span></code></p></li>
+</ul>
+</section>
+<section id="storage-accounts-community-push">
+<h5>Storage accounts (community-push)<a class="headerlink" href="#storage-accounts-community-push" title="Link to this heading">¶</a></h5>
+<p>Required when using the “community” or “combined” workflow</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">aws-us-storage</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">aws-us-gov-storage</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">aws-china-storage</span></code></p></li>
+</ul>
+</section>
+<section id="auth-format">
+<h5>Auth format<a class="headerlink" href="#auth-format" title="Link to this heading">¶</a></h5>
+<p>The <a href="#id1"><span class="problematic" id="id2">*</span></a>KEY*s and <a href="#id3"><span class="problematic" id="id4">*</span></a>VALUE*s for the <code class="docutils literal notranslate"><span class="pre">auth</span></code> object are specific for each Cloud Provider implementation.</p>
+<p><strong>AWS Format</strong></p>
+<p>The following properties are supported for AWS <code class="docutils literal notranslate"><span class="pre">auth</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">AWS_IMAGE_ACCESS_KEY</span></code>: The AWS access key for uploading the images and import them as AMIs</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AWS_IMAGE_SECRET_ACCESS</span></code>: The AWS secret key for uploading the images and import them as AMIs</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AWS_MARKETPLACE_ACCESS_KEY</span></code>: The AWS access key for publishing a new product version with its AMI into the marketplace</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AWS_MARKETPLACE_SECRET_ACCESS</span></code>: The AWS secret key for publishing a new product version with its AMI into the marketplace</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AWS_ACCESS_ROLE_ARN</span></code>: IAM role Amazon Resource Name (ARN) used by AWS Marketplace to access the provided AMI. For details about creating and using this ARN, see <a class="reference external" href="https://docs.aws.amazon.com/marketplace-catalog/latest/api-reference/ami-products.html#working-with-single-AMI-products">Giving AWS Marketplace access to your AMI</a> in the AWS Marketplace Seller Guide.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AWS_GROUPS</span></code>: The default sharing accounts for uploading and importing AMIs</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AWS_SNAPSHOT_ACCOUNTS</span></code>: The default sharing snapshot accounts for uploading and importing AMIs</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AWS_REGION</span></code>: The default region for uploading and importing AMIs</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AWS_S3_BUCKET</span></code>: The S3 bucket name to upload the raw VM images</p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;AWS_IMAGE_ACCESS_KEY&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;AWS_IMAGE_SECRET_ACCESS&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;***************&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;AWS_MARKETPLACE_ACCESS_KEY&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;AWS_MARKETPLACE_SECRET_ACCESS&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;AWS_ACCESS_ROLE_ARN&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;AWS_GROUPS&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">  </span><span class="nt">&quot;AWS_SNAPSHOT_ACCOUNTS&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">  </span><span class="nt">&quot;AWS_REGION&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;us-east-1&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;AWS_S3_BUCKET&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><strong>Azure Format</strong></p>
+<p>The following properties are supported for AWS <code class="docutils literal notranslate"><span class="pre">auth</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">AZURE_TENANT_ID</span></code>: The tenant ID for publishing a new product version</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AZURE_PUBLISHER_NAME</span></code>: The publisher name for publishing a new product version</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AZURE_CLIENT_ID</span></code>: The Azure’s AD Client ID to communicate with Microsoft APIs</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AZURE_API_SECRET</span></code>: The Azure’s AD Client Secret to communicate with Microsoft APIs</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">AZURE_STORAGE_CONNECTION_STRING</span></code>: The Azure Storage Account connection string to upload VHD images</p></li>
+</ul>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;AZURE_TENANT_ID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;AZURE_PUBLISHER_NAME&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;*************&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;AZURE_API_SECRET&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;AZURE_CLIENT_ID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;*******************&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;AZURE_STORAGE_CONNECTION_STRING&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="examples">
+<h5>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h5>
+<p><strong>Example for AWS NA:</strong></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;marketplace_account&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;aws-na&quot;</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;auth&quot;</span><span class="p">:</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">      </span><span class="nt">&quot;AWS_IMAGE_ACCESS_KEY&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span><span class="p">,</span>
@@ -154,7 +241,68 @@
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Being the <em>XX</em> <code class="docutils literal notranslate"><span class="pre">NA</span></code> or <code class="docutils literal notranslate"><span class="pre">EMEA</span></code>.</p>
+<p><strong>Example for Azure NA:</strong></p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;marketplace_account&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;azure-na&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;auth&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;AZURE_TENANT_ID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;AZURE_PUBLISHER_NAME&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;*************&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;AZURE_API_SECRET&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;AZURE_CLIENT_ID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;*******************&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;AZURE_STORAGE_CONNECTION_STRING&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="cli-parameter-format">
+<h4>CLI parameter format<a class="headerlink" href="#cli-parameter-format" title="Link to this heading">¶</a></h4>
+<p>Once the credentials are properly crafted, then can be passed to the tooling in one of the following ways:</p>
+<section id="credentials-as-files">
+<h5>Credentials as files<a class="headerlink" href="#credentials-as-files" title="Link to this heading">¶</a></h5>
+<p>It’s possible to storage each credential into a single JSON file and passing the path for all files
+using a comma delimited string for the parameter <code class="docutils literal notranslate"><span class="pre">--credentials</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>--credentials<span class="w"> </span>PATH_TO_CREDS_1.json,PATH_TO_CREDS_2.json,PATH_TO_CREDS3.json
+</pre></div>
+</div>
+<p>The tooling will split the string by comma (<code class="docutils literal notranslate"><span class="pre">,</span></code>) and open/parse each credential file for loading its credentials.</p>
+<p>Note that the parameter <code class="docutils literal notranslate"><span class="pre">--credentials</span></code> support only a single string argument. Avoid using space as <code class="docutils literal notranslate"><span class="pre">bash</span></code> may consider it two or more arguments.</p>
+</section>
+<section id="credentials-as-list-of-base64-string">
+<h5>Credentials as list of base64 string<a class="headerlink" href="#credentials-as-list-of-base64-string" title="Link to this heading">¶</a></h5>
+<p>Another way to pass the credentials is to encode each credential JSON into a <code class="docutils literal notranslate"><span class="pre">base64</span></code> string and passing it
+as a list of encoded strings separated by comma (<code class="docutils literal notranslate"><span class="pre">,</span></code>).</p>
+<p>Since comma will never be used on <code class="docutils literal notranslate"><span class="pre">base64</span></code> encoding the tooling will first split the string into multiple
+substrings of <code class="docutils literal notranslate"><span class="pre">base64</span></code> encoding, each one representing a single credentials.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">## Convert each creds to a base64 encoded string</span>
+<span class="k">for</span><span class="w"> </span>i<span class="w"> </span><span class="k">in</span><span class="w"> </span>PATH_TO_CREDS_1.json<span class="w"> </span>PATH_TO_CREDS_2.json<span class="w"> </span>PATH_TO_CREDS3.json<span class="p">;</span><span class="w"> </span><span class="k">do</span>
+<span class="w">  </span>cat<span class="w"> </span><span class="nv">$i</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>base64
+<span class="k">done</span>
+
+<span class="c1">## Join the output into a single line and then</span>
+
+--credentials<span class="w"> </span>BASE64_STRING_1,BASE64_STRING_2,BASE64_STRING_3
+</pre></div>
+</div>
+<p>Note that the parameter <code class="docutils literal notranslate"><span class="pre">--credentials</span></code> support only a single string argument. Avoid using space as <code class="docutils literal notranslate"><span class="pre">bash</span></code> may consider it two or more arguments.</p>
+</section>
+<section id="id5">
+<h5>Examples<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h5>
+<p>Using the path mode:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pubtools-marketplacesvm-push<span class="w"> </span><span class="se">\</span>
+--credentials<span class="w"> </span>creds/aws-na.json,creds/aws-emea.json,creds/azure-na.json,creds/azure-emea.json<span class="w"> </span><span class="se">\</span>
+...
+</pre></div>
+</div>
+<p>Using the base64 mode:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pubtools-marketplacesvm-push<span class="w"> </span><span class="se">\</span>
+--credentials<span class="w"> </span>ewogICAgIm1hcmtWNlX<span class="o">[</span>...<span class="o">]</span>,ewogICAgIm1hcmtldH<span class="o">[</span>...<span class="o">]</span>,ewogICAgIm1hcmtl<span class="o">[</span>...<span class="o">]</span>,ewogICAgIm1hcmtldHBsYW<span class="o">[</span>...<span class="o">]</span><span class="w"> </span><span class="se">\</span>
+...
+</pre></div>
+</div>
+</section>
+</section>
 </section>
 <section id="supported-sources">
 <h3>Supported Sources<a class="headerlink" href="#supported-sources" title="Link to this heading">¶</a></h3>
@@ -169,11 +317,324 @@ to the corresponding cloud provider and published to its marketplace.</p>
 </div>
 </div></blockquote>
 </section>
-</section>
 <section id="destination-mapping">
-<h2>Destination Mapping<a class="headerlink" href="#destination-mapping" title="Link to this heading">¶</a></h2>
-<p>The destination mapping is given by <a class="reference external" href="https://gitlab.cee.redhat.com/stratosphere/starmap">StArMap</a>.</p>
-<p>The tool expects a valid endpoint to the StArMap service.</p>
+<h3>Destination Mapping<a class="headerlink" href="#destination-mapping" title="Link to this heading">¶</a></h3>
+<p>The destination mapping is given by an internal service named <code class="docutils literal notranslate"><span class="pre">StArMap</span></code> throught the <a class="reference external" href="https://release-engineering.github.io/starmap-client/">Starmap Client</a> library.</p>
+<p>The tool expects a valid endpoint to the StArMap service and/or a JSON string containing the list of mappings
+using the parameter <code class="docutils literal notranslate"><span class="pre">--repo</span></code>.</p>
+<p>The following sections will cover all the details about the destination mappings.</p>
+<section id="mapping-request-modes">
+<h4>Mapping request modes<a class="headerlink" href="#mapping-request-modes" title="Link to this heading">¶</a></h4>
+<section id="online-mode">
+<h5>Online mode<a class="headerlink" href="#online-mode" title="Link to this heading">¶</a></h5>
+<p>In this mode the tooling will use the <a class="reference external" href="https://release-engineering.github.io/starmap-client/">Starmap Client</a> library to connect into a StArMap server to provide
+the mappings for each <a class="reference external" href="https://release-engineering.github.io/pushsource/model/vmi.html">VMIPushItem</a> into the proper marketplace destination.</p>
+<p>To initiate the tooling into the “online mode” it’s just a matter of providing a valid StArMap server URL</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">starmap</span><span class="o">-</span><span class="n">url</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">starmap</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">url</span>
+</pre></div>
+</div>
+<p>The workflow will be executed like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># For each incoming &quot;VMIPushItem&quot; get its destination data from StArMap
+# using the image name, version and the desired workflow
+curl -S https://starmap.base.url/api/v1/query?name=IMG_NAME&amp;version=IMG_VERworkflow=community
+curl -S https://starmap.base.url/api/v1/query?name=IMG_NAME&amp;version=IMG_VER&amp;workflow=stratosphere
+
+# If mapping not defined =&gt; fail; else
+# Upload and publish the VMs into the proper destinations
+...
+</pre></div>
+</div>
+</section>
+<section id="offline-mode">
+<h5>Offline mode<a class="headerlink" href="#offline-mode" title="Link to this heading">¶</a></h5>
+<p>In this mode the tooling will use the <a class="reference external" href="https://release-engineering.github.io/starmap-client/">Starmap Client</a> library to load the mappings from the <code class="docutils literal notranslate"><span class="pre">--repo</span></code> argument
+and use these mappings to upload and publish each <a class="reference external" href="https://release-engineering.github.io/pushsource/model/vmi.html">VMIPushItem</a> into the proper marketplace destination. In this mode
+it will fail any <a class="reference external" href="https://release-engineering.github.io/pushsource/model/vmi.html">VMIPushItem</a> which doesn’t have a mapping specified on <code class="docutils literal notranslate"><span class="pre">--repo</span></code>.</p>
+<p>Note that no network calls will be made to the StArMap server in this mode, so the <code class="docutils literal notranslate"><span class="pre">--starmap-url</span></code> can be
+any fake url.</p>
+<p>To initiate the tooling into the “offline mode” you must specify the <code class="docutils literal notranslate"><span class="pre">--repo</span></code> mappings as well as the flag <code class="docutils literal notranslate"><span class="pre">--offline</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">starmap</span><span class="o">-</span><span class="n">url</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">some</span><span class="o">.</span><span class="n">fake</span><span class="o">.</span><span class="n">url</span> \
+<span class="o">--</span><span class="n">repo</span> <span class="s2">&quot;{...}&quot;</span> \
+<span class="o">--</span><span class="n">offline</span>
+</pre></div>
+</div>
+<p>The workflow will be executed like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># For each incoming &quot;VMIPushItem&quot; get its destination data from --repo</span>
+<span class="c1"># using the image name and the desired workflow</span>
+<span class="c1"># If mapping not defined =&gt; fail; else</span>
+<span class="c1"># Upload and publish the VMs into the proper destinations</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+</section>
+<section id="hybrid-mode">
+<h5>Hybrid mode<a class="headerlink" href="#hybrid-mode" title="Link to this heading">¶</a></h5>
+<p>In this mode the tooling will use the <a class="reference external" href="https://release-engineering.github.io/starmap-client/">Starmap Client</a> library to load the mappings from the <code class="docutils literal notranslate"><span class="pre">--repo</span></code> argument
+and use these mappings to upload and publish each <a class="reference external" href="https://release-engineering.github.io/pushsource/model/vmi.html">VMIPushItem</a> into the proper marketplace destination. Howevever,
+if a certain mapping is not defined on repo it will request the data from the StArMap server.</p>
+<p>Note that no network calls will be made to the StArMap server in this mode, so the <code class="docutils literal notranslate"><span class="pre">--starmap-url</span></code> can be
+any fake url.</p>
+<p>To initiate the tooling into the “offline mode” you must specify the <code class="docutils literal notranslate"><span class="pre">--repo</span></code> mappings as well as
+valid StArMap server URL for fallback:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">starmap</span><span class="o">-</span><span class="n">url</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">starmap</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">url</span> \
+<span class="o">--</span><span class="n">repo</span> <span class="s2">&quot;{...}&quot;</span>
+</pre></div>
+</div>
+<p>The workflow will be executed like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># For each incoming &quot;VMIPushItem&quot; get its destination data from --repo
+# using the image name and the desired workflow
+# If mapping not defined call the StArMap server
+curl -S https://starmap.base.url/api/v1/query?name=IMG_NAME&amp;version=IMG_VERworkflow=community
+curl -S https://starmap.base.url/api/v1/query?name=IMG_NAME&amp;version=IMG_VER&amp;workflow=stratosphere
+# If mapping is still not defined =&gt; fail; else
+# Upload and publish the VMs into the proper destinations
+...
+</pre></div>
+</div>
+</section>
+</section>
+<section id="mapping-format">
+<h4>Mapping Format<a class="headerlink" href="#mapping-format" title="Link to this heading">¶</a></h4>
+<p>The value for the <code class="docutils literal notranslate"><span class="pre">--repo</span></code> argument expects a JSON with either a single or multiple <a class="reference external" href="https://release-engineering.github.io/starmap-client/model/models.html#starmap_client.models.QueryResponse">QueryResponse</a> data.</p>
+<p>With that, it supports either a JSON starting with a list (for multiple mappings) or a dictionary (single mapping).</p>
+<p>The StArMap APIv1 <a class="reference external" href="https://release-engineering.github.io/starmap-client/model/models.html#starmap_client.models.QueryResponse">QueryResponse</a> has the following format:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;str&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;workflow&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;str&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;mappings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;obj&quot;</span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code>: The name from the image’s NVR. It will be used to match the propre VM artifact.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">workflow</span></code>: Can be either <code class="docutils literal notranslate"><span class="pre">community</span></code> or <code class="docutils literal notranslate"><span class="pre">stratosphere</span></code> and it’s used to match the tooling workflow.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mappings</span></code>: The <code class="docutils literal notranslate"><span class="pre">clouds</span></code> object with the marketplace name and its destinations and metadata</p></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">mappings</span></code> object has the following format:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;MARKETPLACE_NAME&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;architecture&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;str&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;destination&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;str&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;meta&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;obj&quot;</span><span class="p">},</span>
+<span class="w">        </span><span class="nt">&quot;overwrite&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;bool&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;provider&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;str&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;restrict_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;bool&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;restrict_major&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;bool&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;restrict_minor&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;bool&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;tags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">       </span><span class="p">},</span>
+<span class="w">       </span><span class="p">{</span><span class="s2">&quot;...&quot;</span><span class="p">}</span>
+<span class="w">   </span><span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">MARKETPLACE_NAME</span></code>: A string matching a single <a class="reference external" href="credentials.html">marketplace_account</a> from credentials. E.g. <code class="docutils literal notranslate"><span class="pre">aws-na</span></code>.
+It’s used the retrieve the proper credentials to upload and publish into the given marketplace.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">LIST</span></code>: A list of destination objects, which are described below.</p></li>
+</ul>
+<p>Destination objects format:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">architecture</span></code>: A string representing the VM image architecture to publish. E.g. <code class="docutils literal notranslate"><span class="pre">x86_64</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">destination</span></code>: A string representing a offer/plan destination for the image to be published. E.g. <code class="docutils literal notranslate"><span class="pre">offer_1/plan_1</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">meta</span></code>: An object with any key/values which may be threated as complementary metadata for publishing on marketplaces.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">overwrite</span></code>: A boolean indicating whenever the image should replace the existing version (true) in the marketplace.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">provider</span></code>: A string meant to be used only on community workflow. It indicates the provider name (<code class="docutils literal notranslate"><span class="pre">AWS</span></code>, <code class="docutils literal notranslate"><span class="pre">AGOV</span></code>, <code class="docutils literal notranslate"><span class="pre">ACN</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">restrict_version</span></code>: A boolean for AWS marketplace only which indicates whether a previous version need to be restricted after publishing.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">restrict_major</span></code>: An optional boolean indicating whether to restrict a major version. Only applicable if <code class="docutils literal notranslate"><span class="pre">restrict_version</span></code> is set to <code class="docutils literal notranslate"><span class="pre">true</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">restrict_minor</span></code>: An optional boolean indicating whether to restrict a minor version. Only applicable if <code class="docutils literal notranslate"><span class="pre">restrict_version</span></code> is set to <code class="docutils literal notranslate"><span class="pre">true</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tags</span></code>: An object with any key/values to be applied as tags once the VM images are uploaded.</p></li>
+</ul>
+<section id="id6">
+<h5>Examples<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h5>
+<p>An <strong>Azure</strong> mapping for <code class="docutils literal notranslate"><span class="pre">RHEL</span></code> using the architecture <code class="docutils literal notranslate"><span class="pre">x86_64</span></code> to be published in the marketplace:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-S<span class="w"> </span><span class="s1">&#39;https://starmap.base.url/api/v1/query?name=rhel-azure&amp;version=8.0&amp;workflow=stratosphere&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;rhel-azure&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;workflow&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;stratosphere&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;mappings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;azure-na&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;architecture&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;x86_64&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;destination&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;rh-rhel-test/rh-rhel8-internal&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;meta&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;generation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;V2&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;support_legacy&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">},</span>
+<span class="w">                </span><span class="nt">&quot;overwrite&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;provider&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;restrict_major&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;restrict_minor&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;restrict_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;tags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">        </span><span class="p">],</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>An <strong>AWS</strong> mapping for <code class="docutils literal notranslate"><span class="pre">RHEL</span></code> using the architecture <code class="docutils literal notranslate"><span class="pre">x86_64</span></code> to be published in the marketplace:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-S<span class="w"> </span><span class="s1">&#39;https://starmap.base.url/api/v1/query?name=rhel-ec2&amp;workflow=stratosphere&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;rhel-ec2&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;workflow&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;stratosphere&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;mappings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;aws-na&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;architecture&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;x86_64&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;destination&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;d87bcebf-9cf4-47f5-9b5b-5470d4490f3d&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;meta&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Provided by Red Hat, Inc.&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;ena_support&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;marketplace_entity_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AmiProduct&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;recommended_instance_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;m5dn.2xlarge&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;release&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                        </span><span class="nt">&quot;product&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Red Hat Enterprise Linux&quot;</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ga&quot;</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">&quot;variant&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Server&quot;</span>
+<span class="w">                    </span><span class="p">},</span>
+<span class="w">                    </span><span class="nt">&quot;release_notes&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/{major_version}/html/{major_minor}_release_notes/index&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;root_device&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/dev/sda1&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;scanning_port&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">22</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;security_groups&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                        </span><span class="p">{</span>
+<span class="w">                        </span><span class="nt">&quot;from_port&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">22</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">&quot;ip_protocol&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;tcp&quot;</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">&quot;ip_ranges&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                            </span><span class="s2">&quot;0.0.0.0/0&quot;</span>
+<span class="w">                        </span><span class="p">],</span>
+<span class="w">                        </span><span class="nt">&quot;to_port&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">22</span>
+<span class="w">                        </span><span class="p">}</span>
+<span class="w">                    </span><span class="p">],</span>
+<span class="w">                    </span><span class="nt">&quot;sriov_net_support&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;simple&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;usage_instructions&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Access your instance via ssh using the default username \&quot;ec2-user\&quot; and the ssh key registered with AWS. This product provides access to multiple versions. When launching with 1-click launch, please pay attention to the version. You have the ability to select another version of the RHEL image (including RHEL 8 and newer) when launching from the full AWS Marketplace website.&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;user_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ec2-user&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;virtualization&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;hvm&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;volume&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;gp2&quot;</span>
+<span class="w">                </span><span class="p">},</span>
+<span class="w">                </span><span class="nt">&quot;overwrite&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;provider&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;restrict_major&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;restrict_minor&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;restrict_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;tags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>An <strong>AWS</strong> mapping for <code class="docutils literal notranslate"><span class="pre">RHEL</span></code> using the architecture <code class="docutils literal notranslate"><span class="pre">x86_64</span></code> to be published as a community image:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-S<span class="w"> </span><span class="s1">&#39;https://starmap.base.url/api/v1/query?name=rhel-ec2&amp;workflow=community&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;rhel-ec2&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;workflow&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;community&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;mappings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;aws-us-storage&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;architecture&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;destination&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;us-east-1-access&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;meta&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Provided by Red Hat, Inc.&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;ena_support&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;release&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nt">&quot;product&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;RHEL&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ga&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;variant&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;BaseOS&quot;</span>
+<span class="w">                </span><span class="p">},</span>
+<span class="w">                </span><span class="nt">&quot;root_device&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/dev/sda1&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;sriov_net_support&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;simple&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;virtualization&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;hvm&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;volume&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;gp3&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">&quot;overwrite&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;provider&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AWS&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;restrict_major&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;restrict_minor&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;restrict_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;tags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;architecture&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;destination&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;us-east-2-access&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;meta&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Provided by Red Hat, Inc.&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;ena_support&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;release&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nt">&quot;product&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;RHEL&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ga&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;variant&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;BaseOS&quot;</span>
+<span class="w">                </span><span class="p">},</span>
+<span class="w">                </span><span class="nt">&quot;root_device&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/dev/sda1&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;sriov_net_support&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;simple&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;virtualization&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;hvm&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;volume&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;gp3&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">&quot;overwrite&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;provider&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AWS&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;restrict_major&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;restrict_minor&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;restrict_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;tags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;architecture&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;destination&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;us-west-1-access&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;meta&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Provided by Red Hat, Inc.&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;ena_support&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;release&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nt">&quot;product&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;RHEL&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ga&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;variant&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;BaseOS&quot;</span>
+<span class="w">                </span><span class="p">},</span>
+<span class="w">                </span><span class="nt">&quot;root_device&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/dev/sda1&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;sriov_net_support&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;simple&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;virtualization&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;hvm&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;volume&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;gp3&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">&quot;overwrite&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;provider&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AWS&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;restrict_major&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;restrict_minor&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;restrict_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;tags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">        </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;architecture&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;destination&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;us-west-2-access&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;meta&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Provided by Red Hat, Inc.&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;ena_support&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;release&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                    </span><span class="nt">&quot;product&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;RHEL&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ga&quot;</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">&quot;variant&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;BaseOS&quot;</span>
+<span class="w">                </span><span class="p">},</span>
+<span class="w">                </span><span class="nt">&quot;root_device&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/dev/sda1&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;sriov_net_support&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;simple&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;virtualization&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;hvm&quot;</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">&quot;volume&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;gp3&quot;</span>
+<span class="w">            </span><span class="p">},</span>
+<span class="w">            </span><span class="nt">&quot;overwrite&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;provider&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AWS&quot;</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;restrict_major&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;restrict_minor&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;restrict_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">&quot;tags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
 </section>
 </section>
 
@@ -198,9 +659,15 @@ to the corresponding cloud provider and published to its marketplace.</p>
 <h3>Navigation</h3>
 <p class="caption" role="heading"><span class="caption-text">Command Reference:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="push.html">push</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">community-push</a></li>
 <li class="toctree-l1"><a class="reference internal" href="combined_push.html">combined-push</a></li>
+<li class="toctree-l1"><a class="reference internal" href="marketplace_push.html">marketplace-push</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">community-push</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Common arguments and parameters:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="common/credentials.html">Credentials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="common/mappings.html">Destination Mapping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="common/sources.html">Supported Sources</a></li>
 </ul>
 
 
@@ -216,8 +683,8 @@ to the corresponding cloud provider and published to its marketplace.</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="push.html" title="previous chapter">push</a></li>
-      <li>Next: <a href="combined_push.html" title="next chapter">combined-push</a></li>
+      <li>Previous: <a href="marketplace_push.html" title="previous chapter">marketplace-push</a></li>
+      <li>Next: <a href="common/credentials.html" title="next chapter">Credentials</a></li>
   </ul></li>
 </ul>
 </div>
@@ -244,7 +711,7 @@ to the corresponding cloud provider and published to its marketplace.</p>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &#169;2023, Red Hat.
+      &#169;2024, Red Hat.
       
       |
       Powered by <a href="https://www.sphinx-doc.org/">Sphinx 7.4.7</a>

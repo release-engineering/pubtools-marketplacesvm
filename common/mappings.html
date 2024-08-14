@@ -1,22 +1,22 @@
 <!DOCTYPE html>
 
-<html lang="en" data-content_root="./">
+<html lang="en" data-content_root="../">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>combined-push &#8212; pubtools-marketplacesvm  documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=d1102ebc" />
-    <link rel="stylesheet" type="text/css" href="_static/alabaster.css?v=32913b9a" />
-    <script src="_static/documentation_options.js?v=5929fcd5"></script>
-    <script src="_static/doctools.js?v=9a2dae69"></script>
-    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
-    <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="marketplace-push" href="marketplace_push.html" />
-    <link rel="prev" title="pubtools-marketplacesvm" href="index.html" />
+    <title>Destination Mapping &#8212; pubtools-marketplacesvm  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d1102ebc" />
+    <link rel="stylesheet" type="text/css" href="../_static/alabaster.css?v=32913b9a" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Supported Sources" href="sources.html" />
+    <link rel="prev" title="Credentials" href="credentials.html" />
    
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
 
   
@@ -32,316 +32,16 @@
 
           <div class="body" role="main">
             
-  <section id="combined-push">
-<h1>combined-push<a class="headerlink" href="#combined-push" title="Link to this heading">¶</a></h1>
-<p>Executes the <code class="docutils literal notranslate"><span class="pre">marketplace-push</span></code> and <code class="docutils literal notranslate"><span class="pre">community-push</span></code> in parallel using a single entrypoint.</p>
-<p><p>Combine the Marketplace and Community pushes into a single entity.</p>
-</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">pubtools</span><span class="o">-</span><span class="n">marketplacesvm</span><span class="o">-</span><span class="n">push</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">debug</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">rhsm</span><span class="o">-</span><span class="n">url</span> <span class="n">RHSM_URL</span><span class="p">]</span>
-                                    <span class="p">[</span><span class="o">--</span><span class="n">rhsm</span><span class="o">-</span><span class="n">cert</span> <span class="n">RHSM_CERT</span><span class="p">]</span>
-                                    <span class="p">[</span><span class="o">--</span><span class="n">rhsm</span><span class="o">-</span><span class="n">key</span> <span class="n">RHSM_KEY</span><span class="p">]</span>
-                                    <span class="p">[</span><span class="o">--</span><span class="n">starmap</span><span class="o">-</span><span class="n">url</span> <span class="n">STARMAP_URL</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">repo</span> <span class="n">REPO</span><span class="p">]</span>
-                                    <span class="p">[</span><span class="o">--</span><span class="n">offline</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">credentials</span> <span class="n">CREDENTIALS</span><span class="p">]</span>
-                                    <span class="p">[</span><span class="o">--</span><span class="n">skip</span> <span class="n">SKIP</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">pre</span><span class="o">-</span><span class="n">push</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">beta</span><span class="p">]</span>
-                                    <span class="p">[</span><span class="o">--</span><span class="n">container</span><span class="o">-</span><span class="n">prefix</span> <span class="n">CONTAINER_PREFIX</span><span class="p">]</span>
-                                    <span class="p">[</span><span class="o">--</span><span class="n">workflow</span> <span class="p">{</span><span class="n">marketplace</span><span class="p">,</span><span class="n">community</span><span class="p">,</span><span class="nb">all</span><span class="p">}]</span>
-                                    <span class="n">source</span> <span class="p">[</span><span class="n">source</span> <span class="o">...</span><span class="p">]</span>
-</pre></div>
-</div>
-<section id="named-arguments">
-<h2>Named Arguments<a class="headerlink" href="#named-arguments" title="Link to this heading">¶</a></h2>
-<dl class="option-list">
-<dt><kbd>--debug, -d</kbd></dt>
-<dd><p>Show debug logs; can be provided up to three times to enable more logs</p>
-<p>Default: 0</p>
-</dd>
-</dl>
-</section>
-<section id="rhsm-service">
-<h2>RHSM service<a class="headerlink" href="#rhsm-service" title="Link to this heading">¶</a></h2>
-<dl class="option-list">
-<dt><kbd>--rhsm-url</kbd></dt>
-<dd><p>Base URL of the RHSM API</p>
-</dd>
-<dt><kbd>--rhsm-cert</kbd></dt>
-<dd><p>RHSM API certificate path (or set RHSM_CERT environment variable)</p>
-</dd>
-<dt><kbd>--rhsm-key</kbd></dt>
-<dd><p>RHSM API key path (or set RHSM_KEY environment variable)</p>
-</dd>
-</dl>
-</section>
-<section id="starmap-service">
-<h2>StArMap Service<a class="headerlink" href="#starmap-service" title="Link to this heading">¶</a></h2>
-<dl class="option-list">
-<dt><kbd>--starmap-url</kbd></dt>
-<dd><p>Base URL for the StArMap server.</p>
-<p>Default: “<a class="reference external" href="https://starmap.engineering.redhat.com">https://starmap.engineering.redhat.com</a>”</p>
-</dd>
-<dt><kbd>--repo</kbd></dt>
-<dd><p>Override the StArMap mappings for push items. e.g: {‘name’: ‘foo’, ‘workflow’: ‘stratosphere’: {‘aws-na’: [{‘destination’: ‘c39fd…’}, …]},…}</p>
-<p>Default: {}</p>
-</dd>
-<dt><kbd>--offline</kbd></dt>
-<dd><p>Do not connect to a real StArMap server, use a mock session instead. It requires –repo to be set.</p>
-<p>Default: False</p>
-</dd>
-</dl>
-</section>
-<section id="cloud-service">
-<h2>Cloud Service<a class="headerlink" href="#cloud-service" title="Link to this heading">¶</a></h2>
-<dl class="option-list">
-<dt><kbd>--credentials</kbd></dt>
-<dd><p>Path to the credentials files separated by comma or base64 encoded credentials separated by comma (or set CLOUD_CREDENTIALS environment variable)</p>
-<p>Default: “”</p>
-</dd>
-</dl>
-</section>
-<section id="marketplace-push-options">
-<h2>Marketplace Push Options<a class="headerlink" href="#marketplace-push-options" title="Link to this heading">¶</a></h2>
-<dl class="option-list">
-<dt><kbd>--skip</kbd></dt>
-<dd><p>skip given comma-separated sub-steps</p>
-<p>Default: []</p>
-</dd>
-<dt><kbd>--pre-push</kbd></dt>
-<dd><p>Pre-push mode: do as much as possible without making content available to end-users, then stop. May be used to improve the performance of a subsequent full push.</p>
-<p>Default: False</p>
-</dd>
-<dt><kbd>source</kbd></dt>
-<dd><p>Source(s) of content to be pushed</p>
-</dd>
-</dl>
-</section>
-<section id="community-push-options">
-<h2>Community Push options<a class="headerlink" href="#community-push-options" title="Link to this heading">¶</a></h2>
-<dl class="option-list">
-<dt><kbd>--beta</kbd></dt>
-<dd><p>Ship beta images instead of GA</p>
-<p>Default: False</p>
-</dd>
-<dt><kbd>--container-prefix</kbd></dt>
-<dd><p>prefix to storage container for uploading community images</p>
-<p>Default: “redhat-cloudimg”</p>
-</dd>
-</dl>
-</section>
-<section id="workflow-options">
-<h2>Workflow options<a class="headerlink" href="#workflow-options" title="Link to this heading">¶</a></h2>
-<dl class="option-list">
-<dt><kbd>--workflow, -w</kbd></dt>
-<dd><p>Possible choices: marketplace, community, all</p>
-<p>The workflow to be executed</p>
-<p>Default: “all”</p>
-</dd>
-</dl>
-</section>
-<section id="example">
-<h2>Example<a class="headerlink" href="#example" title="Link to this heading">¶</a></h2>
-<section id="push-example">
-<h3>Push Example<a class="headerlink" href="#push-example" title="Link to this heading">¶</a></h3>
-<p>A typical invocation of push would look like this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>pubtools-marketplacesvm-push \
-  --workflow all \
-  --starmap-url https://starmap.example.com \
-  --credentials PATH_TO_CREDS_1.json,PATH_TO_CREDS_2.json \
-  koji:https://koji.example.com/kojihub?vmi_build=build-example1,build-example2
-</pre></div>
-</div>
-</section>
-<section id="credentials">
-<h3>Credentials<a class="headerlink" href="#credentials" title="Link to this heading">¶</a></h3>
-<p>This section describes the supported values for the <code class="docutils literal notranslate"><span class="pre">--credentials</span></code> command line argument.</p>
-<section id="expected-format">
-<h4>Expected format<a class="headerlink" href="#expected-format" title="Link to this heading">¶</a></h4>
-<section id="overall-format">
-<h5>Overall format<a class="headerlink" href="#overall-format" title="Link to this heading">¶</a></h5>
-<p>Each credential file must be in the following format:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;marketplace_account&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CLOUD_ALIAS&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;auth&quot;</span><span class="p">:</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;KEY&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;VALUE&quot;</span><span class="p">,</span><span class="w"> </span><span class="c1">// ...</span>
-<span class="w">  </span><span class="p">}</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<p>The supported values for the key <code class="docutils literal notranslate"><span class="pre">marketplace_account</span></code> are described below:</p>
-</section>
-<section id="marketplace-accounts-push">
-<h5>Marketplace accounts (push)<a class="headerlink" href="#marketplace-accounts-push" title="Link to this heading">¶</a></h5>
-<p>Required when using the “marketplace” or “combined” workflow</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">aws-na</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">aws-emea</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">azure-na</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">azure-emea</span></code></p></li>
-</ul>
-</section>
-<section id="storage-accounts-community-push">
-<h5>Storage accounts (community-push)<a class="headerlink" href="#storage-accounts-community-push" title="Link to this heading">¶</a></h5>
-<p>Required when using the “community” or “combined” workflow</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">aws-us-storage</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">aws-us-gov-storage</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">aws-china-storage</span></code></p></li>
-</ul>
-</section>
-<section id="auth-format">
-<h5>Auth format<a class="headerlink" href="#auth-format" title="Link to this heading">¶</a></h5>
-<p>The <a href="#id1"><span class="problematic" id="id2">*</span></a>KEY*s and <a href="#id3"><span class="problematic" id="id4">*</span></a>VALUE*s for the <code class="docutils literal notranslate"><span class="pre">auth</span></code> object are specific for each Cloud Provider implementation.</p>
-<p><strong>AWS Format</strong></p>
-<p>The following properties are supported for AWS <code class="docutils literal notranslate"><span class="pre">auth</span></code>:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">AWS_IMAGE_ACCESS_KEY</span></code>: The AWS access key for uploading the images and import them as AMIs</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">AWS_IMAGE_SECRET_ACCESS</span></code>: The AWS secret key for uploading the images and import them as AMIs</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">AWS_MARKETPLACE_ACCESS_KEY</span></code>: The AWS access key for publishing a new product version with its AMI into the marketplace</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">AWS_MARKETPLACE_SECRET_ACCESS</span></code>: The AWS secret key for publishing a new product version with its AMI into the marketplace</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">AWS_ACCESS_ROLE_ARN</span></code>: IAM role Amazon Resource Name (ARN) used by AWS Marketplace to access the provided AMI. For details about creating and using this ARN, see <a class="reference external" href="https://docs.aws.amazon.com/marketplace-catalog/latest/api-reference/ami-products.html#working-with-single-AMI-products">Giving AWS Marketplace access to your AMI</a> in the AWS Marketplace Seller Guide.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">AWS_GROUPS</span></code>: The default sharing accounts for uploading and importing AMIs</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">AWS_SNAPSHOT_ACCOUNTS</span></code>: The default sharing snapshot accounts for uploading and importing AMIs</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">AWS_REGION</span></code>: The default region for uploading and importing AMIs</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">AWS_S3_BUCKET</span></code>: The S3 bucket name to upload the raw VM images</p></li>
-</ul>
-<p>Example:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;AWS_IMAGE_ACCESS_KEY&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;AWS_IMAGE_SECRET_ACCESS&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;***************&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;AWS_MARKETPLACE_ACCESS_KEY&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;AWS_MARKETPLACE_SECRET_ACCESS&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;AWS_ACCESS_ROLE_ARN&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;AWS_GROUPS&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
-<span class="w">  </span><span class="nt">&quot;AWS_SNAPSHOT_ACCOUNTS&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
-<span class="w">  </span><span class="nt">&quot;AWS_REGION&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;us-east-1&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;AWS_S3_BUCKET&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<p><strong>Azure Format</strong></p>
-<p>The following properties are supported for AWS <code class="docutils literal notranslate"><span class="pre">auth</span></code>:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">AZURE_TENANT_ID</span></code>: The tenant ID for publishing a new product version</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">AZURE_PUBLISHER_NAME</span></code>: The publisher name for publishing a new product version</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">AZURE_CLIENT_ID</span></code>: The Azure’s AD Client ID to communicate with Microsoft APIs</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">AZURE_API_SECRET</span></code>: The Azure’s AD Client Secret to communicate with Microsoft APIs</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">AZURE_STORAGE_CONNECTION_STRING</span></code>: The Azure Storage Account connection string to upload VHD images</p></li>
-</ul>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;AZURE_TENANT_ID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;AZURE_PUBLISHER_NAME&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;*************&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;AZURE_API_SECRET&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;AZURE_CLIENT_ID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;*******************&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;AZURE_STORAGE_CONNECTION_STRING&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</section>
-<section id="examples">
-<h5>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h5>
-<p><strong>Example for AWS NA:</strong></p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;marketplace_account&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;aws-na&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;auth&quot;</span><span class="p">:</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;AWS_IMAGE_ACCESS_KEY&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;AWS_IMAGE_SECRET_ACCESS&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;***************&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;AWS_MARKETPLACE_ACCESS_KEY&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;AWS_MARKETPLACE_SECRET_ACCESS&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;AWS_ACCESS_ROLE_ARN&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;AWS_GROUPS&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
-<span class="w">      </span><span class="nt">&quot;AWS_SNAPSHOT_ACCOUNTS&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
-<span class="w">      </span><span class="nt">&quot;AWS_REGION&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;us-east-1&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;AWS_S3_BUCKET&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span>
-<span class="w">  </span><span class="p">}</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<p><strong>Example for Azure NA:</strong></p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;marketplace_account&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;azure-na&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;auth&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;AZURE_TENANT_ID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;AZURE_PUBLISHER_NAME&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;*************&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;AZURE_API_SECRET&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;AZURE_CLIENT_ID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;*******************&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;AZURE_STORAGE_CONNECTION_STRING&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span>
-<span class="w">  </span><span class="p">}</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</section>
-</section>
-<section id="cli-parameter-format">
-<h4>CLI parameter format<a class="headerlink" href="#cli-parameter-format" title="Link to this heading">¶</a></h4>
-<p>Once the credentials are properly crafted, then can be passed to the tooling in one of the following ways:</p>
-<section id="credentials-as-files">
-<h5>Credentials as files<a class="headerlink" href="#credentials-as-files" title="Link to this heading">¶</a></h5>
-<p>It’s possible to storage each credential into a single JSON file and passing the path for all files
-using a comma delimited string for the parameter <code class="docutils literal notranslate"><span class="pre">--credentials</span></code>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>--credentials<span class="w"> </span>PATH_TO_CREDS_1.json,PATH_TO_CREDS_2.json,PATH_TO_CREDS3.json
-</pre></div>
-</div>
-<p>The tooling will split the string by comma (<code class="docutils literal notranslate"><span class="pre">,</span></code>) and open/parse each credential file for loading its credentials.</p>
-<p>Note that the parameter <code class="docutils literal notranslate"><span class="pre">--credentials</span></code> support only a single string argument. Avoid using space as <code class="docutils literal notranslate"><span class="pre">bash</span></code> may consider it two or more arguments.</p>
-</section>
-<section id="credentials-as-list-of-base64-string">
-<h5>Credentials as list of base64 string<a class="headerlink" href="#credentials-as-list-of-base64-string" title="Link to this heading">¶</a></h5>
-<p>Another way to pass the credentials is to encode each credential JSON into a <code class="docutils literal notranslate"><span class="pre">base64</span></code> string and passing it
-as a list of encoded strings separated by comma (<code class="docutils literal notranslate"><span class="pre">,</span></code>).</p>
-<p>Since comma will never be used on <code class="docutils literal notranslate"><span class="pre">base64</span></code> encoding the tooling will first split the string into multiple
-substrings of <code class="docutils literal notranslate"><span class="pre">base64</span></code> encoding, each one representing a single credentials.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1">## Convert each creds to a base64 encoded string</span>
-<span class="k">for</span><span class="w"> </span>i<span class="w"> </span><span class="k">in</span><span class="w"> </span>PATH_TO_CREDS_1.json<span class="w"> </span>PATH_TO_CREDS_2.json<span class="w"> </span>PATH_TO_CREDS3.json<span class="p">;</span><span class="w"> </span><span class="k">do</span>
-<span class="w">  </span>cat<span class="w"> </span><span class="nv">$i</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>base64
-<span class="k">done</span>
-
-<span class="c1">## Join the output into a single line and then</span>
-
---credentials<span class="w"> </span>BASE64_STRING_1,BASE64_STRING_2,BASE64_STRING_3
-</pre></div>
-</div>
-<p>Note that the parameter <code class="docutils literal notranslate"><span class="pre">--credentials</span></code> support only a single string argument. Avoid using space as <code class="docutils literal notranslate"><span class="pre">bash</span></code> may consider it two or more arguments.</p>
-</section>
-<section id="id5">
-<h5>Examples<a class="headerlink" href="#id5" title="Link to this heading">¶</a></h5>
-<p>Using the path mode:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pubtools-marketplacesvm-push<span class="w"> </span><span class="se">\</span>
---credentials<span class="w"> </span>creds/aws-na.json,creds/aws-emea.json,creds/azure-na.json,creds/azure-emea.json<span class="w"> </span><span class="se">\</span>
-...
-</pre></div>
-</div>
-<p>Using the base64 mode:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pubtools-marketplacesvm-push<span class="w"> </span><span class="se">\</span>
---credentials<span class="w"> </span>ewogICAgIm1hcmtWNlX<span class="o">[</span>...<span class="o">]</span>,ewogICAgIm1hcmtldH<span class="o">[</span>...<span class="o">]</span>,ewogICAgIm1hcmtl<span class="o">[</span>...<span class="o">]</span>,ewogICAgIm1hcmtldHBsYW<span class="o">[</span>...<span class="o">]</span><span class="w"> </span><span class="se">\</span>
-...
-</pre></div>
-</div>
-</section>
-</section>
-</section>
-<section id="supported-sources">
-<h3>Supported Sources<a class="headerlink" href="#supported-sources" title="Link to this heading">¶</a></h3>
-<p>The tooling supports the <a class="reference external" href="https://release-engineering.github.io/pushsource/sources/koji.html#accessing-virtual-machine-images">KojiSource</a> and <a class="reference external" href="https://release-engineering.github.io/pushsource/sources/errata.html">ErrataSource</a> from <code class="docutils literal notranslate"><span class="pre">pushsource</span></code>.</p>
-<p>All the VM images in the given source path will be uploaded
-to the corresponding cloud provider and published to its marketplace.</p>
-<p>The expected parameter for the VM images is <code class="docutils literal notranslate"><span class="pre">vmi_build</span></code>:</p>
-<p><strong>Example:</strong></p>
-<blockquote>
-<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span>koji:https://koji.example.com/kojihub?vmi_build=build-example1,build-example2
-</pre></div>
-</div>
-</div></blockquote>
-</section>
-<section id="destination-mapping">
-<h3>Destination Mapping<a class="headerlink" href="#destination-mapping" title="Link to this heading">¶</a></h3>
+  <section id="destination-mapping">
+<h1>Destination Mapping<a class="headerlink" href="#destination-mapping" title="Link to this heading">¶</a></h1>
 <p>The destination mapping is given by an internal service named <code class="docutils literal notranslate"><span class="pre">StArMap</span></code> throught the <a class="reference external" href="https://release-engineering.github.io/starmap-client/">Starmap Client</a> library.</p>
 <p>The tool expects a valid endpoint to the StArMap service and/or a JSON string containing the list of mappings
 using the parameter <code class="docutils literal notranslate"><span class="pre">--repo</span></code>.</p>
 <p>The following sections will cover all the details about the destination mappings.</p>
 <section id="mapping-request-modes">
-<h4>Mapping request modes<a class="headerlink" href="#mapping-request-modes" title="Link to this heading">¶</a></h4>
+<h2>Mapping request modes<a class="headerlink" href="#mapping-request-modes" title="Link to this heading">¶</a></h2>
 <section id="online-mode">
-<h5>Online mode<a class="headerlink" href="#online-mode" title="Link to this heading">¶</a></h5>
+<h3>Online mode<a class="headerlink" href="#online-mode" title="Link to this heading">¶</a></h3>
 <p>In this mode the tooling will use the <a class="reference external" href="https://release-engineering.github.io/starmap-client/">Starmap Client</a> library to connect into a StArMap server to provide
 the mappings for each <a class="reference external" href="https://release-engineering.github.io/pushsource/model/vmi.html">VMIPushItem</a> into the proper marketplace destination.</p>
 <p>To initiate the tooling into the “online mode” it’s just a matter of providing a valid StArMap server URL</p>
@@ -361,7 +61,7 @@ curl -S https://starmap.base.url/api/v1/query?name=IMG_NAME&amp;version=IMG_VER&
 </div>
 </section>
 <section id="offline-mode">
-<h5>Offline mode<a class="headerlink" href="#offline-mode" title="Link to this heading">¶</a></h5>
+<h3>Offline mode<a class="headerlink" href="#offline-mode" title="Link to this heading">¶</a></h3>
 <p>In this mode the tooling will use the <a class="reference external" href="https://release-engineering.github.io/starmap-client/">Starmap Client</a> library to load the mappings from the <code class="docutils literal notranslate"><span class="pre">--repo</span></code> argument
 and use these mappings to upload and publish each <a class="reference external" href="https://release-engineering.github.io/pushsource/model/vmi.html">VMIPushItem</a> into the proper marketplace destination. In this mode
 it will fail any <a class="reference external" href="https://release-engineering.github.io/pushsource/model/vmi.html">VMIPushItem</a> which doesn’t have a mapping specified on <code class="docutils literal notranslate"><span class="pre">--repo</span></code>.</p>
@@ -383,7 +83,7 @@ any fake url.</p>
 </div>
 </section>
 <section id="hybrid-mode">
-<h5>Hybrid mode<a class="headerlink" href="#hybrid-mode" title="Link to this heading">¶</a></h5>
+<h3>Hybrid mode<a class="headerlink" href="#hybrid-mode" title="Link to this heading">¶</a></h3>
 <p>In this mode the tooling will use the <a class="reference external" href="https://release-engineering.github.io/starmap-client/">Starmap Client</a> library to load the mappings from the <code class="docutils literal notranslate"><span class="pre">--repo</span></code> argument
 and use these mappings to upload and publish each <a class="reference external" href="https://release-engineering.github.io/pushsource/model/vmi.html">VMIPushItem</a> into the proper marketplace destination. Howevever,
 if a certain mapping is not defined on repo it will request the data from the StArMap server.</p>
@@ -409,7 +109,7 @@ curl -S https://starmap.base.url/api/v1/query?name=IMG_NAME&amp;version=IMG_VER&
 </section>
 </section>
 <section id="mapping-format">
-<h4>Mapping Format<a class="headerlink" href="#mapping-format" title="Link to this heading">¶</a></h4>
+<h2>Mapping Format<a class="headerlink" href="#mapping-format" title="Link to this heading">¶</a></h2>
 <p>The value for the <code class="docutils literal notranslate"><span class="pre">--repo</span></code> argument expects a JSON with either a single or multiple <a class="reference external" href="https://release-engineering.github.io/starmap-client/model/models.html#starmap_client.models.QueryResponse">QueryResponse</a> data.</p>
 <p>With that, it supports either a JSON starting with a list (for multiple mappings) or a dictionary (single mapping).</p>
 <p>The StArMap APIv1 <a class="reference external" href="https://release-engineering.github.io/starmap-client/model/models.html#starmap_client.models.QueryResponse">QueryResponse</a> has the following format:</p>
@@ -461,8 +161,8 @@ It’s used the retrieve the proper credentials to upload and publish into the g
 <li><p><code class="docutils literal notranslate"><span class="pre">restrict_minor</span></code>: An optional boolean indicating whether to restrict a minor version. Only applicable if <code class="docutils literal notranslate"><span class="pre">restrict_version</span></code> is set to <code class="docutils literal notranslate"><span class="pre">true</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tags</span></code>: An object with any key/values to be applied as tags once the VM images are uploaded.</p></li>
 </ul>
-<section id="id6">
-<h5>Examples<a class="headerlink" href="#id6" title="Link to this heading">¶</a></h5>
+<section id="examples">
+<h3>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h3>
 <p>An <strong>Azure</strong> mapping for <code class="docutils literal notranslate"><span class="pre">RHEL</span></code> using the architecture <code class="docutils literal notranslate"><span class="pre">x86_64</span></code> to be published in the marketplace:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-S<span class="w"> </span><span class="s1">&#39;https://starmap.base.url/api/v1/query?name=rhel-azure&amp;version=8.0&amp;workflow=stratosphere&#39;</span>
 </pre></div>
@@ -650,8 +350,6 @@ It’s used the retrieve the proper credentials to upload and publish into the g
 </section>
 </section>
 </section>
-</section>
-</section>
 
 
           </div>
@@ -660,7 +358,7 @@ It’s used the retrieve the proper credentials to upload and publish into the g
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="index.html">pubtools-marketplacesvm</a></h1>
+<h1 class="logo"><a href="../index.html">pubtools-marketplacesvm</a></h1>
 
 
 
@@ -673,16 +371,16 @@ It’s used the retrieve the proper credentials to upload and publish into the g
 
 <h3>Navigation</h3>
 <p class="caption" role="heading"><span class="caption-text">Command Reference:</span></p>
-<ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">combined-push</a></li>
-<li class="toctree-l1"><a class="reference internal" href="marketplace_push.html">marketplace-push</a></li>
-<li class="toctree-l1"><a class="reference internal" href="community_push.html">community-push</a></li>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../combined_push.html">combined-push</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../marketplace_push.html">marketplace-push</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../community_push.html">community-push</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Common arguments and parameters:</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="common/credentials.html">Credentials</a></li>
-<li class="toctree-l1"><a class="reference internal" href="common/mappings.html">Destination Mapping</a></li>
-<li class="toctree-l1"><a class="reference internal" href="common/sources.html">Supported Sources</a></li>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="credentials.html">Credentials</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Destination Mapping</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sources.html">Supported Sources</a></li>
 </ul>
 
 
@@ -697,16 +395,16 @@ It’s used the retrieve the proper credentials to upload and publish into the g
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="index.html" title="previous chapter">pubtools-marketplacesvm</a></li>
-      <li>Next: <a href="marketplace_push.html" title="next chapter">marketplace-push</a></li>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="credentials.html" title="previous chapter">Credentials</a></li>
+      <li>Next: <a href="sources.html" title="next chapter">Supported Sources</a></li>
   </ul></li>
 </ul>
 </div>
 <search id="searchbox" style="display: none" role="search">
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
+    <form class="search" action="../search.html" method="get">
       <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
@@ -733,7 +431,7 @@ It’s used the retrieve the proper credentials to upload and publish into the g
       &amp; <a href="https://alabaster.readthedocs.io">Alabaster 0.7.16</a>
       
       |
-      <a href="_sources/combined_push.rst.txt"
+      <a href="../_sources/common/mappings.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 
