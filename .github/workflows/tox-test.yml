@@ -15,7 +15,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.8
+          python-version: 3.9
       - name: Install Tox
         run: pip install tox 'virtualenv<20.21.1'
       - name: Run Linting
@@ -42,7 +42,7 @@ jobs:
     strategy:
       matrix:
         # https://raw.githubusercontent.com/actions/python-versions/main/versions-manifest.json
-        python-version: ["3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.9", "3.10", "3.11"]
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
@@ -89,7 +89,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
-          python-version: 3.8
+          python-version: 3.9
       - name: Install Tox
         run: pip install tox 'virtualenv<20.21.1'
       - name: Run Tox
