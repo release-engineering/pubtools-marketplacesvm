@@ -75,6 +75,10 @@ def name_from_push_item(push_item: AmiPushItem) -> str:
 class AWSCredentials(CloudCredentials):
     """Represent the credentials for AWSProvider."""
 
+    def __init__(self, **kwargs):
+        """Initialize the AWSCredentials."""
+        super(AWSCredentials, self).__init__(**kwargs)
+
     aws_image_access_key: str = field(alias="AWS_IMAGE_ACCESS_KEY", validator=instance_of(str))
     """AWs Image access key."""
 

@@ -21,8 +21,9 @@ LOG = logging.getLogger("pubtools.marketplacesvm")
 class AzureCredentials(CloudCredentials):
     """Represent the credentials for AzureProvider."""
 
-    azure_publisher_name: str = field(alias="AZURE_PUBLISHER_NAME", validator=instance_of(str))
-    """The publisher name."""
+    def __init__(self, **kwargs):
+        """Initialize the AzureCredentials."""
+        super(AzureCredentials, self).__init__(**kwargs)
 
     azure_tenant_id: str = field(alias="AZURE_TENANT_ID", validator=instance_of(str))
     """Tenant ID for Azure Marketplace."""
