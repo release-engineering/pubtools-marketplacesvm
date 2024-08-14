@@ -53,7 +53,7 @@ The following properties are supported for AWS ``auth``:
 - ``AWS_IMAGE_SECRET_ACCESS``: The AWS secret key for uploading the images and import them as AMIs
 - ``AWS_MARKETPLACE_ACCESS_KEY``: The AWS access key for publishing a new product version with its AMI into the marketplace
 - ``AWS_MARKETPLACE_SECRET_ACCESS``: The AWS secret key for publishing a new product version with its AMI into the marketplace
-- ``AWS_ACCESS_ROLE_ARN``: The AWS role ARN for publishing a new product version with its AMI into the marketplace
+- ``AWS_ACCESS_ROLE_ARN``: IAM role Amazon Resource Name (ARN) used by AWS Marketplace to access the provided AMI. For details about creating and using this ARN, see `Giving AWS Marketplace access to your AMI`_ in the AWS Marketplace Seller Guide.
 - ``AWS_GROUPS``: The default sharing accounts for uploading and importing AMIs
 - ``AWS_SNAPSHOT_ACCOUNTS``: The default sharing snapshot accounts for uploading and importing AMIs
 - ``AWS_REGION``: The default region for uploading and importing AMIs
@@ -197,3 +197,6 @@ Using the base64 mode:
   pubtools-marketplacesvm-push \
   --credentials ewogICAgIm1hcmtWNlX[...],ewogICAgIm1hcmtldH[...],ewogICAgIm1hcmtl[...],ewogICAgIm1hcmtldHBsYW[...] \
   ...
+
+
+.. _`Giving AWS Marketplace access to your AMI`: https://docs.aws.amazon.com/marketplace-catalog/latest/api-reference/ami-products.html#working-with-single-AMI-products
