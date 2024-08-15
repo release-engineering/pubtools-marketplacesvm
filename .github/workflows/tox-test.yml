@@ -94,6 +94,12 @@ jobs:
         run: pip install tox 'virtualenv<20.21.1'
       - name: Run Tox
         run: tox -e security
+      - name: Install project
+        run: python -m pip install .
+      - name: Run pip-audit
+        uses: pypa/gh-action-pip-audit@v1.1.0
+        with:
+          inputs: requirements.txt requirements-test.txt
   docs:
     runs-on: ubuntu-latest
     steps:
