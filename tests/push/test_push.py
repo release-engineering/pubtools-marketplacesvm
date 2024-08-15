@@ -1,6 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 import logging
-import time
 from typing import Generator
 from unittest import mock
 
@@ -24,7 +23,6 @@ class FakeCloudProvider(CloudProvider):
         return cls()
 
     def _upload(self, push_item, custom_tags=None, **kwargs):
-        time.sleep(2)
         return push_item, True
 
     def _pre_publish(self, push_item, **kwargs):
@@ -105,7 +103,6 @@ def test_do_push_ami_correct_id(
         log = logging.getLogger("pubtools.marketplacesvm")
 
         def _upload(self, push_item, custom_tags=None, **kwargs):
-            time.sleep(2)
             push_item = evolve(push_item, image_id=self.amis.pop(0))
             return push_item, True
 
@@ -185,7 +182,6 @@ def test_do_push_azure_correct_sas(
         log = logging.getLogger("pubtools.marketplacesvm")
 
         def _upload(self, push_item, custom_tags=None, **kwargs):
-            time.sleep(2)
             push_item = evolve(push_item, sas_uri=self.vhds.pop(0))
             return push_item, True
 

@@ -3,7 +3,6 @@ import contextlib
 import io
 import json
 import re
-import time
 from typing import Any, Dict, Generator
 from unittest import mock
 
@@ -35,7 +34,6 @@ class FakeCloudProvider(CloudProvider):
         return cls()
 
     def _upload(self, push_item, custom_tags=None, **kwargs):
-        time.sleep(2)
         return push_item, UploadResponse({"id": "foo", "name": "bar"})
 
     def _pre_publish(self, push_item, **kwargs):
