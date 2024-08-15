@@ -17,6 +17,7 @@ from pubtools._marketplacesvm.task import MarketplacesVMTask
         "pubtools._marketplacesvm.tasks.push",
         "pubtools._marketplacesvm.tasks.community_push",
         "pubtools._marketplacesvm.tasks.combined_push",
+        "pubtools._marketplacesvm.tasks.delete",
     ]
 )
 def task_module(request: pytest.FixtureRequest):

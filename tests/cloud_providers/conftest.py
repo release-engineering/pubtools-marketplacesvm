@@ -33,6 +33,9 @@ class FakeProvider(CloudProvider):
     ) -> Tuple[T, Any]:
         return push_item, True
 
+    def _delete_push_images(self, push_item, **kwargs):
+        return push_item
+
 
 @pytest.fixture
 def fake_provider():

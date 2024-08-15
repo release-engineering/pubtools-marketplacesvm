@@ -186,6 +186,20 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         self.image_id = ""
         self.s3_bucket = credentials.aws_s3_bucket or UPLOAD_CONTAINER_NAME
 
+    @classmethod
+    def from_credentials(cls, auth_data: Dict[str, Any]) -> 'AWSProvider':
+        """
+        Create an AWSProvider object using the incoming credentials.
+
+        Args:
+            auth_data (dict)
+                Dictionary with the required data to instantiate the AWSCredentials object.
+        Returns:
+            A new instance of AWSProvider.
+        """
+        creds = AWSCredentials(**auth_data)
+        return cls(creds)
+
     def _get_security_items(self, push_item: AmiPushItem) -> List[Dict[str, Any]]:
         """
         Convert a list of AmiSecurityGroup to a list of dictionary.
@@ -245,20 +259,6 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
             }
         return None
 
-    @classmethod
-    def from_credentials(cls, auth_data: Dict[str, Any]) -> 'AWSProvider':
-        """
-        Create an AWSProvider object using the incoming credentials.
-
-        Args:
-            auth_data (dict)
-                Dictionary with the required data to instantiate the AWSCredentials object.
-        Returns:
-            A new instance of AWSProvider.
-        """
-        creds = AWSCredentials(**auth_data)
-        return cls(creds)
-
     def _copy_image_from_ami_catalog(self, push_item: AmiPushItem, tags: Dict[str, str]):
         """
         Copy AMI from AMI-Catalog (AWS-Marketplace AMIs and Community-AMIs) to account.
@@ -293,6 +293,25 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         image = upload_svc.get_image_by_id(result.id)
         upload_svc.tag_image(image, tags)
         return result
+
+    def _check_version_exists(self, publishing_version: str, entity_id: str) -> bool:
+        """
+        Check if a version exists in a product already in AWS.
+
+        Args:
+            publishing_version (str)
+                Version to be checked against already published targets.
+            entity_id (str)
+                The entity id of the product to check against
+
+        Returns:
+            Bool of whether it exists or not.
+        """
+        current_versions = self.publish_svc.get_product_versions(entity_id)
+
+        matching_version_list = [v for t, v in current_versions.items() if publishing_version in t]
+
+        return len(matching_version_list) > 0
 
     def _upload(
         self,
@@ -523,6 +542,24 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         res = self.publish_svc.publish(metadata)
         return push_item, res
 
+    def _remove_amis(self, restricted_amis: List[str], region: str) -> None:
+        """
+        Delete a list of ami Ids from AWS including snapshots.
+
+        Args:
+            restricted_amis (list[str])
+                A list of restricted amis to delete.
+            region (str):
+                The region in which the AMI is registered.
+        """
+        for ami_id in restricted_amis:
+            delete_meta_kwargs = {
+                "image_id": ami_id,
+            }
+
+            LOG.debug("Deleting AMI: %s", delete_meta_kwargs)
+            self._delete(region, **delete_meta_kwargs)
+
     def _post_publish(
         self, push_item: AmiPushItem, publish_result: Any, nochannel: bool, **kwargs
     ) -> Tuple[AmiPushItem, Any]:
@@ -574,44 +611,37 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
 
         return push_item, publish_result
 
-    def _check_version_exists(self, publishing_version: str, entity_id: str) -> bool:
+    def _delete(self, region: str, **kwargs) -> None:
+        metadata = AWSDeleteMetadata(**kwargs)
+        self.upload_svc_partial(region).delete(metadata)
+
+    def _delete_push_images(self, push_item: AmiPushItem, **kwargs) -> Tuple[AmiPushItem, Any]:
         """
-        Check if a version exists in a product already in AWS.
+        Delete images and snapshots(optional) from AWS.
 
         Args:
-            publishing_version (str)
-                Version to be checked against already published targets.
-            entity_id (str)
-                The entity id of the product to check against
-
+            push_item (VMIPushItem)
+                The push item to associate and publish a VM image into a product.
+            dry_run (bool)
+                Boolean value of if this should be a dry run.
         Returns:
-            Bool of whether it exists or not.
+            A tuple of AmiPushItem and response from delete.
         """
-        current_versions = self.publish_svc.get_product_versions(entity_id)
+        region = push_item.region or self.default_region
+        keep_snapshots = kwargs.get("keep_snapshots") or False
+        name = name_from_push_item(push_item)
+        delete_meta_kwargs = {
+            "image_id": push_item.image_id,
+            "image_name": name,
+            # currently using getattr for snapshot_id/name because
+            # snapshot related fields are not available in pushitem
+            "snapshot_id": getattr(push_item, "snapshot_id", None),
+            "snapshot_name": getattr(push_item, "snapshot_name", name),
+            "skip_snapshot": keep_snapshots,
+        }
+        self._delete(region, **delete_meta_kwargs)
 
-        matching_version_list = [v for t, v in current_versions.items() if publishing_version in t]
-
-        return len(matching_version_list) > 0
-
-    def _remove_amis(self, restricted_amis: List[str], region: str) -> None:
-        """
-        Check if a version exists in a product already in AWS.
-
-        Args:
-            restricted_amis (list[str])
-                A list of restricted amis to delete.
-            region (str):
-                The region in which the AMI is registered.
-        """
-        for ami_id in restricted_amis:
-            delete_metadata_kwargs = {
-                "image_id": ami_id,
-            }
-
-            LOG.debug("Deleting AMI: %s", delete_metadata_kwargs)
-            metadata = AWSDeleteMetadata(**delete_metadata_kwargs)
-
-            self.upload_svc_partial(region=region).delete(metadata)
+        return AmiPushItem
 
 
 register_provider(

@@ -26,3 +26,9 @@ class State(StrEnum):
 
     NOTPUSHED = "NOTPUSHED"
     """An error occurred while publishing the push item to a product listing."""
+
+    DELETED = "DELETED"
+    """Image successfully deleted."""
+
+    SKIPPED = "SKIPPED"
+    """Image deletion skipped."""

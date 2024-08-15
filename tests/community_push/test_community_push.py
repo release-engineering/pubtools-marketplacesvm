@@ -42,6 +42,9 @@ class FakeCloudProvider(CloudProvider):
     def _publish(self, push_item, nochannel, overwrite, **kwargs):
         return push_item, nochannel
 
+    def _delete_push_images(self, push_item, **kwargs):
+        return push_item
+
 
 @pytest.fixture()
 def fake_cloud_instance() -> Generator[mock.MagicMock, None, None]:

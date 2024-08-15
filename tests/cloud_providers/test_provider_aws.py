@@ -839,3 +839,27 @@ def test_post_publish_nochannel(aws_push_item: AmiPushItem, fake_aws_provider: A
         restrict_minor=2,
     )
     fake_aws_provider.publish_svc.restrict_versions.assert_not_called()
+
+
+@patch("pubtools._marketplacesvm.cloud_providers.aws.AWSDeleteMetadata")
+def test_delete_push_images(
+    mock_metadata: MagicMock, aws_push_item: AmiPushItem, fake_aws_provider: AWSProvider
+):
+    fake_aws_provider.image_id = "ami-97969874573"
+    fake_image = FakeImageResp()
+    name = name_from_push_item(aws_push_item)
+    fake_aws_provider.upload_svc_partial.return_value.delete.return_value = fake_image  # type: ignore [attr-defined] # noqa: E501
+    delete_meta_kwargs = {
+        "image_id": aws_push_item.image_id,
+        "image_name": name,
+        "snapshot_id": None,
+        "snapshot_name": name,
+        "skip_snapshot": True,
+    }
+    meta_obj = MagicMock(**delete_meta_kwargs)
+    mock_metadata.return_value = meta_obj
+
+    fake_aws_provider._delete_push_images(aws_push_item, keep_snapshots=True)
+
+    mock_metadata.assert_called_once_with(**delete_meta_kwargs)
+    fake_aws_provider.upload_svc_partial.return_value.delete.assert_called_once_with(meta_obj)
