@@ -42,7 +42,7 @@ jobs:
     strategy:
       matrix:
         # https://raw.githubusercontent.com/actions/python-versions/main/versions-manifest.json
-        python-version: ["3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
@@ -55,7 +55,7 @@ jobs:
           sudo apt-get install -y rpm
           sudo apt-get install -y libkrb5-dev
       - name: Install Tox
-        run: pip install tox 'virtualenv<20.21.1'
+        run: pip install tox
       - name: Test on ${{ matrix.python-version }}
         run: tox -e "py${{ matrix.python-version }}"
   coverage:
