@@ -157,7 +157,7 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
     ARCH_ALIASES: Dict[str, str] = {"aarch64": "arm64"}
     """Dictionary of aliases for architecture names between brew and AWS."""
 
-    def __init__(self, credentials: AWSCredentials) -> None:
+    def __init__(self, credentials: AWSCredentials, **kwargs) -> None:
         """
         Create an instance of AWSProvider.
 

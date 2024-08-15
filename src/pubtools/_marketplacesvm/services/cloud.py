@@ -4,7 +4,7 @@ import logging
 import os
 import threading
 from argparse import ArgumentParser
-from typing import Dict
+from typing import Any, Dict
 
 from ..arguments import from_environ
 from ..cloud_providers import CloudProvider, MarketplaceAuth, get_provider
@@ -46,6 +46,12 @@ class CloudService(Service):
             "(or set CLOUD_CREDENTIALS environment variable)",
             type=from_environ("CLOUD_CREDENTIALS"),
             default="",
+        )
+
+        group.add_argument(
+            "--azure-allow-draft-push",
+            help="Allow publishing to draft offers on Azure.",
+            action='store_true',
         )
 
     def _init_creds(self) -> None:
@@ -92,6 +98,17 @@ class CloudService(Service):
             raise ValueError(message)
         return cred
 
+    def _parse_extra_args(self) -> Dict[str, Any]:
+        """Return a dictionary with extra arguments for the cloud providers.
+
+        Returns:
+            Dict[str, Any]: Extra arguments for the cloud providers.
+        """
+        res = {}
+        if self._service_args.azure_allow_draft_push:
+            res["allow_draft_push"] = True
+        return res
+
     def cloud_instance(self, account_name: str) -> CloudProvider:
         """
         Return an instance of CloudProvider from the requested account name.
@@ -103,6 +120,7 @@ class CloudService(Service):
         with self._lock:
             if account_name not in self._instances:
                 creds = self._get_cloud_credentials(account_name)
-                instance = get_provider(creds)
+                extra_args = self._parse_extra_args()
+                instance = get_provider(creds, **extra_args)
                 self._instances.update({account_name: instance})
         return self._instances[account_name]
