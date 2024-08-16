@@ -67,7 +67,6 @@
 [   DEBUG] Fetching product from https://rhsm.com/v1/internal/cloud_access_providers/amazon/provider_image_groups
 [   DEBUG] 5 Products(AWS provider) in rhsm: RHEL_HA(awstest), SAP(awstest), sample_product(anotherprovider), sample_product(awstest), sample_product_HOURLY(awstest)
 [   DEBUG] Searching for product sample_product for provider anotherprovider in rhsm
-[    INFO] Uploading to the storage account aws_storage
 [    INFO] Uploading /foo/bar/sample_product_test.raw to region fake-destination (type: access, ship: True)
 [    INFO] Upload finished for ami_pushitem on fake-destination
 [    INFO] Creating region fake-destination [awstest]
@@ -77,7 +76,6 @@
 [   DEBUG] {'image_id': 'ami-00000000000000000', 'image_name': 'fake-name', 'arch': 'x86_64', 'product_name': 'sample_product', 'version': '7.0', 'variant': 'variant'}
 [    INFO] Successfully registered image ami-00000000000000000 with RHSM
 [    INFO] Successfully uploaded ami_pushitem [None] [ami-00000000000000000]
-[    INFO] Uploading to the storage account aws_storage
 [    INFO] Uploading /foo/bar/sample_product_test.raw to region fake-destination (type: access2, ship: True)
 [    INFO] Upload finished for ami_pushitem on fake-destination
 [    INFO] Creating region fake-destination [anotherprovider]

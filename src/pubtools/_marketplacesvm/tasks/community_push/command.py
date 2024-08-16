@@ -3,13 +3,14 @@ import json
 import logging
 import os
 from collections import namedtuple
-from typing import Any, Dict, Iterator, List, Optional
+from typing import Any, Dict, Iterator, List, Optional, TypedDict, cast
 
 from attrs import asdict, evolve
 from more_executors import Executors
 from pushsource import AmiPushItem, Source, VMIPushItem
 from requests import HTTPError, Response
 from starmap_client.models import Workflow
+from typing_extensions import NotRequired
 
 from pubtools._marketplacesvm.tasks.community_push.items import enrich_push_item
 
@@ -26,10 +27,19 @@ PushItemAndSA = namedtuple("PushItemAndSA", ["push_items", "sharing_accounts"])
 EnrichedPushItem = Dict[str, PushItemAndSA]
 
 
+class UploadParams(TypedDict):
+    """Represent the parameters to start the community VM upload operation."""
+
+    marketplace: str
+    push_item: AmiPushItem
+    accounts: NotRequired[List[str]]
+    sharing_accounts: NotRequired[List[str]]
+    snapshot_accounts: NotRequired[List[str]]
+
+
 class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
     """Upload an AMI to S3 and update RHSM."""
 
-    _REQUEST_THREADS = int(os.environ.get("COMMUNITY_PUSH_REQUEST_THREADS", "5"))
     _PROCESS_THREADS = int(os.environ.get("COMMUNITY_PUSH_PROCESS_THREADS", "10"))
     _REQUIRE_BC = bool(
         os.environ.get("COMMUNITY_PUSH_REQUIRE_BILLING_CODES", "true").lower() == "true"
@@ -443,58 +453,69 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                     return False
         return True
 
-    def _push_to_community(self, enriched_push_item: EnrichedPushItem) -> List[Dict[str, Any]]:
+    def _push_to_community(self, push_queue: Iterator[UploadParams]) -> List[Dict[str, Any]]:
         """
-        Perform the whole community workflow to upload the AMI and update RHSM.
+        Consume the queue to perform the whole community workflow to upload the AMI and update RHSM.
 
         Args:
-            enriched_push_item
-                Dictionary with the storage account name and the push items.
+            push_queue
+                Iterator with the required data to upload.
         Returns:
             Dictionary with the resulting operation for the Collector service.
         """
-        result = []
-        for storage_account, push_items_and_sa in enriched_push_item.items():
-            # Setup the threading
-            to_await = []
-            out_pi = []
-            push_items = push_items_and_sa.push_items
-            executor = Executors.thread_pool(
-                name="pubtools-marketplacesvm-community-push-regions",
-                max_workers=min(max(len(push_items), 1), self._PROCESS_THREADS),
-            )
+        to_await = []
+        upload_result = []
+        executor = Executors.thread_pool(
+            name="pubtools-marketplacesvm-community-push",
+            max_workers=self._PROCESS_THREADS,
+        )
 
-            # Prepare the sharing accounts
-            sharing_accts: SharingAccounts = push_items_and_sa.sharing_accounts
-            additional_args = {}
-            extra_args = ["accounts", "sharing_accounts", "snapshot_accounts"]
-            for arg in extra_args:
-                content = sharing_accts.get(arg)
-                if content:
-                    additional_args[arg] = content
+        # consume the queue
+        for data in push_queue:
+            to_await.append(executor.submit(self._upload, **data))
 
-            # Upload the push items in parallel
-            log.info("Uploading to the storage account %s", storage_account)
-            for pi in push_items:
-                to_await.append(
-                    executor.submit(self._upload, storage_account, pi, **additional_args)
-                )
+        # wait for results
+        for f_out in to_await:
+            upload_result.append(f_out.result())
 
-            # Wait for all results
-            for f_out in to_await:
-                out_pi.append(f_out.result())
+        # Return the data for collection
+        return [
+            {
+                "push_item": pi,
+                "state": pi.state,
+                "image_id": pi.image_id,
+                "image_name": name_from_push_item(pi),
+            }
+            for pi in upload_result
+        ]
 
-            # Append the data for collection
-            for pi in out_pi:
-                result.append(
-                    {
-                        "push_item": pi,
-                        "state": pi.state,
-                        "image_id": pi.image_id,
-                        "image_name": name_from_push_item(pi),
-                    }
-                )
-        return result
+    def _data_to_upload(
+        self, enriched_push_items: List[EnrichedPushItem]
+    ) -> Iterator[UploadParams]:
+        """
+        Generate the required data to perform the AMI upload and update RHSM.
+
+        Args:
+            enriched_push_items
+                List of dictionaries and storage accounts with the region name and the push items.
+        """
+        for enriched_push_item in enriched_push_items:
+            for storage_account, push_items_and_sa in enriched_push_item.items():
+                push_items = push_items_and_sa.push_items
+
+                # Prepare the sharing accounts
+                sharing_accts: SharingAccounts = push_items_and_sa.sharing_accounts
+                additional_args = {}
+                extra_args = ["accounts", "sharing_accounts", "snapshot_accounts"]
+                for arg in extra_args:
+                    content = sharing_accts.get(arg)
+                    if content:
+                        additional_args[arg] = content
+
+                # Generate the push items to upload
+                for pi in push_items:
+                    params = {"marketplace": storage_account, "push_item": pi, **additional_args}
+                    yield cast(UploadParams, params)
 
     def add_args(self):
         """Include the required CLI arguments for CommunityVMPush."""
@@ -518,19 +539,7 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
         if not self._check_product_in_rhsm(enriched_push_items):
             return RUN_RESULT(False, False, {})  # Fail to push due to product missing on RHSM
 
-        executor = Executors.thread_pool(
-            name="pubtools-marketplacesvm-community-push",
-            max_workers=min(max(len(enriched_push_items), 1), self._REQUEST_THREADS),
-        )
-
-        to_await = []
-        result = []
-        for enriched_item in enriched_push_items:
-            to_await.append(executor.submit(self._push_to_community, enriched_item))
-
-        # waiting for results
-        for f_out in to_await:
-            result.extend(f_out.result())
+        result = self._push_to_community(self._data_to_upload(enriched_push_items))
 
         # process result for failures
         failed = False

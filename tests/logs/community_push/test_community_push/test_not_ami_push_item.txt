@@ -57,7 +57,6 @@
 [   DEBUG] Searching for product sample_product for provider awstest in rhsm
 [   DEBUG] Searching for product sample_product_HOURLY for provider awstest in rhsm
 [   DEBUG] Searching for product sample_product for provider awstest in rhsm
-[    INFO] Uploading to the storage account aws_storage
 [    INFO] Uploading /foo/bar/sample_product_test.raw to region us-east-1 (type: hourly, ship: True)
 [    INFO] Upload finished for ami_pushitem on us-east-1
 [    INFO] Creating region us-east-1 [awstest]
