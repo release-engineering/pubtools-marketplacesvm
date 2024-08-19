@@ -47,6 +47,7 @@ setup(
             "pubtools-marketplacesvm-push = pubtools._marketplacesvm.tasks.combined_push:entry_point",
             "pubtools-marketplacesvm-marketplace-push = pubtools._marketplacesvm.tasks.push:entry_point",
             "pubtools-marketplacesvm-community-push = pubtools._marketplacesvm.tasks.community_push:entry_point",
+            "pubtools-marketplacesvm-delete = pubtools._marketplacesvm.tasks.delete:entry_point",
         ]
     },
     zip_safe=False,

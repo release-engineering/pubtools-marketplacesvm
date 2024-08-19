@@ -10,7 +10,7 @@ import threading
 from argparse import ArgumentParser
 from concurrent.futures import Future
 from datetime import datetime, timezone
-from typing import Any, Generic, NoReturn, Optional, Set, TypeVar
+from typing import Any, Dict, Generic, List, NoReturn, Optional, Set, TypeVar
 from urllib.parse import urljoin
 
 import requests
@@ -276,6 +276,8 @@ class AwsRHSMClientService(Service):
         """Initialize the AwsRHSMClientService."""
         self._lock = threading.Lock()
         self._rhsm_instance = None
+        self._rhsm_products: Optional[List[Dict[str, Any]]] = None
+        self._rhsm_image_ids: Optional[Set[str]] = None
         super(AwsRHSMClientService, self).__init__(*args, **kwargs)
 
     def add_service_args(self, parser: ArgumentParser) -> None:
@@ -311,6 +313,29 @@ class AwsRHSMClientService(Service):
                 self._rhsm_instance = self._get_rhsm_instance()
         return self._rhsm_instance
 
+    @property
+    def rhsm_products(self) -> List[Dict[str, Any]]:
+        """List of products/image groups for AWS provider."""
+        if self._rhsm_products is None:
+            response = self.rhsm_client.aws_products().result()
+            self._rhsm_products = response.json()["body"]
+            prod_names = [
+                "%s(%s)" % (p["name"], p["providerShortName"]) for p in self._rhsm_products
+            ]
+            LOG.debug(
+                "%s Products(AWS provider) in rhsm: %s",
+                len(prod_names),
+                ", ".join(sorted(prod_names)),
+            )
+        return self._rhsm_products
+
+    @property
+    def rhsm_image_ids(self) -> Optional[Set[str]]:
+        """List of products/image groups for AWS provider."""
+        if self._rhsm_image_ids is None:
+            self._rhsm_image_ids = self.rhsm_client.aws_list_image_ids()
+        return self._rhsm_image_ids
+
     def _get_rhsm_instance(self) -> 'AwsRHSMClient':
         rhsm_url = self._service_args.rhsm_url
         rhsm_cert = self._service_args.rhsm_cert
@@ -322,3 +347,36 @@ class AwsRHSMClientService(Service):
         default_cert, default_key = result if result else (None, None)
         cert = rhsm_cert or default_cert, rhsm_key or default_key
         return AwsRHSMClient(rhsm_url, cert=cert)
+
+    def get_rhsm_product(
+        self, product: str, image_type: str, aws_provider_name: str
+    ) -> Dict[str, Any]:
+        """Retrieve a product info from RHSM for the specified product in metadata.
+
+        Args:
+            product (str): The product name
+            image_type (str): The image type (hourly or access)
+            aws_provider_name (str): The provider name for RHSM
+
+        Returns:
+            The specified product info from RHSM.
+        """
+        # The rhsm prodcut should always be the product (short) plus
+        # "_HOURLY" for hourly type images.
+        image_type = image_type.upper()
+        if image_type == "HOURLY":
+            product = product + "_" + image_type
+
+        LOG.debug(
+            "Searching for product %s for provider %s in rhsm",
+            product,
+            aws_provider_name,
+        )
+        for rhsm_product in self.rhsm_products:
+            if (
+                rhsm_product["name"] == product
+                and rhsm_product["providerShortName"] == aws_provider_name  # noqa: W503
+            ):
+                return rhsm_product
+
+        raise RuntimeError("Product not in RHSM: %s" % product)

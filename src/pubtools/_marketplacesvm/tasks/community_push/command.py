@@ -114,55 +114,6 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                 log.error(f"No mappings found for {binfo.name}")
         return mapped_items
 
-    @property
-    def rhsm_products(self) -> List[Dict[str, Any]]:
-        """List of products/image groups for AWS provider."""
-        if self._rhsm_products is None:
-            response = self.rhsm_client.aws_products().result()
-            self._rhsm_products = response.json()["body"]
-            prod_names = [
-                "%s(%s)" % (p["name"], p["providerShortName"]) for p in self._rhsm_products
-            ]
-            log.debug(
-                "%s Products(AWS provider) in rhsm: %s",
-                len(prod_names),
-                ", ".join(sorted(prod_names)),
-            )
-        return self._rhsm_products
-
-    def get_rhsm_product(
-        self, product: str, image_type: str, aws_provider_name: str
-    ) -> Dict[str, Any]:
-        """Retrieve a product info from RHSM for the specified product in metadata.
-
-        Args:
-            product (str): The product name
-            image_type (str): The image type (hourly or access)
-            aws_provider_name (str): The provider name for RHSM
-
-        Returns:
-            The specified product info from RHSM.
-        """
-        # The rhsm prodcut should always be the product (short) plus
-        # "_HOURLY" for hourly type images.
-        image_type = image_type.upper()
-        if image_type == "HOURLY":
-            product = product + "_" + image_type
-
-        log.debug(
-            "Searching for product %s for provider %s in rhsm",
-            product,
-            aws_provider_name,
-        )
-        for rhsm_product in self.rhsm_products:
-            if (
-                rhsm_product["name"] == product
-                and rhsm_product["providerShortName"] == aws_provider_name  # noqa: W503
-            ):
-                return rhsm_product
-
-        raise RuntimeError("Product not in RHSM: %s" % product)
-
     def in_rhsm(self, product: str, image_type: str, aws_provider_name: str) -> bool:
         """Check whether the product is present in rhsm for the provider.
 

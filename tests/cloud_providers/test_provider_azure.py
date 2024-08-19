@@ -437,3 +437,11 @@ def test_post_publish_nochannel(
     mock_blob.get_blob_tags.assert_not_called()
     mock_datetime.now.return_value.strftime.assert_not_called()
     mock_blob.set_blob_tags.assert_not_called()
+
+
+def test_delete_push_images(
+    azure_push_item: VHDPushItem,
+    fake_azure_provider: AzureProvider,
+) -> None:
+    pi = fake_azure_provider._delete_push_images(azure_push_item)
+    assert pi

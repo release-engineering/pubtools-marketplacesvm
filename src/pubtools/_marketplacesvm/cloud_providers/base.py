@@ -146,6 +146,20 @@ class CloudProvider(ABC, Generic[T, C]):
                 Defaults to ``False``
         """
 
+    @abstractmethod
+    def _delete_push_images(
+        self,
+        push_item: T,
+        **kwargs,
+    ) -> T:
+        """
+        Abstract method for deleting images from a public cloud provider.
+
+        Args:
+            push_item (VMIPushItem)
+                The push item to associate and publish a VM image into a product.
+        """
+
     #
     # Subclasses can implement
     #
@@ -181,6 +195,20 @@ class CloudProvider(ABC, Generic[T, C]):
             The publish result data.
         """
         return push_item, publish_result
+
+    def _post_delete(self, push_item: T, **kwargs) -> T:
+        """
+        Define the default method for post publishing actions.
+
+        Args:
+            push_item (VMIPushItem)
+                The push item to associate and publish a VM image into a product.
+            delete_result (Any)
+                The resulting data from delete.
+        Returns:
+            The delete result data.
+        """
+        return push_item
 
     #
     # Public interfaces - not intended to be changed by subclasses
@@ -253,6 +281,25 @@ class CloudProvider(ABC, Generic[T, C]):
         """
         pi, res = self._publish(push_item, nochannel, overwrite, **kwargs)
         return self._post_publish(pi, res, nochannel, **kwargs)
+
+    def delete_push_images(
+        self,
+        push_item: T,
+        **kwargs,
+    ) -> T:
+        """
+        Associate an existing VM image with a product and publish the changes.
+
+        Args:
+            push_item (VMIPushItem)
+                The push_item to associate and publish a VM image into a product.
+            builds (List[str])
+                List of builds to delete uploaded images from.
+        Returns:
+            object: The publish result data.
+        """
+        pi = self._delete_push_images(push_item, **kwargs)
+        return self._post_delete(pi, **kwargs)
 
 
 P = TypeVar('P', bound=CloudProvider)
