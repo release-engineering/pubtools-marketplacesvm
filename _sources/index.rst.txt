@@ -13,6 +13,7 @@ Virtual Machine images to various cloud marketplaces.
    combined_push
    marketplace_push
    community_push
+   delete
 
 
 .. toctree::
