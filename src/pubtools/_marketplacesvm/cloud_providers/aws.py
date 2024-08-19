@@ -628,7 +628,7 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
             A tuple of AmiPushItem and response from delete.
         """
         region = push_item.region or self.default_region
-        keep_snapshots = kwargs.get("keep_snapshots") or False
+        keep_snapshot = kwargs.get("keep_snapshot") or False
         name = name_from_push_item(push_item)
         delete_meta_kwargs = {
             "image_id": push_item.image_id,
@@ -637,7 +637,7 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
             # snapshot related fields are not available in pushitem
             "snapshot_id": getattr(push_item, "snapshot_id", None),
             "snapshot_name": getattr(push_item, "snapshot_name", name),
-            "skip_snapshot": keep_snapshots,
+            "skip_snapshot": keep_snapshot,
         }
         self._delete(region, **delete_meta_kwargs)
 

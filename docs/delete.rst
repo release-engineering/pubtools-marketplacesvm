@@ -19,7 +19,7 @@ A typical invocation of delete would look like this:
   pubtools-marketplacesvm-delete \
     --credentials PATH_TO_CREDS_1.json,PATH_TO_CREDS_2.json \
     --builds build1,build2 \
-    --keep-snapshots \
+    --keep-snapshot \
     --dry-run \
     pub:https://pub.example.com/pub/task/555555/
 

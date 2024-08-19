@@ -859,7 +859,7 @@ def test_delete_push_images(
     meta_obj = MagicMock(**delete_meta_kwargs)
     mock_metadata.return_value = meta_obj
 
-    fake_aws_provider._delete_push_images(aws_push_item, keep_snapshots=True)
+    fake_aws_provider._delete_push_images(aws_push_item, keep_snapshot=True)
 
     mock_metadata.assert_called_once_with(**delete_meta_kwargs)
     fake_aws_provider.upload_svc_partial.return_value.delete.assert_called_once_with(meta_obj)

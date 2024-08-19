@@ -162,7 +162,7 @@ class VMDelete(MarketplacesVMTask, CloudService, CollectorService, AwsRHSMClient
                         marketplace,
                     )
                     pi = self.cloud_instance(marketplace).delete_push_images(
-                        push_item, keep_snapshots=self.args.keep_snapshots, **kwargs
+                        push_item, keep_snapshot=self.args.keep_snapshot, **kwargs
                     )
                     log.info(
                         "Delete finished for %s in account %s",
@@ -212,7 +212,7 @@ class VMDelete(MarketplacesVMTask, CloudService, CollectorService, AwsRHSMClient
         )
 
         self.parser.add_argument(
-            "--keep-snapshots",
+            "--keep-snapshot",
             help="Do not delete snapshot from AWS",
             action="store_true",
         )
