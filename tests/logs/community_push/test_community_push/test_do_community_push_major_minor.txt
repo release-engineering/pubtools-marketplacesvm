@@ -34,7 +34,7 @@
 [   DEBUG] Searching for product sample_product for provider awstest in rhsm
 [   DEBUG] Fetching product from https://rhsm.com/v1/internal/cloud_access_providers/amazon/provider_image_groups
 [   DEBUG] 5 Products(AWS provider) in rhsm: RHEL_HA(awstest), SAP(awstest), sample_product(anotherprovider), sample_product(awstest), sample_product_HOURLY(awstest)
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region fake-destination (type: access, ship: True)
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region fake-destination (type: access, ship: True) with sharing accounts: None and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on fake-destination
 [    INFO] Creating region fake-destination [awstest]
 [    INFO] Registering image foo with RHSM

@@ -260,12 +260,12 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                 )
                 return
 
-            log.info("Loading %s from StArMap.", acct_name)
+            log.info("Loading %s from StArMap: %s", acct_name, accts)
             if isinstance(accts, dict):
                 combined_accts = []
                 for _, accounts in accts.items():  # expected format: Dict[str, List[str]]
                     combined_accts.extend(accounts)
-                    log.debug("Loaded \"%s\": \"%s\".", acct_name, accounts)
+                    log.debug("Loaded \"%s\": \"%s\" from StArMap.", acct_name, accounts)
                 acct_dict.setdefault(acct_name, combined_accts)
             elif isinstance(accts, list):  # expected format: List[str]
                 log.debug("Loaded the following accounts as \"%s\": %s", acct_name, accts)
@@ -340,15 +340,17 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
         ship = not self.args.pre_push
         container = "%s-%s" % (self.args.container_prefix, push_item.region)
         try:
+            accounts = kwargs.get("accounts") or kwargs.get("sharing_accounts")
+            snapshot_accounts = kwargs.get("snapshot_accounts")
             log.info(
-                "Uploading %s to region %s (type: %s, ship: %s)",
+                "Uploading %s to region %s (type: %s, ship: %s) with sharing accounts: %s and snapshot accounts: %s",  # noqa: E501
                 push_item.src,
                 push_item.region,
                 push_item.type,
                 ship,
+                accounts,
+                snapshot_accounts,
             )
-            accounts = kwargs.get("accounts") or kwargs.get("sharing_accounts")
-            snapshot_accounts = kwargs.get("snapshot_accounts")
             pi, image = self.cloud_instance(marketplace).upload(
                 push_item,
                 custom_tags=custom_tags,

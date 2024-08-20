@@ -42,13 +42,13 @@
 [    INFO] Loading items from koji:https://fakekoji.com?vmi_build=ami_build
 [    INFO] Retrieving the mappings for ami_pushitem from https://starmap-example.com using the community workflow.
 [    INFO] starmap query returned for ami_pushitem : {"name": "test-build", "version": "7.0", "query_response": {"name": "sample_product", "workflow": "community", "clouds": {"aws_storage": [{"id": null, "meta": {"description": "Provided by Red Hat, Inc.", "virtualization": "hvm", "volume": "gp2", "root_device": "/dev/sda1", "sriov_net_support": "simple", "ena_support": true, "release": {"product": "sample_product", "version": "7.0", "arch": "x86_64", "respin": 1, "date": "2023-12-12 00:00:00", "base_product": "sample_base", "base_version": "1.0", "variant": "variant", "type": "ga"}, "billing-code-config": {"sample-hourly": {"name": "Hourly2", "codes": ["bp-6fa54006"], "image_name": "sample_product", "image_types": ["hourly"]}, "sample-access": {"name": "Access2", "codes": ["bp-63a5400a"], "image_name": "sample_product", "image_types": ["access"]}}, "accounts": {"default": "000000", "us-east-1": "121212"}, "snapshot_accounts": {"default": "111111", "us-east-1": "121212"}}, "architecture": "x86_64", "destination": "us-east-1-hourly", "overwrite": false, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "provider": "awstest", "tags": {"key1": "value1", "key2": "value2"}}, {"id": null, "meta": {"description": "Provided by Red Hat, Inc.", "virtualization": "hvm", "volume": "gp2", "root_device": "/dev/sda1", "sriov_net_support": "simple", "ena_support": true, "release": {"product": "sample_product", "version": "7.0", "arch": "x86_64", "respin": 1, "date": "2023-12-12 00:00:00", "base_product": "sample_base", "base_version": "1.0", "variant": "variant", "type": "ga"}, "billing-code-config": {"sample-hourly": {"name": "Hourly2", "codes": ["bp-6fa54006"], "image_name": "sample_product", "image_types": ["hourly"]}, "sample-access": {"name": "Access2", "codes": ["bp-63a5400a"], "image_name": "sample_product", "image_types": ["access"]}}, "accounts": {"default": "000000", "us-east-1": "121212"}, "snapshot_accounts": {"default": "111111", "us-east-1": "121212"}}, "architecture": "x86_64", "destination": "us-east-1-access", "overwrite": false, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "provider": "awstest", "tags": {"key1": "value1", "key2": "value2"}}, {"id": null, "meta": {"description": "Provided by Red Hat, Inc.", "virtualization": "hvm", "volume": "gp2", "root_device": "/dev/sda1", "sriov_net_support": "simple", "ena_support": true, "release": {"product": "sample_product", "version": "7.0", "arch": "x86_64", "respin": 1, "date": "2023-12-12 00:00:00", "base_product": "sample_base", "base_version": "1.0", "variant": "variant", "type": "ga"}, "billing-code-config": {"sample-hourly": {"name": "Hourly2", "codes": ["bp-6fa54006"], "image_name": "sample_product", "image_types": ["hourly"]}, "sample-access": {"name": "Access2", "codes": ["bp-63a5400a"], "image_name": "sample_product", "image_types": ["access"]}}, "accounts": {"default": "000000", "us-east-1": "121212"}, "snapshot_accounts": {"default": "111111", "us-east-1": "121212"}}, "architecture": "x86_64", "destination": "us-east-2-hourly", "overwrite": false, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "provider": "awstest", "tags": {"key1": "value1", "key2": "value2"}}, {"id": null, "meta": {"description": "Provided by Red Hat, Inc.", "virtualization": "hvm", "volume": "gp2", "root_device": "/dev/sda1", "sriov_net_support": "simple", "ena_support": true, "release": {"product": "sample_product", "version": "7.0", "arch": "x86_64", "respin": 1, "date": "2023-12-12 00:00:00", "base_product": "sample_base", "base_version": "1.0", "variant": "variant", "type": "ga"}, "billing-code-config": {"sample-hourly": {"name": "Hourly2", "codes": ["bp-6fa54006"], "image_name": "sample_product", "image_types": ["hourly"]}, "sample-access": {"name": "Access2", "codes": ["bp-63a5400a"], "image_name": "sample_product", "image_types": ["access"]}}, "accounts": {"default": "000000", "us-east-1": "121212"}, "snapshot_accounts": {"default": "111111", "us-east-1": "121212"}}, "architecture": "x86_64", "destination": "us-east-2-access", "overwrite": false, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "provider": "awstest", "tags": {"key1": "value1", "key2": "value2"}}, {"id": null, "meta": {"description": "Provided by Red Hat, Inc.", "virtualization": "hvm", "volume": "gp2", "root_device": "/dev/sda1", "sriov_net_support": "simple", "ena_support": true, "release": {"product": "sample_product", "version": "7.0", "arch": "x86_64", "respin": 1, "date": "2023-12-12 00:00:00", "base_product": "sample_base", "base_version": "1.0", "variant": "variant", "type": "ga"}, "billing-code-config": {"sample-hourly": {"name": "Hourly2", "codes": ["bp-6fa54006"], "image_name": "sample_product", "image_types": ["hourly"]}, "sample-access": {"name": "Access2", "codes": ["bp-63a5400a"], "image_name": "sample_product", "image_types": ["access"]}}, "accounts": {"default": "000000", "us-east-1": "121212"}, "snapshot_accounts": {"default": "111111", "us-east-1": "121212"}}, "architecture": "x86_64", "destination": "us-west-1-hourly", "overwrite": false, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "provider": "awstest", "tags": {"key1": "value1", "key2": "value2"}}, {"id": null, "meta": {"description": "Provided by Red Hat, Inc.", "virtualization": "hvm", "volume": "gp2", "root_device": "/dev/sda1", "sriov_net_support": "simple", "ena_support": true, "release": {"product": "sample_product", "version": "7.0", "arch": "x86_64", "respin": 1, "date": "2023-12-12 00:00:00", "base_product": "sample_base", "base_version": "1.0", "variant": "variant", "type": "ga"}, "billing-code-config": {"sample-hourly": {"name": "Hourly2", "codes": ["bp-6fa54006"], "image_name": "sample_product", "image_types": ["hourly"]}, "sample-access": {"name": "Access2", "codes": ["bp-63a5400a"], "image_name": "sample_product", "image_types": ["access"]}}, "accounts": {"default": "000000", "us-east-1": "121212"}, "snapshot_accounts": {"default": "111111", "us-east-1": "121212"}}, "architecture": "x86_64", "destination": "us-west-1-access", "overwrite": false, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "provider": "awstest", "tags": {"key1": "value1", "key2": "value2"}}, {"id": null, "meta": {"description": "Provided by Red Hat, Inc.", "virtualization": "hvm", "volume": "gp2", "root_device": "/dev/sda1", "sriov_net_support": "simple", "ena_support": true, "release": {"product": "sample_product", "version": "7.0", "arch": "x86_64", "respin": 1, "date": "2023-12-12 00:00:00", "base_product": "sample_base", "base_version": "1.0", "variant": "variant", "type": "ga"}, "billing-code-config": {"sample-hourly": {"name": "Hourly2", "codes": ["bp-6fa54006"], "image_name": "sample_product", "image_types": ["hourly"]}, "sample-access": {"name": "Access2", "codes": ["bp-63a5400a"], "image_name": "sample_product", "image_types": ["access"]}}, "accounts": {"default": "000000", "us-east-1": "121212"}, "snapshot_accounts": {"default": "111111", "us-east-1": "121212"}}, "architecture": "x86_64", "destination": "us-west-2-hourly", "overwrite": false, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "provider": "awstest", "tags": {"key1": "value1", "key2": "value2"}}, {"id": null, "meta": {"description": "Provided by Red Hat, Inc.", "virtualization": "hvm", "volume": "gp2", "root_device": "/dev/sda1", "sriov_net_support": "simple", "ena_support": true, "release": {"product": "sample_product", "version": "7.0", "arch": "x86_64", "respin": 1, "date": "2023-12-12 00:00:00", "base_product": "sample_base", "base_version": "1.0", "variant": "variant", "type": "ga"}, "billing-code-config": {"sample-hourly": {"name": "Hourly2", "codes": ["bp-6fa54006"], "image_name": "sample_product", "image_types": ["hourly"]}, "sample-access": {"name": "Access2", "codes": ["bp-63a5400a"], "image_name": "sample_product", "image_types": ["access"]}}, "accounts": {"default": "000000", "us-east-1": "121212"}, "snapshot_accounts": {"default": "111111", "us-east-1": "121212"}}, "architecture": "x86_64", "destination": "us-west-2-access", "overwrite": false, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "provider": "awstest", "tags": {"key1": "value1", "key2": "value2"}}]}}} 
-[    INFO] Loading accounts from StArMap.
-[   DEBUG] Loaded "accounts": "000000".
-[   DEBUG] Loaded "accounts": "121212".
+[    INFO] Loading accounts from StArMap: {'default': '000000', 'us-east-1': '121212'}
+[   DEBUG] Loaded "accounts": "000000" from StArMap.
+[   DEBUG] Loaded "accounts": "121212" from StArMap.
 [ WARNING] No sharing_accounts definition in StArMap, leaving the defaults from credentials.
-[    INFO] Loading snapshot_accounts from StArMap.
-[   DEBUG] Loaded "snapshot_accounts": "111111".
-[   DEBUG] Loaded "snapshot_accounts": "121212".
+[    INFO] Loading snapshot_accounts from StArMap: {'default': '111111', 'us-east-1': '121212'}
+[   DEBUG] Loaded "snapshot_accounts": "111111" from StArMap.
+[   DEBUG] Loaded "snapshot_accounts": "121212" from StArMap.
 [    INFO] Processing the storage account aws_storage
 [   DEBUG] Merging original release information with data from StArMap
 [   DEBUG] Creating a VMIRelease object with {'product': 'sample_product', 'date': datetime.datetime(2023, 12, 12, 0, 0), 'arch': 'x86_64', 'respin': 1, 'version': '7.0', 'base_product': 'sample_base', 'base_version': '1.0', 'variant': 'variant', 'type': 'ga'}
@@ -98,7 +98,7 @@
 [   DEBUG] Searching for product sample_product for provider awstest in rhsm
 [   DEBUG] Searching for product sample_product_HOURLY for provider awstest in rhsm
 [   DEBUG] Searching for product sample_product for provider awstest in rhsm
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-east-1 (type: hourly, ship: True)
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-east-1 (type: hourly, ship: True) with sharing accounts: ['0', '0', '0', '0', '0', '0', '1', '2', '1', '2', '1', '2'] and snapshot accounts: ['1', '1', '1', '1', '1', '1', '1', '2', '1', '2', '1', '2']
 [    INFO] Upload finished for ami_pushitem on us-east-1
 [    INFO] Creating region us-east-1 [awstest]
 [    INFO] Registering image foo with RHSM
@@ -108,7 +108,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [us-east-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-east-1 (type: access, ship: True)
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-east-1 (type: access, ship: True) with sharing accounts: ['0', '0', '0', '0', '0', '0', '1', '2', '1', '2', '1', '2'] and snapshot accounts: ['1', '1', '1', '1', '1', '1', '1', '2', '1', '2', '1', '2']
 [    INFO] Upload finished for ami_pushitem on us-east-1
 [    INFO] Creating region us-east-1 [awstest]
 [    INFO] Registering image foo with RHSM
@@ -117,7 +117,7 @@
 [   DEBUG] {'image_id': 'foo', 'image_name': 'bar', 'arch': 'x86_64', 'product_name': 'sample_product', 'version': '7.0', 'variant': 'variant'}
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Successfully uploaded ami_pushitem [us-east-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-east-2 (type: hourly, ship: True)
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-east-2 (type: hourly, ship: True) with sharing accounts: ['0', '0', '0', '0', '0', '0', '1', '2', '1', '2', '1', '2'] and snapshot accounts: ['1', '1', '1', '1', '1', '1', '1', '2', '1', '2', '1', '2']
 [    INFO] Upload finished for ami_pushitem on us-east-2
 [    INFO] Creating region us-east-2 [awstest]
 [    INFO] Registering image foo with RHSM
@@ -127,7 +127,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [us-east-2] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-east-2 (type: access, ship: True)
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-east-2 (type: access, ship: True) with sharing accounts: ['0', '0', '0', '0', '0', '0', '1', '2', '1', '2', '1', '2'] and snapshot accounts: ['1', '1', '1', '1', '1', '1', '1', '2', '1', '2', '1', '2']
 [    INFO] Upload finished for ami_pushitem on us-east-2
 [    INFO] Creating region us-east-2 [awstest]
 [    INFO] Registering image foo with RHSM
@@ -136,7 +136,7 @@
 [   DEBUG] {'image_id': 'foo', 'image_name': 'bar', 'arch': 'x86_64', 'product_name': 'sample_product', 'version': '7.0', 'variant': 'variant'}
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Successfully uploaded ami_pushitem [us-east-2] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-west-1 (type: hourly, ship: True)
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-west-1 (type: hourly, ship: True) with sharing accounts: ['0', '0', '0', '0', '0', '0', '1', '2', '1', '2', '1', '2'] and snapshot accounts: ['1', '1', '1', '1', '1', '1', '1', '2', '1', '2', '1', '2']
 [    INFO] Upload finished for ami_pushitem on us-west-1
 [    INFO] Creating region us-west-1 [awstest]
 [    INFO] Registering image foo with RHSM
@@ -146,7 +146,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [us-west-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-west-1 (type: access, ship: True)
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-west-1 (type: access, ship: True) with sharing accounts: ['0', '0', '0', '0', '0', '0', '1', '2', '1', '2', '1', '2'] and snapshot accounts: ['1', '1', '1', '1', '1', '1', '1', '2', '1', '2', '1', '2']
 [    INFO] Upload finished for ami_pushitem on us-west-1
 [    INFO] Creating region us-west-1 [awstest]
 [    INFO] Registering image foo with RHSM
@@ -155,7 +155,7 @@
 [   DEBUG] {'image_id': 'foo', 'image_name': 'bar', 'arch': 'x86_64', 'product_name': 'sample_product', 'version': '7.0', 'variant': 'variant'}
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Successfully uploaded ami_pushitem [us-west-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-west-2 (type: hourly, ship: True)
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-west-2 (type: hourly, ship: True) with sharing accounts: ['0', '0', '0', '0', '0', '0', '1', '2', '1', '2', '1', '2'] and snapshot accounts: ['1', '1', '1', '1', '1', '1', '1', '2', '1', '2', '1', '2']
 [    INFO] Upload finished for ami_pushitem on us-west-2
 [    INFO] Creating region us-west-2 [awstest]
 [    INFO] Registering image foo with RHSM
@@ -165,7 +165,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [us-west-2] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-west-2 (type: access, ship: True)
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-west-2 (type: access, ship: True) with sharing accounts: ['0', '0', '0', '0', '0', '0', '1', '2', '1', '2', '1', '2'] and snapshot accounts: ['1', '1', '1', '1', '1', '1', '1', '2', '1', '2', '1', '2']
 [    INFO] Upload finished for ami_pushitem on us-west-2
 [    INFO] Creating region us-west-2 [awstest]
 [    INFO] Registering image foo with RHSM

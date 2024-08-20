@@ -2,7 +2,7 @@
 [    INFO] Retrieving the mappings for ami_pushitem from https://starmap-example.com using the community workflow.
 [    INFO] starmap query returned for ami_pushitem : {"name": "test-build", "version": "7.0", "query_response": {"name": "test-product", "workflow": "community", "clouds": {"aws_storage": [{"id": null, "meta": {"billing-code-config": {"sample-hourly": {"name": "Hourly2", "codes": ["bp-6fa54006"], "image_name": "sample_product", "image_types": ["hourly"]}, "sample-access": {"name": "Access2", "codes": ["bp-63a5400a"], "image_name": "sample_product", "image_types": ["access"]}}, "sharing_accounts": ["account1", "account2", "account3"]}, "architecture": "x86_64", "destination": "fake-destination-access", "overwrite": false, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "provider": "awstest", "tags": null}]}}} 
 [ WARNING] No accounts definition in StArMap, leaving the defaults from credentials.
-[    INFO] Loading sharing_accounts from StArMap.
+[    INFO] Loading sharing_accounts from StArMap: ['account1', 'account2', 'account3']
 [   DEBUG] Loaded the following accounts as "sharing_accounts": ['account1', 'account2', 'account3']
 [ WARNING] No snapshot_accounts definition in StArMap, leaving the defaults from credentials.
 [    INFO] Processing the storage account aws_storage
@@ -34,7 +34,7 @@
 [   DEBUG] Searching for product sample_product for provider awstest in rhsm
 [   DEBUG] Fetching product from https://rhsm.com/v1/internal/cloud_access_providers/amazon/provider_image_groups
 [   DEBUG] 5 Products(AWS provider) in rhsm: RHEL_HA(awstest), SAP(awstest), sample_product(anotherprovider), sample_product(awstest), sample_product_HOURLY(awstest)
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region fake-destination (type: access, ship: True)
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region fake-destination (type: access, ship: True) with sharing accounts: ['account1', 'account2', 'account3'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on fake-destination
 [    INFO] Creating region fake-destination [awstest]
 [    INFO] Registering image foo with RHSM
