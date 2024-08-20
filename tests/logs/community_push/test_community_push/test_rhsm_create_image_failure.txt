@@ -97,7 +97,7 @@
 [   DEBUG] Loaded "snapshot_accounts": "121212" from StArMap.
 [   DEBUG] Searching for product sample_product_HOURLY for provider awstest in rhsm
 [   DEBUG] Fetching product from https://example.com/v1/internal/cloud_access_providers/amazon/provider_image_groups
-[   DEBUG] 5 Products(AWS provider) in rhsm: RHEL_HA(awstest), SAP(awstest), sample_product(anotherprovider), sample_product(awstest), sample_product_HOURLY(awstest)
+[   DEBUG] 10 Products(AWS provider) in rhsm: RHEL_HA(awstest), sample_product(anotherprovider), sample_product(awstest), sample_product_HOURLY(ACN), sample_product_HOURLY(ACN), sample_product_HOURLY(AGOV), sample_product_HOURLY(AGOV), sample_product_HOURLY(AWS), sample_product_HOURLY(AWS), sample_product_HOURLY(awstest)
 [   DEBUG] Searching for product sample_product for provider awstest in rhsm
 [   DEBUG] Searching for product sample_product_HOURLY for provider awstest in rhsm
 [   DEBUG] Searching for product sample_product for provider awstest in rhsm

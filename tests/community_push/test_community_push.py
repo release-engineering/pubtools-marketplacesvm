@@ -75,10 +75,15 @@ def fake_rhsm_api(requests_mocker):
         json={
             "body": [
                 {"name": "sample_product_HOURLY", "providerShortName": "awstest"},
+                {"name": "sample_product_HOURLY", "providerShortName": "ACN"},
+                {"name": "sample_product_HOURLY", "providerShortName": "ACN"},
+                {"name": "sample_product_HOURLY", "providerShortName": "AGOV"},
+                {"name": "sample_product_HOURLY", "providerShortName": "AGOV"},
+                {"name": "sample_product_HOURLY", "providerShortName": "AWS"},
+                {"name": "sample_product_HOURLY", "providerShortName": "AWS"},
                 {"name": "sample_product", "providerShortName": "awstest"},
                 {"name": "sample_product", "providerShortName": "anotherprovider"},
                 {"name": "RHEL_HA", "providerShortName": "awstest"},
-                {"name": "SAP", "providerShortName": "awstest"},
             ]
         },
     )
@@ -112,6 +117,43 @@ def test_do_community_push(
     fake_source.get.assert_called_once()
     fake_starmap.query_image_by_name.assert_called_once_with(
         name="test-build", version="7.0", workflow=Workflow.community
+    )
+
+
+@pytest.mark.parametrize(
+    "filename",
+    ["tests/community_push/data/sap-community.json"],
+    ids=["sap-community.json"],
+)
+@mock.patch("pubtools._marketplacesvm.tasks.community_push.CommunityVMPush.starmap")
+def test_do_community_push_from_starmap_data(
+    mock_starmap: mock.MagicMock,
+    filename: str,
+    fake_source: mock.MagicMock,
+    fake_cloud_instance: mock.MagicMock,
+    command_tester: CommandTester,
+) -> None:
+    """Test a successfull community-push from a given StArMap data."""
+    # Add the custom starmap mapping
+    with open(filename, 'r') as f:
+        policy = json.load(f)
+
+    mock_starmap.query_image_by_name.return_value = QueryResponse.from_json(policy)
+
+    # Test
+    command_tester.test(
+        lambda: entry_point(CommunityVMPush),
+        [
+            "test-push",
+            "--starmap-url",
+            "https://starmap-example.com",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--rhsm-url",
+            "https://rhsm.com/test/api/",
+            "--debug",
+            "koji:https://fakekoji.com?vmi_build=ami_build",
+        ],
     )
 
 
