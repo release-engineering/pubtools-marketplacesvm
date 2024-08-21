@@ -1,9 +1,6 @@
 [    INFO] Loading items from koji:https://fakekoji.com?vmi_build=ami_build
 [    INFO] Retrieving the mappings for ami_pushitem from https://starmap-example.com using the community workflow.
 [    INFO] starmap query returned for ami_pushitem : {"name": "test-build", "version": "7.0", "query_response": {"name": "RHEL_HA", "workflow": "community", "clouds": {"aws_storage": [{"id": null, "meta": {"billing-code-config": {"sample-hourly": {"name": "Hourly2", "codes": ["bp-6fa54006"], "image_name": "sample_product", "image_types": ["hourly"]}, "sample-access": {"name": "Access2", "codes": ["bp-63a5400a"], "image_name": "sample_product", "image_types": ["access"]}}}, "architecture": "x86_64", "destination": "fake-destination-access", "overwrite": false, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "provider": "awstest", "tags": null}]}}} 
-[ WARNING] No accounts definition in StArMap, leaving the defaults from credentials.
-[ WARNING] No sharing_accounts definition in StArMap, leaving the defaults from credentials.
-[ WARNING] No snapshot_accounts definition in StArMap, leaving the defaults from credentials.
 [    INFO] Processing the storage account aws_storage
 [ WARNING] Missing information for the attribute ami_pushitem.build, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.description, leaving it unset.

@@ -9,7 +9,7 @@ from attrs import asdict, evolve
 from more_executors import Executors
 from pushsource import AmiPushItem, Source, VMIPushItem
 from requests import HTTPError, Response
-from starmap_client.models import Workflow
+from starmap_client.models import Destination, Workflow
 from typing_extensions import NotRequired
 
 from pubtools._marketplacesvm.tasks.community_push.items import enrich_push_item
@@ -23,8 +23,8 @@ from ..push.items import MappedVMIPushItem, State
 log = logging.getLogger("pubtools.marketplacesvm")
 
 SharingAccounts = Dict[str, List[str]]
-PushItemAndSA = namedtuple("PushItemAndSA", ["push_items", "sharing_accounts"])
-EnrichedPushItem = Dict[str, PushItemAndSA]
+PushItemAndSA = namedtuple("PushItemAndSA", ["push_item", "sharing_accounts"])
+EnrichedPushItem = Dict[str, List[PushItemAndSA]]
 
 
 class UploadParams(TypedDict):
@@ -222,11 +222,11 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                 response.raise_for_status()
         log.info("Successfully registered image %s with RHSM", image.id)
 
-    def _get_sharing_accounts(self, mapped_item: MappedVMIPushItem) -> SharingAccounts:
+    def _get_sharing_accounts(self, destination: Destination) -> SharingAccounts:
         """Return the sharing accounts configuration when provided by StArMap.
 
         Args:
-            mapped_item (MappedVMIPushItem): The mapped item to retrieve the accounts from meta.
+            destination: The destination of a given push item to retrieve the sharing accounts.
         Returns:
             SharingAccounts: The dictionary containing the respective sharing accounts.
         """  # noqa: D202
@@ -250,31 +250,29 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
         # both ways:
         # The `sharing_accounts` in a similar way of the marketplace workflow, while maintaining the
         # previous `accounts` format for retrocompatibility.
-        def set_accounts(
-            acct_name: str, mapped_item: MappedVMIPushItem, acct_dict: Dict[str, List[str]]
-        ) -> None:
-            accts = mapped_item.meta.get(acct_name)
+        def set_accounts(acct_name: str, acct_dict: Dict[str, List[str]]) -> None:
+            accts = destination.meta.get(acct_name)
             if not accts:
                 log.warning(
                     "No %s definition in StArMap, leaving the defaults from credentials.", acct_name
                 )
                 return
 
-            log.info("Loading %s from StArMap.", acct_name)
+            log.info("Loading %s from StArMap: %s", acct_name, accts)
             if isinstance(accts, dict):
                 combined_accts = []
                 for _, accounts in accts.items():  # expected format: Dict[str, List[str]]
                     combined_accts.extend(accounts)
-                    log.debug("Loaded \"%s\": \"%s\".", acct_name, accounts)
+                    log.debug("Loaded \"%s\": \"%s\" from StArMap.", acct_name, accounts)
                 acct_dict.setdefault(acct_name, combined_accts)
             elif isinstance(accts, list):  # expected format: List[str]
                 log.debug("Loaded the following accounts as \"%s\": %s", acct_name, accts)
                 acct_dict.setdefault(acct_name, accts)
 
         result: SharingAccounts = {}
-        set_accounts("accounts", mapped_item, result)
-        set_accounts("sharing_accounts", mapped_item, result)
-        set_accounts("snapshot_accounts", mapped_item, result)
+        set_accounts("accounts", result)
+        set_accounts("sharing_accounts", result)
+        set_accounts("snapshot_accounts", result)
         return result
 
     def enrich_mapped_items(self, mapped_items: List[MappedVMIPushItem]) -> List[EnrichedPushItem]:
@@ -291,12 +289,11 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
         """
         result: List[EnrichedPushItem] = []
         for mapped_item in mapped_items:
-            sharing_accounts = self._get_sharing_accounts(mapped_item)
             account_dict: EnrichedPushItem = {}
+            pi_and_sa_list: List[PushItemAndSA] = []
             for storage_account, destinations in mapped_item.clouds.items():
                 log.info("Processing the storage account %s", storage_account)
 
-                enriched_pi_list: List[AmiPushItem] = []
                 pi = mapped_item.get_push_item_for_marketplace(storage_account)
                 log.debug("Mapped push item for %s: %s", storage_account, pi)
 
@@ -324,8 +321,9 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                         epi.dest[0],
                         epi.type,
                     )
-                    enriched_pi_list.append(epi)
-                account_dict[storage_account] = PushItemAndSA(enriched_pi_list, sharing_accounts)
+                    pi_and_sa = PushItemAndSA(epi, self._get_sharing_accounts(dest))
+                    pi_and_sa_list.append(pi_and_sa)
+                account_dict[storage_account] = pi_and_sa_list
             result.append(account_dict)
         return result
 
@@ -340,15 +338,17 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
         ship = not self.args.pre_push
         container = "%s-%s" % (self.args.container_prefix, push_item.region)
         try:
+            accounts = kwargs.get("accounts") or kwargs.get("sharing_accounts")
+            snapshot_accounts = kwargs.get("snapshot_accounts")
             log.info(
-                "Uploading %s to region %s (type: %s, ship: %s)",
+                "Uploading %s to region %s (type: %s, ship: %s) with sharing accounts: %s and snapshot accounts: %s",  # noqa: E501
                 push_item.src,
                 push_item.region,
                 push_item.type,
                 ship,
+                accounts,
+                snapshot_accounts,
             )
-            accounts = kwargs.get("accounts") or kwargs.get("sharing_accounts")
-            snapshot_accounts = kwargs.get("snapshot_accounts")
             pi, image = self.cloud_instance(marketplace).upload(
                 push_item,
                 custom_tags=custom_tags,
@@ -398,7 +398,8 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
 
     def _check_product_in_rhsm(self, enriched_push_items: List[EnrichedPushItem]) -> bool:
         for enriched_item in enriched_push_items:
-            for push_items, _ in enriched_item.values():
+            for _, pi_and_sa_list in enriched_item.items():
+                push_items = [x.push_item for x in pi_and_sa_list]
                 if not self.items_in_metadata_service(push_items):
                     log.error("Pre-push verification of push items in metadata service failed")
                     return False
@@ -452,19 +453,18 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
         """
         for enriched_push_item in enriched_push_items:
             for storage_account, push_items_and_sa in enriched_push_item.items():
-                push_items = push_items_and_sa.push_items
+                for pi_and_sa in push_items_and_sa:
+                    pi, sharing_accts = pi_and_sa
 
-                # Prepare the sharing accounts
-                sharing_accts: SharingAccounts = push_items_and_sa.sharing_accounts
-                additional_args = {}
-                extra_args = ["accounts", "sharing_accounts", "snapshot_accounts"]
-                for arg in extra_args:
-                    content = sharing_accts.get(arg)
-                    if content:
-                        additional_args[arg] = content
+                    # Prepare the sharing accounts
+                    additional_args = {}
+                    extra_args = ["accounts", "sharing_accounts", "snapshot_accounts"]
+                    for arg in extra_args:
+                        content = sharing_accts.get(arg)
+                        if content:
+                            additional_args[arg] = content
 
-                # Generate the push items to upload
-                for pi in push_items:
+                    # Generate the push items to upload
                     params = {"marketplace": storage_account, "push_item": pi, **additional_args}
                     yield cast(UploadParams, params)
 
