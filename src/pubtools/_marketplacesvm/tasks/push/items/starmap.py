@@ -66,18 +66,12 @@ class MappedVMIPushItem:
                 res.update(dest.tags)
         return res
 
-    def _map_push_item(self, destinations: List[Destination]) -> VMIPushItem:
-        """Return the wrapped push item with the missing attributes set."""
-        if self.push_item.dest:  # If it has destinations it means we already mapped its properties
-            # Just update the destinations for the marketplace and return
-            self.push_item = evolve(self.push_item, dest=destinations)
-            return self.push_item
-
-        # Update the missing fields for push item and its release
-        pi = self.push_item
-
+    def _update_push_item_properties(
+        self, push_item: VMIPushItem, destinations: List[Destination]
+    ) -> VMIPushItem:
+        """Return an updated push item with data from destinations."""
         # Update the destinations
-        pi = evolve(pi, dest=destinations)
+        pi = evolve(push_item, dest=destinations)
 
         # Get the "meta" data from destinations
         # Note that this will merge all meta data from every destionation into a single data.
@@ -114,12 +108,22 @@ class MappedVMIPushItem:
                 elif attribute.name not in ignore_unset_attributes:
                     log.warning(
                         "Missing information for the attribute %s.%s, leaving it unset.",
-                        self.push_item.name,
+                        pi.name,
                         attribute.name,
                     )
 
         # Finally return the updated push_item
-        self.push_item = evolve(pi, **new_attrs)
+        return evolve(pi, **new_attrs)
+
+    def _map_push_item(self, destinations: List[Destination]) -> VMIPushItem:
+        """Return the wrapped push item with the missing attributes set."""
+        if self.push_item.dest:  # If it has destinations it means we already mapped its properties
+            # Just update the destinations for the marketplace and return
+            self.push_item = evolve(self.push_item, dest=destinations)
+            return self.push_item
+
+        # Update the missing fields for push item and its release
+        self.push_item = self._update_push_item_properties(self.push_item, destinations)
         return self.push_item
 
     @classmethod
@@ -153,6 +157,15 @@ class MappedVMIPushItem:
             self._mapped_push_item[account] = self._map_push_item(destinations)
 
         return self._mapped_push_item.get(account)
+
+    def get_push_item_for_destination(self, destination: Destination) -> VMIPushItem:
+        """
+        Return a VMIPushItem with all properties updated for a single destination.
+
+        Args:
+            destination (Destination): The destination to update the push item.
+        """
+        return self._update_push_item_properties(self.push_item, [destination])
 
     def update_push_item_for_marketplace(self, account: str, push_item: VMIPushItem) -> None:
         """Update a push item for a given marketplace account.
