@@ -28,13 +28,14 @@
 [   DEBUG] Enriched push item for aws_storage: AmiPushItem(name='ami_pushitem', state='PENDING', src='/foo/bar/sample_product_test.raw', dest=['fake-destination-access'], md5sum=None, sha256sum=None, origin=None, build=None, build_info=KojiBuildInfo(name='test-build', version='7.0', release='20230101', id=None), signing_key=None, release=AmiRelease(product='sample_product', date=datetime.datetime(2023, 12, 12, 0, 0), arch='x86_64', respin=1, version='7.0', base_product='sample_base', base_version='1.0', variant='variant', type='beta'), description='', boot_mode=None, marketplace_title_template=None, marketplace_name=None, type='access', region='fake-destination', virtualization='hvm', volume='/dev/sda1', root_device=None, sriov_net_support=None, ena_support=None, uefi_support=None, billing_codes=AmiBillingCodes(name='Access2', codes=['bp-63a5400a']), release_notes=None, usage_instructions=None, recommended_instance_type=None, marketplace_entity_type='awstest', image_id=None, public_image=False, scanning_port=None, user_name=None, version_title=None, security_groups=[], access_endpoint_url=None)
 [    INFO] Adding push item "ami_pushitem" with destination "fake-destination-access" and type "access" to the queue.
 [    INFO] Loading accounts from StArMap: {'default': ['account1', 'account2', 'account3']}
-[   DEBUG] Loaded "accounts": "['account1', 'account2', 'account3']" from StArMap.
+[ WARNING] Ignoring unsupported format for accounts <class 'list'>: ['account1', 'account2', 'account3']
+[   DEBUG] Loaded "accounts": "[]" from StArMap.
 [ WARNING] No sharing_accounts definition in StArMap, leaving the defaults from credentials.
 [ WARNING] No snapshot_accounts definition in StArMap, leaving the defaults from credentials.
 [   DEBUG] Searching for product sample_product for provider awstest in rhsm
 [   DEBUG] Fetching product from https://rhsm.com/v1/internal/cloud_access_providers/amazon/provider_image_groups
 [   DEBUG] 10 Products(AWS provider) in rhsm: RHEL_HA(awstest), sample_product(anotherprovider), sample_product(awstest), sample_product_HOURLY(ACN), sample_product_HOURLY(ACN), sample_product_HOURLY(AGOV), sample_product_HOURLY(AGOV), sample_product_HOURLY(AWS), sample_product_HOURLY(AWS), sample_product_HOURLY(awstest)
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region fake-destination (type: access, ship: True) with sharing accounts: ['account1', 'account2', 'account3'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region fake-destination (type: access, ship: True) with sharing accounts: None and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on fake-destination
 [    INFO] Creating region fake-destination [awstest]
 [    INFO] Registering image foo with RHSM
