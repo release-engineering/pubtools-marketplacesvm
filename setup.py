@@ -22,7 +22,7 @@ def get_requirements():
 
 setup(
     name="pubtools-marketplacesvm",
-    version="1.0.0",
+    version="1.1.0",
     packages=find_namespace_packages(where="src"),
     package_dir={"": "src"},
     url="https://github.com/release-engineering/pubtools-marketplacesvm",
