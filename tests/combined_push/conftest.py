@@ -133,12 +133,12 @@ def starmap_ami_meta(release_params, starmap_ami_billing_config) -> Dict[str, An
         "release": release_params,
         "billing-code-config": starmap_ami_billing_config,
         "accounts": {
-            "default": "000000",
-            "us-east-1": "121212",
+            "default": ["000000"],
+            "us-east-1": ["121212"],
         },
         "snapshot_accounts": {
-            "default": "111111",
-            "us-east-1": "121212",
+            "default": ["111111"],
+            "us-east-1": ["121212"],
         },
     }
 
