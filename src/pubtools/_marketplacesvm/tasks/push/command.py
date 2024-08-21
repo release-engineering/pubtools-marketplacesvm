@@ -212,12 +212,14 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             # Upload the VM image to the marketplace
             # In order to get the correct destinations we need to first pass the result of
             # get_push_item_from_marketplace.
+            pi = mapped_item.get_push_item_for_marketplace(marketplace)
+            meta = mapped_item.get_metadata_for_mapped_item(pi.dest[0]) or {}
 
             pi = self._upload(
                 marketplace,
-                mapped_item.get_push_item_for_marketplace(marketplace),
+                pi,
                 custom_tags=mapped_item.get_tags_for_marketplace(marketplace),
-                accounts=mapped_item.meta.get("sharing_accounts", []),
+                accounts=meta.get("sharing_accounts", []),
             )
             mapped_item.update_push_item_for_marketplace(marketplace, pi)
         return mapped_item, starmap_query

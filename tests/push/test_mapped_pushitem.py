@@ -45,13 +45,6 @@ def test_mapped_item_properties(
             expected_destinations.extend(starmap_response.clouds[mkt])
         assert mapped_item.destinations == expected_destinations
 
-        # -- Test Property: meta
-        expected_meta = {}
-        for dest in mapped_item.destinations:
-            if dest.meta:
-                expected_meta.update({k: v for k, v in dest.meta.items()})
-        assert mapped_item.meta == expected_meta
-
         # -- Test Property: tags
         expected_tags = {}
         for dest in mapped_item.destinations:

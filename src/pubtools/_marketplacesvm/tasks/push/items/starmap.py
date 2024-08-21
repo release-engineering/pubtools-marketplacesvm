@@ -58,15 +58,6 @@ class MappedVMIPushItem:
         return dest
 
     @property
-    def meta(self) -> Dict[str, Any]:
-        """Return all metadata associated with the stored push item."""
-        res = {}
-        for dest in self.destinations:
-            if dest.meta:
-                res.update({k: v for k, v in dest.meta.items()})
-        return res
-
-    @property
     def tags(self) -> Dict[str, Any]:
         """Return all tags associated with the stored push item."""
         res = {}
@@ -88,8 +79,15 @@ class MappedVMIPushItem:
         # Update the destinations
         pi = evolve(pi, dest=destinations)
 
+        # Get the "meta" data from destinations
+        # Note that this will merge all meta data from every destionation into a single data.
+        meta = {}
+        for d in destinations:
+            if d.meta:
+                meta.update(d.meta)
+
         # Build the VMIRelease information when the meta key `release` is present
-        rel_data = self.meta.pop("release", None)
+        rel_data = meta.get("release", None)
         if rel_data:
             if pi.release:
                 log.debug("Merging original release information with data from StArMap")
@@ -109,7 +107,7 @@ class MappedVMIPushItem:
         new_attrs = {}
         for attribute in pi.__attrs_attrs__:
             if not getattr(pi, attribute.name, None):  # If attribute is not set
-                value = self.meta.get(attribute.name, None)  # Get the value from "dst.meta"
+                value = meta.get(attribute.name, None)  # Get the value from "dst.meta"
                 if value:  # If the value is set in the metadata
                     func = self._CONVERTER_HANDLERS.get(attribute.name, lambda x: x)  # Converter
                     new_attrs.update({attribute.name: func(value)})  # Set the new value
