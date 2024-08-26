@@ -261,9 +261,13 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
             log.info("Loading %s from StArMap: %s", acct_name, accts)
             if isinstance(accts, dict):
                 combined_accts = []
-                for _, accounts in accts.items():  # expected format: Dict[str, List[str]]
-                    combined_accts.extend(accounts)
-                    log.debug("Loaded \"%s\": \"%s\" from StArMap.", acct_name, accounts)
+                for _, account in accts.items():  # expected format: Dict[str, str]]
+                    if not isinstance(account, str):
+                        w = f"Ignoring unsupported format for {acct_name} {type(account)}: {account}"  # noqa: E501
+                        log.warning(w)
+                        continue
+                    combined_accts.append(account)
+                log.debug("Loaded \"%s\": \"%s\" from StArMap.", acct_name, combined_accts)
                 acct_dict.setdefault(acct_name, combined_accts)
             elif isinstance(accts, list):  # expected format: List[str]
                 log.debug("Loaded the following accounts as \"%s\": %s", acct_name, accts)
