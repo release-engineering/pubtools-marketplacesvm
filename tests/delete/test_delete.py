@@ -40,6 +40,15 @@ def fake_source(pub_response: List[AmiPushItem]) -> Generator[mock.MagicMock, No
 
 
 @pytest.fixture()
+def fake_source_dif_amis(
+    pub_response_diff_amis: List[AmiPushItem],
+) -> Generator[mock.MagicMock, None, None]:
+    with mock.patch("pubtools._marketplacesvm.tasks.delete.command.Source") as m:
+        m.get.return_value.__enter__.return_value = pub_response_diff_amis
+        yield m
+
+
+@pytest.fixture()
 def bad_fake_source(
     bad_pub_response: List[Dict[str, str]]
 ) -> Generator[mock.MagicMock, None, None]:
@@ -114,7 +123,7 @@ def test_delete(
     )
 
     fake_source.get.assert_called_once()
-    # There's 3 as the AmiProduct deletes require trying aws-na and aws-emea
+    # There's 2 as the AmiProduct deletes require trying aws-na and aws-emea
     assert fake_cloud_instance.call_count == 2
 
 
@@ -184,7 +193,7 @@ def test_delete_ami_id_not_found_rhsm(
     )
 
     fake_source.get.assert_called_once()
-    # 1 call for RHCOS delete
+    # 2 call for RHCOS delete
     assert fake_cloud_instance.call_count == 2
 
 
@@ -243,8 +252,44 @@ def test_delete_failed(
     )
 
     fake_source.get.assert_called_once()
-    # 0 calls for dry-run, should just report to log
+    # 3 calls since we errored on aws-na, aws-emea, aws-us-storage
     assert fake_cloud_instance.call_count == 3
+
+
+def test_delete_failed_one(
+    fake_source_dif_amis: mock.MagicMock,
+    fake_cloud_instance: mock.MagicMock,
+    command_tester: CommandTester,
+) -> None:
+    """Test a failed delete."""
+    image_seen = []
+
+    class FakePublish(FakeCloudProvider):
+        def _delete_push_images(self, push_item, **kwargs):
+            if push_item.image_id not in image_seen:
+                image_seen.append(push_item.image_id)
+                raise Exception("Random exception")
+            return push_item
+
+    fake_cloud_instance.return_value = FakePublish()
+    command_tester.test(
+        lambda: entry_point(VMDelete),
+        [
+            "test-delete",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--rhsm-url",
+            "https://rhsm.com/test/api/",
+            "--debug",
+            "--builds",
+            "rhcos-x86_64-414.92.202405201754-0,sample_product-1.0.1-1-x86_64",
+            "pub:https://fakepub.com?task-id=12345",
+        ],
+    )
+
+    fake_source_dif_amis.get.assert_called_once()
+    # 4 Calls since we errored on the first call
+    assert fake_cloud_instance.call_count == 4
 
 
 def test_delete_not_AmiPushItem(

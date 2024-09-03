@@ -3,7 +3,7 @@
 [    INFO] Failed to delete ami-rhcos1 in aws-china-storage:Random exception
 [    INFO] Deleting ami-aws1 in account aws-na
 [    INFO] Deleting ami-aws1 in account aws-emea
-[    INFO] Failed to delete ami-aws1 in aws-emea:Random exception
+[    INFO] Failed to delete ami-aws1 in aws-na,aws-emea:Random exception
 [    INFO] Collecting results
 [   ERROR] Delete failed
 # Raised: 30

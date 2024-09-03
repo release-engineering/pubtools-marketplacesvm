@@ -153,7 +153,7 @@ class VMDelete(MarketplacesVMTask, CloudService, CollectorService, AwsRHSMClient
                 return pi
             # Cycle through potential marketplaces, this only matters in AmiProducts
             # as the build could exist in either aws-na or aws-emea.
-            delete_failed = False
+            failed_marketplace = []
             for marketplace in marketplaces:
                 try:
                     log.info(
@@ -170,18 +170,17 @@ class VMDelete(MarketplacesVMTask, CloudService, CollectorService, AwsRHSMClient
                         marketplace,
                     )
                     pi = evolve(pi, state=State.DELETED)
-                    delete_failed = False
                     self.update_rhsm_metadata(push_item)
                     return pi
                 except Exception as exc:
                     # If we failed the image might not exist, not necessarily an error
                     delete_error = exc
-                    delete_failed = True
-            if delete_failed:
+                    failed_marketplace.append(marketplace)
+            if len(failed_marketplace) == len(marketplaces):
                 log.info(
                     "Failed to delete %s in %s:%s",
                     push_item.image_id,
-                    marketplace,
+                    ",".join(failed_marketplace),
                     delete_error,
                     stack_info=True,
                 )
