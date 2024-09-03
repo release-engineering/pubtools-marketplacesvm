@@ -302,9 +302,7 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                     pi = mapped_item.get_push_item_for_destination(dest)
                     log.debug("Mapped push item for %s: %s", storage_account, pi)
                     beta = self.args.beta or str(pi.release.type) == "beta"
-                    epi = enrich_push_item(
-                        pi, dest, beta=beta, require_bc=self._REQUIRE_BC
-                    )
+                    epi = enrich_push_item(pi, dest, beta=beta, require_bc=self._REQUIRE_BC)
                     log.debug("Enriched push item for %s: %s", storage_account, epi)
 
                     # SAP and RHEL-HA images are expected to be

@@ -216,8 +216,8 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             # Since we will have a single upload for each marketplace and each PushItem may contain
             # multiple destinations within each marketplace, we may merge the StArMap "meta"
             # safely as the upload will just take advantage of their "sharing_accounts"
-            # which es expected to be the same for all destinations within a same marketplace. 
-            meta = {} 
+            # which es expected to be the same for all destinations within a same marketplace.
+            meta = {}
             for d in pi.dest:
                 meta.update(mapped_item.get_metadata_for_mapped_item(d) or {})
 
