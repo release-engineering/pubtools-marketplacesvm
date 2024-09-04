@@ -277,7 +277,8 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
             raise RuntimeError("AMI not found.")
 
         # Search if the AMI is already in the Account
-        ami = upload_svc.get_image_by_name(push_item.build)
+        name = name_from_push_item(push_item)
+        ami = upload_svc.get_image_by_name(name)
         if ami:
             LOG.info("AMI already exits in account.Skipping Copying AMI.")
             result = UploadResult(ami.id)
@@ -286,7 +287,7 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
 
             copy_result = upload_svc.copy_ami(
                 image_id=push_item.src,
-                image_name=push_item.build,
+                image_name=name,
                 image_region=push_item.region,
             )
             result = UploadResult(copy_result["ImageId"])
