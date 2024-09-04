@@ -94,6 +94,35 @@ def aws_push_item(
 
 
 @pytest.fixture
+def aws_push_item_2(
+    ami_release: AmiRelease,
+    security_group: AmiSecurityGroup,
+) -> AmiPushItem:
+    params = {
+        "name": "sample_product-1.0.1-1-x86_64.raw",
+        "description": "foo",
+        "src": "/foo/bar/image.raw",
+        "image_id": "ami-aws2",
+        "dest": ["product-uuid"],
+        "build": "sample_product-1.0.1-1-x86_64",
+        "build_info": KojiBuildInfo(
+            name="test-build", version="1.0.1", release="20230101", id=1234
+        ),
+        "virtualization": "virt",
+        "volume": "gp2",
+        "release": ami_release,
+        "scanning_port": 22,
+        "user_name": "fake-user",
+        "release_notes": "https://access.redhat.com/{major_version}/{major_minor}",
+        "usage_instructions": "Example. {major_version} - {major_minor}",
+        "recommended_instance_type": "m5.large",
+        "marketplace_entity_type": "AmiProduct",
+        "security_groups": [security_group],
+    }
+    return AmiPushItem(**params)
+
+
+@pytest.fixture
 def aws_rhcos_push_item(ami_release: AmiRelease, security_group: AmiSecurityGroup) -> AmiPushItem:
     params = {
         "name": "rhcos",
@@ -122,6 +151,13 @@ def aws_rhcos_push_item(ami_release: AmiRelease, security_group: AmiSecurityGrou
 @pytest.fixture
 def pub_response(aws_rhcos_push_item: AmiPushItem, aws_push_item: AmiPushItem) -> List[AmiPushItem]:
     return [aws_rhcos_push_item, aws_push_item]
+
+
+@pytest.fixture
+def pub_response_diff_amis(
+    aws_push_item_2: AmiPushItem, aws_push_item: AmiPushItem
+) -> List[AmiPushItem]:
+    return [aws_push_item, aws_push_item_2]
 
 
 @pytest.fixture
