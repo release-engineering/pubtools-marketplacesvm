@@ -298,11 +298,10 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
             for storage_account, destinations in mapped_item.clouds.items():
                 log.info("Processing the storage account %s", storage_account)
 
-                pi = mapped_item.get_push_item_for_marketplace(storage_account)
-                log.debug("Mapped push item for %s: %s", storage_account, pi)
-                beta = self.args.beta or str(pi.release.type) == "beta"
-
                 for dest in destinations:
+                    pi = mapped_item.get_push_item_for_destination(dest)
+                    log.debug("Mapped push item for %s: %s", storage_account, pi)
+                    beta = self.args.beta or str(pi.release.type) == "beta"
                     epi = enrich_push_item(pi, dest, beta=beta, require_bc=self._REQUIRE_BC)
                     log.debug("Enriched push item for %s: %s", storage_account, epi)
 

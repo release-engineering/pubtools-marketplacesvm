@@ -58,15 +58,6 @@ class MappedVMIPushItem:
         return dest
 
     @property
-    def meta(self) -> Dict[str, Any]:
-        """Return all metadata associated with the stored push item."""
-        res = {}
-        for dest in self.destinations:
-            if dest.meta:
-                res.update({k: v for k, v in dest.meta.items()})
-        return res
-
-    @property
     def tags(self) -> Dict[str, Any]:
         """Return all tags associated with the stored push item."""
         res = {}
@@ -75,21 +66,22 @@ class MappedVMIPushItem:
                 res.update(dest.tags)
         return res
 
-    def _map_push_item(self, destinations: List[Destination]) -> VMIPushItem:
-        """Return the wrapped push item with the missing attributes set."""
-        if self.push_item.dest:  # If it has destinations it means we already mapped its properties
-            # Just update the destinations for the marketplace and return
-            self.push_item = evolve(self.push_item, dest=destinations)
-            return self.push_item
-
-        # Update the missing fields for push item and its release
-        pi = self.push_item
-
+    def _update_push_item_properties(
+        self, push_item: VMIPushItem, destinations: List[Destination]
+    ) -> VMIPushItem:
+        """Return an updated push item with data from destinations."""
         # Update the destinations
-        pi = evolve(pi, dest=destinations)
+        pi = evolve(push_item, dest=destinations)
+
+        # Get the "meta" data from destinations
+        # Note that this will merge all meta data from every destionation into a single data.
+        meta = {}
+        for d in destinations:
+            if d.meta:
+                meta.update(d.meta)
 
         # Build the VMIRelease information when the meta key `release` is present
-        rel_data = self.meta.pop("release", None)
+        rel_data = meta.get("release", None)
         if rel_data:
             if pi.release:
                 log.debug("Merging original release information with data from StArMap")
@@ -109,19 +101,29 @@ class MappedVMIPushItem:
         new_attrs = {}
         for attribute in pi.__attrs_attrs__:
             if not getattr(pi, attribute.name, None):  # If attribute is not set
-                value = self.meta.get(attribute.name, None)  # Get the value from "dst.meta"
+                value = meta.get(attribute.name, None)  # Get the value from "dst.meta"
                 if value:  # If the value is set in the metadata
                     func = self._CONVERTER_HANDLERS.get(attribute.name, lambda x: x)  # Converter
                     new_attrs.update({attribute.name: func(value)})  # Set the new value
                 elif attribute.name not in ignore_unset_attributes:
                     log.warning(
                         "Missing information for the attribute %s.%s, leaving it unset.",
-                        self.push_item.name,
+                        pi.name,
                         attribute.name,
                     )
 
         # Finally return the updated push_item
-        self.push_item = evolve(pi, **new_attrs)
+        return evolve(pi, **new_attrs)
+
+    def _map_push_item(self, destinations: List[Destination]) -> VMIPushItem:
+        """Return the wrapped push item with the missing attributes set."""
+        if self.push_item.dest:  # If it has destinations it means we already mapped its properties
+            # Just update the destinations for the marketplace and return
+            self.push_item = evolve(self.push_item, dest=destinations)
+            return self.push_item
+
+        # Update the missing fields for push item and its release
+        self.push_item = self._update_push_item_properties(self.push_item, destinations)
         return self.push_item
 
     @classmethod
@@ -155,6 +157,15 @@ class MappedVMIPushItem:
             self._mapped_push_item[account] = self._map_push_item(destinations)
 
         return self._mapped_push_item.get(account)
+
+    def get_push_item_for_destination(self, destination: Destination) -> VMIPushItem:
+        """
+        Return a VMIPushItem with all properties updated for a single destination.
+
+        Args:
+            destination (Destination): The destination to update the push item.
+        """
+        return self._update_push_item_properties(self.push_item, [destination])
 
     def update_push_item_for_marketplace(self, account: str, push_item: VMIPushItem) -> None:
         """Update a push item for a given marketplace account.
