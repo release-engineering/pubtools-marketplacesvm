@@ -1,10 +1,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 import json
 import os
-from argparse import Action
+from argparse import Action, ArgumentError
 from typing import Callable, Optional
-
-from starmap_client.models import QueryResponse
 
 
 def from_environ(key, delegate_converter=lambda x: x):
@@ -179,9 +177,7 @@ class RepoQueryLoad(Action):
         """Convert the received args into QueryResponse."""
         items = getattr(namespace, self.dest, None) or []
         if values and isinstance(values, str):
-            data = json.loads(values)
-            if isinstance(data, list):
-                items.extend([QueryResponse.from_json(x) for x in data])
-            else:
-                items.append(QueryResponse.from_json(data))
+            items = json.loads(values)
+            if not isinstance(items, list):
+                raise ArgumentError(self, f"Expected value to be a list, got: {type(items)}")
         setattr(namespace, self.dest, items)

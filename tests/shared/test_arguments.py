@@ -7,7 +7,7 @@ from typing import Any, Dict, List
 from unittest.mock import patch
 
 import pytest
-from starmap_client.models import QueryResponse
+from _pytest.capture import CaptureFixture
 
 from pubtools._marketplacesvm.arguments import RepoQueryLoad, SplitAndExtend, from_environ
 
@@ -63,89 +63,88 @@ def test_from_environ(parser: ArgumentParser) -> None:
 
 
 @pytest.fixture
-def qr1() -> Dict[str, Any]:
-    return {
-        "name": "test",
-        "workflow": "stratosphere",
-        "mappings": {
-            "aws-na": [
-                {
-                    "architecture": "x86_64",
-                    "destination": "185380b0-4e79-11ef-ae6c-3e3c9dfa9194",
-                    "overwrite": False,
-                    "restrict_version": True,
+def qrc1() -> List[Dict[str, Any]]:
+    return [
+        {
+            "name": "test",
+            "workflow": "stratosphere",
+            "mappings": {
+                "aws-na": {
+                    "destinations": [
+                        {
+                            "architecture": "x86_64",
+                            "destination": "185380b0-4e79-11ef-ae6c-3e3c9dfa9194",
+                            "overwrite": False,
+                            "restrict_version": True,
+                        }
+                    ]
                 }
-            ]
-        },
-    }
+            },
+        }
+    ]
 
 
 @pytest.fixture
-def qr2() -> Dict[str, Any]:
-    return {
-        "name": "test",
-        "workflow": "community",
-        "mappings": {
-            "aws-us-storage": [
-                {
-                    "architecture": "x86_64",
-                    "destination": "test1",
-                    "overwrite": False,
-                    "restrict_version": False,
-                },
-                {
-                    "architecture": "x86_64",
-                    "destination": "test2",
-                    "overwrite": False,
-                    "restrict_version": False,
-                },
-                {
-                    "architecture": "x86_64",
-                    "destination": "test3",
-                    "overwrite": False,
-                    "restrict_version": False,
-                },
-            ]
-        },
-    }
+def qrc2() -> List[Dict[str, Any]]:
+    return [
+        {
+            "name": "test",
+            "workflow": "community",
+            "mappings": {
+                "aws-us-storage": {
+                    "destinations": [
+                        {
+                            "architecture": "x86_64",
+                            "destination": "test1",
+                            "overwrite": False,
+                            "restrict_version": False,
+                        },
+                        {
+                            "architecture": "x86_64",
+                            "destination": "test2",
+                            "overwrite": False,
+                            "restrict_version": False,
+                        },
+                        {
+                            "architecture": "x86_64",
+                            "destination": "test3",
+                            "overwrite": False,
+                            "restrict_version": False,
+                        },
+                    ],
+                    "provider": "AWS",
+                }
+            },
+        }
+    ]
 
 
 @pytest.fixture
-def qr1_input(qr1) -> str:
-    return json.dumps(qr1)
+def qrc3(qrc1, qrc2) -> List[Dict[str, Any]]:
+    return qrc1 + qrc2
 
 
 @pytest.fixture
-def qr1_output(qr1) -> List[QueryResponse]:
-    return [QueryResponse.from_json(qr1)]
+def qrc1_input(qrc1) -> str:
+    return json.dumps(qrc1)
 
 
 @pytest.fixture
-def qr2_input(qr2) -> str:
-    return json.dumps(qr2)
+def qrc2_input(qrc2) -> str:
+    return json.dumps(qrc2)
 
 
 @pytest.fixture
-def qr2_output(qr2) -> List[QueryResponse]:
-    return [QueryResponse.from_json(qr2)]
-
-
-@pytest.fixture
-def qr3_input(qr1, qr2) -> str:
-    return json.dumps([qr1, qr2])
-
-
-@pytest.fixture
-def qr3_output(qr1_output, qr2_output) -> List[QueryResponse]:
-    return qr1_output + qr2_output
+def qrc3_input(qrc3) -> str:
+    return json.dumps(qrc3)
 
 
 @pytest.mark.parametrize(
     "input, expected",
     [
-        ('qr1_input', 'qr1_output'),
-        ('qr2_input', 'qr2_output'),
-        ('qr3_input', 'qr3_output'),
+        ('qrc1_input', 'qrc1'),
+        ('qrc2_input', 'qrc2'),
+        ('qrc3_input', 'qrc3'),
     ],
 )
 def test_repo_query_load(
@@ -159,3 +158,13 @@ def test_repo_query_load(
     sys.argv = ["command", "--repo", request.getfixturevalue(input)]
     args = parser.parse_args()
     assert args.repo == request.getfixturevalue(expected)
+
+
+def test_invalid_repo_query_load(parser: ArgumentParser, capsys: CaptureFixture) -> None:
+    parser.add_argument("--foo", action=RepoQueryLoad)
+    sys.argv = ["command", "--foo", "{\"foo\": \"bar\"}"]
+    err = "argument --foo: Expected value to be a list, got: <class 'dict'>"
+    with pytest.raises(SystemExit):
+        parser.parse_args()
+
+    assert err in capsys.readouterr().err
