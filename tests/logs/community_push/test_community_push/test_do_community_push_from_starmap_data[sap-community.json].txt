@@ -1026,7 +1026,7 @@
 [   DEBUG] Searching for product sample_product_HOURLY for provider AWS in rhsm
 [   DEBUG] Searching for product sample_product_HOURLY for provider AWS in rhsm
 [   DEBUG] Searching for product sample_product_HOURLY for provider AWS in rhsm
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region cn-north-1 (type: hourly, ship: True) with sharing accounts: ['111111111111111'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region cn-north-1 (type: hourly, ship: True, account: aws-china-storage) with sharing accounts: ['111111111111111'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on cn-north-1
 [    INFO] Creating region cn-north-1 [ACN]
 [    INFO] Registering image foo with RHSM
@@ -1036,7 +1036,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [cn-north-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region cn-northwest-1 (type: hourly, ship: True) with sharing accounts: ['111111111111111'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region cn-northwest-1 (type: hourly, ship: True, account: aws-china-storage) with sharing accounts: ['111111111111111'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on cn-northwest-1
 [    INFO] Creating region cn-northwest-1 [ACN]
 [    INFO] Registering image foo with RHSM
@@ -1046,7 +1046,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [cn-northwest-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-gov-west-1 (type: hourly, ship: True) with sharing accounts: ['222222222222', '333333333333'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-gov-west-1 (type: hourly, ship: True, account: aws-china-storage) with sharing accounts: ['222222222222', '333333333333'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on us-gov-west-1
 [    INFO] Creating region us-gov-west-1 [AGOV]
 [    INFO] Registering image foo with RHSM
@@ -1056,7 +1056,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [us-gov-west-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-gov-east-1 (type: hourly, ship: True) with sharing accounts: ['222222222222', '333333333333'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-gov-east-1 (type: hourly, ship: True, account: aws-china-storage) with sharing accounts: ['222222222222', '333333333333'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on us-gov-east-1
 [    INFO] Creating region us-gov-east-1 [AGOV]
 [    INFO] Registering image foo with RHSM
@@ -1066,7 +1066,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [us-gov-east-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-east-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-east-1 (type: hourly, ship: True, account: aws-china-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on us-east-1
 [    INFO] Creating region us-east-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1076,7 +1076,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [us-east-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-east-2 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-east-2 (type: hourly, ship: True, account: aws-china-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on us-east-2
 [    INFO] Creating region us-east-2 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1086,7 +1086,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [us-east-2] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-west-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-west-1 (type: hourly, ship: True, account: aws-china-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on us-west-1
 [    INFO] Creating region us-west-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1096,7 +1096,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [us-west-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-west-2 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-west-2 (type: hourly, ship: True, account: aws-china-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on us-west-2
 [    INFO] Creating region us-west-2 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1106,7 +1106,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [us-west-2] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-central-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-central-1 (type: hourly, ship: True, account: aws-china-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on eu-central-1
 [    INFO] Creating region eu-central-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1116,7 +1116,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [eu-central-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-central-2 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-central-2 (type: hourly, ship: True, account: aws-china-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on eu-central-2
 [    INFO] Creating region eu-central-2 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1126,7 +1126,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [eu-central-2] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-north-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-north-1 (type: hourly, ship: True, account: aws-china-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on eu-north-1
 [    INFO] Creating region eu-north-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1136,7 +1136,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [eu-north-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-south-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-south-1 (type: hourly, ship: True, account: aws-china-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on eu-south-1
 [    INFO] Creating region eu-south-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1146,7 +1146,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [eu-south-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-south-2 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-south-2 (type: hourly, ship: True, account: aws-china-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on eu-south-2
 [    INFO] Creating region eu-south-2 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1156,7 +1156,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [eu-south-2] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-west-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-west-1 (type: hourly, ship: True, account: aws-china-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on eu-west-1
 [    INFO] Creating region eu-west-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1166,7 +1166,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [eu-west-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-west-2 (type: hourly, ship: True) with sharing accounts: ['33333333333', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-west-2 (type: hourly, ship: True, account: aws-china-storage) with sharing accounts: ['33333333333', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on eu-west-2
 [    INFO] Creating region eu-west-2 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1176,7 +1176,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [eu-west-2] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-west-3 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-west-3 (type: hourly, ship: True, account: aws-china-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on eu-west-3
 [    INFO] Creating region eu-west-3 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1186,7 +1186,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [eu-west-3] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region ca-central-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region ca-central-1 (type: hourly, ship: True, account: aws-china-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on ca-central-1
 [    INFO] Creating region ca-central-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1196,7 +1196,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [ca-central-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region ca-west-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region ca-west-1 (type: hourly, ship: True, account: aws-china-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on ca-west-1
 [    INFO] Creating region ca-west-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1206,7 +1206,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [ca-west-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-east-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-east-1 (type: hourly, ship: True, account: aws-china-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on ap-east-1
 [    INFO] Creating region ap-east-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1216,7 +1216,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [ap-east-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-northeast-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-northeast-1 (type: hourly, ship: True, account: aws-china-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on ap-northeast-1
 [    INFO] Creating region ap-northeast-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1226,7 +1226,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [ap-northeast-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-northeast-2 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-northeast-2 (type: hourly, ship: True, account: aws-china-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on ap-northeast-2
 [    INFO] Creating region ap-northeast-2 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1236,7 +1236,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [ap-northeast-2] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-northeast-3 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-northeast-3 (type: hourly, ship: True, account: aws-china-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on ap-northeast-3
 [    INFO] Creating region ap-northeast-3 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1246,7 +1246,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [ap-northeast-3] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-south-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-south-1 (type: hourly, ship: True, account: aws-china-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on ap-south-1
 [    INFO] Creating region ap-south-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1256,7 +1256,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [ap-south-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-south-2 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-south-2 (type: hourly, ship: True, account: aws-china-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on ap-south-2
 [    INFO] Creating region ap-south-2 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1266,7 +1266,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [ap-south-2] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-southeast-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-southeast-1 (type: hourly, ship: True, account: aws-china-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on ap-southeast-1
 [    INFO] Creating region ap-southeast-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1276,7 +1276,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [ap-southeast-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-southeast-2 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-southeast-2 (type: hourly, ship: True, account: aws-china-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on ap-southeast-2
 [    INFO] Creating region ap-southeast-2 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1286,7 +1286,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [ap-southeast-2] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-southeast-3 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-southeast-3 (type: hourly, ship: True, account: aws-china-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on ap-southeast-3
 [    INFO] Creating region ap-southeast-3 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1296,7 +1296,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [ap-southeast-3] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-southeast-4 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-southeast-4 (type: hourly, ship: True, account: aws-china-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on ap-southeast-4
 [    INFO] Creating region ap-southeast-4 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1306,7 +1306,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [ap-southeast-4] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-southeast-5 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-southeast-5 (type: hourly, ship: True, account: aws-china-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on ap-southeast-5
 [    INFO] Creating region ap-southeast-5 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1316,7 +1316,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [ap-southeast-5] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region sa-east-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region sa-east-1 (type: hourly, ship: True, account: aws-china-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on sa-east-1
 [    INFO] Creating region sa-east-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1326,7 +1326,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [sa-east-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region me-central-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region me-central-1 (type: hourly, ship: True, account: aws-china-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on me-central-1
 [    INFO] Creating region me-central-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1336,7 +1336,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [me-central-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region me-south-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region me-south-1 (type: hourly, ship: True, account: aws-china-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on me-south-1
 [    INFO] Creating region me-south-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1346,7 +1346,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [me-south-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region af-south-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region af-south-1 (type: hourly, ship: True, account: aws-china-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on af-south-1
 [    INFO] Creating region af-south-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1356,7 +1356,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [af-south-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region il-central-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region il-central-1 (type: hourly, ship: True, account: aws-china-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on il-central-1
 [    INFO] Creating region il-central-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1366,7 +1366,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [il-central-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region cn-north-1 (type: hourly, ship: True) with sharing accounts: ['111111111111111'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region cn-north-1 (type: hourly, ship: True, account: aws-us-gov-storage) with sharing accounts: ['111111111111111'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on cn-north-1
 [    INFO] Creating region cn-north-1 [ACN]
 [    INFO] Registering image foo with RHSM
@@ -1376,7 +1376,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [cn-north-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region cn-northwest-1 (type: hourly, ship: True) with sharing accounts: ['111111111111111'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region cn-northwest-1 (type: hourly, ship: True, account: aws-us-gov-storage) with sharing accounts: ['111111111111111'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on cn-northwest-1
 [    INFO] Creating region cn-northwest-1 [ACN]
 [    INFO] Registering image foo with RHSM
@@ -1386,7 +1386,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [cn-northwest-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-gov-west-1 (type: hourly, ship: True) with sharing accounts: ['222222222222', '333333333333'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-gov-west-1 (type: hourly, ship: True, account: aws-us-gov-storage) with sharing accounts: ['222222222222', '333333333333'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on us-gov-west-1
 [    INFO] Creating region us-gov-west-1 [AGOV]
 [    INFO] Registering image foo with RHSM
@@ -1396,7 +1396,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [us-gov-west-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-gov-east-1 (type: hourly, ship: True) with sharing accounts: ['222222222222', '333333333333'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-gov-east-1 (type: hourly, ship: True, account: aws-us-gov-storage) with sharing accounts: ['222222222222', '333333333333'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on us-gov-east-1
 [    INFO] Creating region us-gov-east-1 [AGOV]
 [    INFO] Registering image foo with RHSM
@@ -1406,7 +1406,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [us-gov-east-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-east-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-east-1 (type: hourly, ship: True, account: aws-us-gov-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on us-east-1
 [    INFO] Creating region us-east-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1416,7 +1416,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [us-east-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-east-2 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-east-2 (type: hourly, ship: True, account: aws-us-gov-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on us-east-2
 [    INFO] Creating region us-east-2 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1426,7 +1426,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [us-east-2] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-west-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-west-1 (type: hourly, ship: True, account: aws-us-gov-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on us-west-1
 [    INFO] Creating region us-west-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1436,7 +1436,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [us-west-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-west-2 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-west-2 (type: hourly, ship: True, account: aws-us-gov-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on us-west-2
 [    INFO] Creating region us-west-2 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1446,7 +1446,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [us-west-2] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-central-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-central-1 (type: hourly, ship: True, account: aws-us-gov-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on eu-central-1
 [    INFO] Creating region eu-central-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1456,7 +1456,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [eu-central-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-central-2 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-central-2 (type: hourly, ship: True, account: aws-us-gov-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on eu-central-2
 [    INFO] Creating region eu-central-2 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1466,7 +1466,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [eu-central-2] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-north-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-north-1 (type: hourly, ship: True, account: aws-us-gov-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on eu-north-1
 [    INFO] Creating region eu-north-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1476,7 +1476,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [eu-north-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-south-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-south-1 (type: hourly, ship: True, account: aws-us-gov-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on eu-south-1
 [    INFO] Creating region eu-south-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1486,7 +1486,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [eu-south-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-south-2 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-south-2 (type: hourly, ship: True, account: aws-us-gov-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on eu-south-2
 [    INFO] Creating region eu-south-2 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1496,7 +1496,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [eu-south-2] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-west-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-west-1 (type: hourly, ship: True, account: aws-us-gov-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on eu-west-1
 [    INFO] Creating region eu-west-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1506,7 +1506,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [eu-west-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-west-2 (type: hourly, ship: True) with sharing accounts: ['33333333333', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-west-2 (type: hourly, ship: True, account: aws-us-gov-storage) with sharing accounts: ['33333333333', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on eu-west-2
 [    INFO] Creating region eu-west-2 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1516,7 +1516,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [eu-west-2] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-west-3 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-west-3 (type: hourly, ship: True, account: aws-us-gov-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on eu-west-3
 [    INFO] Creating region eu-west-3 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1526,7 +1526,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [eu-west-3] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region ca-central-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region ca-central-1 (type: hourly, ship: True, account: aws-us-gov-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on ca-central-1
 [    INFO] Creating region ca-central-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1536,7 +1536,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [ca-central-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region ca-west-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region ca-west-1 (type: hourly, ship: True, account: aws-us-gov-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on ca-west-1
 [    INFO] Creating region ca-west-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1546,7 +1546,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [ca-west-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-east-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-east-1 (type: hourly, ship: True, account: aws-us-gov-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on ap-east-1
 [    INFO] Creating region ap-east-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1556,7 +1556,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [ap-east-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-northeast-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-northeast-1 (type: hourly, ship: True, account: aws-us-gov-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on ap-northeast-1
 [    INFO] Creating region ap-northeast-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1566,7 +1566,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [ap-northeast-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-northeast-2 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-northeast-2 (type: hourly, ship: True, account: aws-us-gov-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on ap-northeast-2
 [    INFO] Creating region ap-northeast-2 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1576,7 +1576,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [ap-northeast-2] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-northeast-3 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-northeast-3 (type: hourly, ship: True, account: aws-us-gov-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on ap-northeast-3
 [    INFO] Creating region ap-northeast-3 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1586,7 +1586,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [ap-northeast-3] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-south-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-south-1 (type: hourly, ship: True, account: aws-us-gov-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on ap-south-1
 [    INFO] Creating region ap-south-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1596,7 +1596,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [ap-south-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-south-2 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-south-2 (type: hourly, ship: True, account: aws-us-gov-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on ap-south-2
 [    INFO] Creating region ap-south-2 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1606,7 +1606,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [ap-south-2] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-southeast-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-southeast-1 (type: hourly, ship: True, account: aws-us-gov-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on ap-southeast-1
 [    INFO] Creating region ap-southeast-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1616,7 +1616,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [ap-southeast-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-southeast-2 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-southeast-2 (type: hourly, ship: True, account: aws-us-gov-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on ap-southeast-2
 [    INFO] Creating region ap-southeast-2 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1626,7 +1626,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [ap-southeast-2] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-southeast-3 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-southeast-3 (type: hourly, ship: True, account: aws-us-gov-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on ap-southeast-3
 [    INFO] Creating region ap-southeast-3 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1636,7 +1636,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [ap-southeast-3] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-southeast-4 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-southeast-4 (type: hourly, ship: True, account: aws-us-gov-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on ap-southeast-4
 [    INFO] Creating region ap-southeast-4 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1646,7 +1646,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [ap-southeast-4] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-southeast-5 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-southeast-5 (type: hourly, ship: True, account: aws-us-gov-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on ap-southeast-5
 [    INFO] Creating region ap-southeast-5 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1656,7 +1656,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [ap-southeast-5] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region sa-east-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region sa-east-1 (type: hourly, ship: True, account: aws-us-gov-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on sa-east-1
 [    INFO] Creating region sa-east-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1666,7 +1666,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [sa-east-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region me-central-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region me-central-1 (type: hourly, ship: True, account: aws-us-gov-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on me-central-1
 [    INFO] Creating region me-central-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1676,7 +1676,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [me-central-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region me-south-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region me-south-1 (type: hourly, ship: True, account: aws-us-gov-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on me-south-1
 [    INFO] Creating region me-south-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1686,7 +1686,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [me-south-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region af-south-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region af-south-1 (type: hourly, ship: True, account: aws-us-gov-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on af-south-1
 [    INFO] Creating region af-south-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1696,7 +1696,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [af-south-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region il-central-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region il-central-1 (type: hourly, ship: True, account: aws-us-gov-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on il-central-1
 [    INFO] Creating region il-central-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1706,7 +1706,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [il-central-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region cn-north-1 (type: hourly, ship: True) with sharing accounts: ['111111111111111'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region cn-north-1 (type: hourly, ship: True, account: aws-us-storage) with sharing accounts: ['111111111111111'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on cn-north-1
 [    INFO] Creating region cn-north-1 [ACN]
 [    INFO] Registering image foo with RHSM
@@ -1716,7 +1716,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [cn-north-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region cn-northwest-1 (type: hourly, ship: True) with sharing accounts: ['111111111111111'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region cn-northwest-1 (type: hourly, ship: True, account: aws-us-storage) with sharing accounts: ['111111111111111'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on cn-northwest-1
 [    INFO] Creating region cn-northwest-1 [ACN]
 [    INFO] Registering image foo with RHSM
@@ -1726,7 +1726,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [cn-northwest-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-gov-west-1 (type: hourly, ship: True) with sharing accounts: ['222222222222', '333333333333'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-gov-west-1 (type: hourly, ship: True, account: aws-us-storage) with sharing accounts: ['222222222222', '333333333333'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on us-gov-west-1
 [    INFO] Creating region us-gov-west-1 [AGOV]
 [    INFO] Registering image foo with RHSM
@@ -1736,7 +1736,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [us-gov-west-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-gov-east-1 (type: hourly, ship: True) with sharing accounts: ['222222222222', '333333333333'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-gov-east-1 (type: hourly, ship: True, account: aws-us-storage) with sharing accounts: ['222222222222', '333333333333'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on us-gov-east-1
 [    INFO] Creating region us-gov-east-1 [AGOV]
 [    INFO] Registering image foo with RHSM
@@ -1746,7 +1746,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [us-gov-east-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-east-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-east-1 (type: hourly, ship: True, account: aws-us-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on us-east-1
 [    INFO] Creating region us-east-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1756,7 +1756,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [us-east-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-east-2 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-east-2 (type: hourly, ship: True, account: aws-us-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on us-east-2
 [    INFO] Creating region us-east-2 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1766,7 +1766,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [us-east-2] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-west-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-west-1 (type: hourly, ship: True, account: aws-us-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on us-west-1
 [    INFO] Creating region us-west-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1776,7 +1776,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [us-west-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-west-2 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-west-2 (type: hourly, ship: True, account: aws-us-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on us-west-2
 [    INFO] Creating region us-west-2 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1786,7 +1786,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [us-west-2] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-central-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-central-1 (type: hourly, ship: True, account: aws-us-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on eu-central-1
 [    INFO] Creating region eu-central-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1796,7 +1796,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [eu-central-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-central-2 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-central-2 (type: hourly, ship: True, account: aws-us-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on eu-central-2
 [    INFO] Creating region eu-central-2 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1806,7 +1806,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [eu-central-2] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-north-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-north-1 (type: hourly, ship: True, account: aws-us-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on eu-north-1
 [    INFO] Creating region eu-north-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1816,7 +1816,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [eu-north-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-south-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-south-1 (type: hourly, ship: True, account: aws-us-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on eu-south-1
 [    INFO] Creating region eu-south-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1826,7 +1826,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [eu-south-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-south-2 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-south-2 (type: hourly, ship: True, account: aws-us-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on eu-south-2
 [    INFO] Creating region eu-south-2 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1836,7 +1836,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [eu-south-2] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-west-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-west-1 (type: hourly, ship: True, account: aws-us-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on eu-west-1
 [    INFO] Creating region eu-west-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1846,7 +1846,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [eu-west-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-west-2 (type: hourly, ship: True) with sharing accounts: ['33333333333', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-west-2 (type: hourly, ship: True, account: aws-us-storage) with sharing accounts: ['33333333333', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on eu-west-2
 [    INFO] Creating region eu-west-2 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1856,7 +1856,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [eu-west-2] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-west-3 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region eu-west-3 (type: hourly, ship: True, account: aws-us-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on eu-west-3
 [    INFO] Creating region eu-west-3 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1866,7 +1866,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [eu-west-3] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region ca-central-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region ca-central-1 (type: hourly, ship: True, account: aws-us-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on ca-central-1
 [    INFO] Creating region ca-central-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1876,7 +1876,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [ca-central-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region ca-west-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region ca-west-1 (type: hourly, ship: True, account: aws-us-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on ca-west-1
 [    INFO] Creating region ca-west-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1886,7 +1886,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [ca-west-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-east-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-east-1 (type: hourly, ship: True, account: aws-us-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on ap-east-1
 [    INFO] Creating region ap-east-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1896,7 +1896,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [ap-east-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-northeast-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-northeast-1 (type: hourly, ship: True, account: aws-us-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on ap-northeast-1
 [    INFO] Creating region ap-northeast-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1906,7 +1906,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [ap-northeast-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-northeast-2 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-northeast-2 (type: hourly, ship: True, account: aws-us-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on ap-northeast-2
 [    INFO] Creating region ap-northeast-2 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1916,7 +1916,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [ap-northeast-2] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-northeast-3 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-northeast-3 (type: hourly, ship: True, account: aws-us-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on ap-northeast-3
 [    INFO] Creating region ap-northeast-3 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1926,7 +1926,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [ap-northeast-3] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-south-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-south-1 (type: hourly, ship: True, account: aws-us-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on ap-south-1
 [    INFO] Creating region ap-south-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1936,7 +1936,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [ap-south-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-south-2 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-south-2 (type: hourly, ship: True, account: aws-us-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on ap-south-2
 [    INFO] Creating region ap-south-2 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1946,7 +1946,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [ap-south-2] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-southeast-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-southeast-1 (type: hourly, ship: True, account: aws-us-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on ap-southeast-1
 [    INFO] Creating region ap-southeast-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1956,7 +1956,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [ap-southeast-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-southeast-2 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-southeast-2 (type: hourly, ship: True, account: aws-us-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on ap-southeast-2
 [    INFO] Creating region ap-southeast-2 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1966,7 +1966,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [ap-southeast-2] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-southeast-3 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-southeast-3 (type: hourly, ship: True, account: aws-us-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on ap-southeast-3
 [    INFO] Creating region ap-southeast-3 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1976,7 +1976,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [ap-southeast-3] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-southeast-4 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-southeast-4 (type: hourly, ship: True, account: aws-us-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on ap-southeast-4
 [    INFO] Creating region ap-southeast-4 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1986,7 +1986,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [ap-southeast-4] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-southeast-5 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region ap-southeast-5 (type: hourly, ship: True, account: aws-us-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on ap-southeast-5
 [    INFO] Creating region ap-southeast-5 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -1996,7 +1996,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [ap-southeast-5] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region sa-east-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region sa-east-1 (type: hourly, ship: True, account: aws-us-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on sa-east-1
 [    INFO] Creating region sa-east-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -2006,7 +2006,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [sa-east-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region me-central-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region me-central-1 (type: hourly, ship: True, account: aws-us-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on me-central-1
 [    INFO] Creating region me-central-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -2016,7 +2016,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [me-central-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region me-south-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region me-south-1 (type: hourly, ship: True, account: aws-us-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on me-south-1
 [    INFO] Creating region me-south-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -2026,7 +2026,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [me-south-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region af-south-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region af-south-1 (type: hourly, ship: True, account: aws-us-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on af-south-1
 [    INFO] Creating region af-south-1 [AWS]
 [    INFO] Registering image foo with RHSM
@@ -2036,7 +2036,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [af-south-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region il-central-1 (type: hourly, ship: True) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region il-central-1 (type: hourly, ship: True, account: aws-us-storage) with sharing accounts: ['44444444444', '555555555555'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on il-central-1
 [    INFO] Creating region il-central-1 [AWS]
 [    INFO] Registering image foo with RHSM

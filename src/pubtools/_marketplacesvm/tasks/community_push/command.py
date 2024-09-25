@@ -343,11 +343,12 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
             accounts = kwargs.get("accounts") or kwargs.get("sharing_accounts")
             snapshot_accounts = kwargs.get("snapshot_accounts")
             log.info(
-                "Uploading %s to region %s (type: %s, ship: %s) with sharing accounts: %s and snapshot accounts: %s",  # noqa: E501
+                "Uploading %s to region %s (type: %s, ship: %s, account: %s) with sharing accounts: %s and snapshot accounts: %s",  # noqa: E501
                 push_item.src,
                 push_item.region,
                 push_item.type,
                 ship,
+                marketplace,
                 accounts,
                 snapshot_accounts,
             )
