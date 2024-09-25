@@ -285,7 +285,7 @@
 [   DEBUG] Searching for product sample_product for provider awstest in rhsm
 [   DEBUG] Searching for product sample_product_HOURLY for provider awstest in rhsm
 [   DEBUG] Searching for product sample_product for provider awstest in rhsm
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-east-1 (type: hourly, ship: True) with sharing accounts: ['000000', '121212'] and snapshot accounts: ['111111', '121212']
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-east-1 (type: hourly, ship: True, account: aws_storage) with sharing accounts: ['000000', '121212'] and snapshot accounts: ['111111', '121212']
 [    INFO] Upload finished for ami_pushitem on us-east-1
 [    INFO] Creating region us-east-1 [awstest]
 [    INFO] Registering image foo with RHSM
@@ -295,7 +295,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [us-east-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-east-1 (type: access, ship: True) with sharing accounts: ['000000', '121212'] and snapshot accounts: ['111111', '121212']
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-east-1 (type: access, ship: True, account: aws_storage) with sharing accounts: ['000000', '121212'] and snapshot accounts: ['111111', '121212']
 [    INFO] Upload finished for ami_pushitem on us-east-1
 [    INFO] Creating region us-east-1 [awstest]
 [    INFO] Registering image foo with RHSM
@@ -304,7 +304,7 @@
 [   DEBUG] {'image_id': 'foo', 'image_name': 'bar', 'arch': 'x86_64', 'product_name': 'sample_product', 'version': '7.0', 'variant': 'variant'}
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Successfully uploaded ami_pushitem [us-east-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-east-2 (type: hourly, ship: True) with sharing accounts: ['000000', '121212'] and snapshot accounts: ['111111', '121212']
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-east-2 (type: hourly, ship: True, account: aws_storage) with sharing accounts: ['000000', '121212'] and snapshot accounts: ['111111', '121212']
 [    INFO] Upload finished for ami_pushitem on us-east-2
 [    INFO] Creating region us-east-2 [awstest]
 [    INFO] Registering image foo with RHSM
@@ -314,7 +314,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [us-east-2] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-east-2 (type: access, ship: True) with sharing accounts: ['000000', '121212'] and snapshot accounts: ['111111', '121212']
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-east-2 (type: access, ship: True, account: aws_storage) with sharing accounts: ['000000', '121212'] and snapshot accounts: ['111111', '121212']
 [    INFO] Upload finished for ami_pushitem on us-east-2
 [    INFO] Creating region us-east-2 [awstest]
 [    INFO] Registering image foo with RHSM
@@ -323,7 +323,7 @@
 [   DEBUG] {'image_id': 'foo', 'image_name': 'bar', 'arch': 'x86_64', 'product_name': 'sample_product', 'version': '7.0', 'variant': 'variant'}
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Successfully uploaded ami_pushitem [us-east-2] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-west-1 (type: hourly, ship: True) with sharing accounts: ['000000', '121212'] and snapshot accounts: ['111111', '121212']
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-west-1 (type: hourly, ship: True, account: aws_storage) with sharing accounts: ['000000', '121212'] and snapshot accounts: ['111111', '121212']
 [    INFO] Upload finished for ami_pushitem on us-west-1
 [    INFO] Creating region us-west-1 [awstest]
 [    INFO] Registering image foo with RHSM
@@ -333,7 +333,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [us-west-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-west-1 (type: access, ship: True) with sharing accounts: ['000000', '121212'] and snapshot accounts: ['111111', '121212']
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-west-1 (type: access, ship: True, account: aws_storage) with sharing accounts: ['000000', '121212'] and snapshot accounts: ['111111', '121212']
 [    INFO] Upload finished for ami_pushitem on us-west-1
 [    INFO] Creating region us-west-1 [awstest]
 [    INFO] Registering image foo with RHSM
@@ -342,7 +342,7 @@
 [   DEBUG] {'image_id': 'foo', 'image_name': 'bar', 'arch': 'x86_64', 'product_name': 'sample_product', 'version': '7.0', 'variant': 'variant'}
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Successfully uploaded ami_pushitem [us-west-1] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-west-2 (type: hourly, ship: True) with sharing accounts: ['000000', '121212'] and snapshot accounts: ['111111', '121212']
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-west-2 (type: hourly, ship: True, account: aws_storage) with sharing accounts: ['000000', '121212'] and snapshot accounts: ['111111', '121212']
 [    INFO] Upload finished for ami_pushitem on us-west-2
 [    INFO] Creating region us-west-2 [awstest]
 [    INFO] Registering image foo with RHSM
@@ -352,7 +352,7 @@
 [    INFO] Successfully registered image foo with RHSM
 [    INFO] Releasing image foo publicly
 [    INFO] Successfully uploaded ami_pushitem [us-west-2] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-west-2 (type: access, ship: True) with sharing accounts: ['000000', '121212'] and snapshot accounts: ['111111', '121212']
+[    INFO] Uploading /foo/bar/sample_product_test.raw to region us-west-2 (type: access, ship: True, account: aws_storage) with sharing accounts: ['000000', '121212'] and snapshot accounts: ['111111', '121212']
 [    INFO] Upload finished for ami_pushitem on us-west-2
 [    INFO] Creating region us-west-2 [awstest]
 [    INFO] Registering image foo with RHSM

@@ -294,10 +294,9 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
         result: List[EnrichedPushItem] = []
         for mapped_item in mapped_items:
             account_dict: EnrichedPushItem = {}
-            pi_and_sa_list: List[PushItemAndSA] = []
             for storage_account, destinations in mapped_item.clouds.items():
                 log.info("Processing the storage account %s", storage_account)
-
+                pi_and_sa_list: List[PushItemAndSA] = []
                 for dest in destinations:
                     pi = mapped_item.get_push_item_for_destination(dest)
                     log.debug("Mapped push item for %s: %s", storage_account, pi)
@@ -343,11 +342,12 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
             accounts = kwargs.get("accounts") or kwargs.get("sharing_accounts")
             snapshot_accounts = kwargs.get("snapshot_accounts")
             log.info(
-                "Uploading %s to region %s (type: %s, ship: %s) with sharing accounts: %s and snapshot accounts: %s",  # noqa: E501
+                "Uploading %s to region %s (type: %s, ship: %s, account: %s) with sharing accounts: %s and snapshot accounts: %s",  # noqa: E501
                 push_item.src,
                 push_item.region,
                 push_item.type,
                 ship,
+                marketplace,
                 accounts,
                 snapshot_accounts,
             )
