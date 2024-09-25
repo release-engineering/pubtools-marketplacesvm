@@ -294,10 +294,9 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
         result: List[EnrichedPushItem] = []
         for mapped_item in mapped_items:
             account_dict: EnrichedPushItem = {}
-            pi_and_sa_list: List[PushItemAndSA] = []
             for storage_account, destinations in mapped_item.clouds.items():
                 log.info("Processing the storage account %s", storage_account)
-
+                pi_and_sa_list: List[PushItemAndSA] = []
                 for dest in destinations:
                     pi = mapped_item.get_push_item_for_destination(dest)
                     log.debug("Mapped push item for %s: %s", storage_account, pi)

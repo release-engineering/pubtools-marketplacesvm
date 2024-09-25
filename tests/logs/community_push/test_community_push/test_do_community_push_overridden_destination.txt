@@ -63,27 +63,7 @@
 [   DEBUG] Fetching product from https://rhsm.com/v1/internal/cloud_access_providers/amazon/provider_image_groups
 [   DEBUG] 10 Products(AWS provider) in rhsm: RHEL_HA(awstest), sample_product(anotherprovider), sample_product(awstest), sample_product_HOURLY(ACN), sample_product_HOURLY(ACN), sample_product_HOURLY(AGOV), sample_product_HOURLY(AGOV), sample_product_HOURLY(AWS), sample_product_HOURLY(AWS), sample_product_HOURLY(awstest)
 [   DEBUG] Searching for product sample_product for provider awstest in rhsm
-[   DEBUG] Searching for product sample_product for provider awstest in rhsm
-[   DEBUG] Searching for product sample_product for provider awstest in rhsm
 [    INFO] Uploading /foo/bar/sample_product_test.raw to region new_aws (type: na_destination, ship: True, account: aws-na) with sharing accounts: None and snapshot accounts: None
-[    INFO] Upload finished for ami_pushitem on new_aws
-[    INFO] Creating region new_aws [awstest]
-[    INFO] Registering image foo with RHSM
-[   DEBUG] Searching for product sample_product for provider awstest in rhsm
-[    INFO] Attempting to update the existing image foo in RHSM
-[   DEBUG] {'image_id': 'foo', 'image_name': 'bar', 'arch': 'x86_64', 'product_name': 'sample_product', 'version': '7.0', 'variant': 'variant'}
-[    INFO] Successfully registered image foo with RHSM
-[    INFO] Successfully uploaded ami_pushitem [new_aws] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region new_aws (type: emea_destination, ship: True, account: aws-na) with sharing accounts: None and snapshot accounts: None
-[    INFO] Upload finished for ami_pushitem on new_aws
-[    INFO] Creating region new_aws [awstest]
-[    INFO] Registering image foo with RHSM
-[   DEBUG] Searching for product sample_product for provider awstest in rhsm
-[    INFO] Attempting to update the existing image foo in RHSM
-[   DEBUG] {'image_id': 'foo', 'image_name': 'bar', 'arch': 'x86_64', 'product_name': 'sample_product', 'version': '7.0', 'variant': 'variant'}
-[    INFO] Successfully registered image foo with RHSM
-[    INFO] Successfully uploaded ami_pushitem [new_aws] [foo]
-[    INFO] Uploading /foo/bar/sample_product_test.raw to region new_aws (type: na_destination, ship: True, account: aws-emea) with sharing accounts: None and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on new_aws
 [    INFO] Creating region new_aws [awstest]
 [    INFO] Registering image foo with RHSM
