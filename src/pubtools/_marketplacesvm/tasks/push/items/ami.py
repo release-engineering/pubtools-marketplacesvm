@@ -3,7 +3,7 @@ from typing import Any, Dict, List
 
 from pushsource import AmiAccessEndpointUrl, AmiSecurityGroup
 
-from .starmap import MappedVMIPushItem
+from .starmap import MappedVMIPushItemV2
 
 log = logging.getLogger(__name__)
 
@@ -36,5 +36,5 @@ def aws_access_endpoint_url_converter(value: Dict[str, Any]) -> AmiAccessEndpoin
     return AmiAccessEndpointUrl._from_data(value)
 
 
-MappedVMIPushItem.register_converter("security_groups", aws_security_groups_converter)
-MappedVMIPushItem.register_converter("access_endpoint_url", aws_access_endpoint_url_converter)
+MappedVMIPushItemV2.register_converter("security_groups", aws_security_groups_converter)
+MappedVMIPushItemV2.register_converter("access_endpoint_url", aws_access_endpoint_url_converter)

@@ -5,7 +5,7 @@ from typing import Any, Dict
 import pytest
 from attrs import evolve
 from pushsource import AmiPushItem, AmiRelease, KojiBuildInfo, VHDPushItem, VMIRelease
-from starmap_client.models import QueryResponse
+from starmap_client.models import QueryResponseEntity
 
 from pubtools._marketplacesvm.tasks.push.command import MarketplacesVMPush
 
@@ -66,29 +66,34 @@ def ami_push_item(release_params: Dict[str, Any], push_item_params: Dict[str, st
 def starmap_response_aws() -> Dict[str, Any]:
     return {
         "mappings": {
-            "aws-na": [
-                {
-                    "architecture": "x86_64",
-                    "destination": "ffffffff-ffff-ffff-ffff-ffffffffffff",
-                    "overwrite": True,
-                    "restrict_version": False,
-                    "meta": {"tag1": "aws-na-value1", "tag2": "aws-na-value2"},
-                    "tags": {"key1": "value1", "key2": "value2"},
-                }
-            ],
-            "aws-emea": [
-                {
-                    "architecture": "x86_64",
-                    "destination": "00000000-0000-0000-0000-000000000000",
-                    "overwrite": True,
-                    "restrict_version": False,
-                    "meta": {"tag1": "aws-emea-value1", "tag2": "aws-emea-value2"},
-                    "tags": {"key3": "value3", "key4": "value4"},
-                }
-            ],
+            "aws-na": {
+                "destinations": [
+                    {
+                        "architecture": "x86_64",
+                        "destination": "ffffffff-ffff-ffff-ffff-ffffffffffff",
+                        "overwrite": True,
+                        "restrict_version": False,
+                        "meta": {"tag1": "aws-na-value1", "tag2": "aws-na-value2"},
+                        "tags": {"key1": "value1", "key2": "value2"},
+                    }
+                ]
+            },
+            "aws-emea": {
+                "destinations": [
+                    {
+                        "architecture": "x86_64",
+                        "destination": "00000000-0000-0000-0000-000000000000",
+                        "overwrite": True,
+                        "restrict_version": False,
+                        "meta": {"tag1": "aws-emea-value1", "tag2": "aws-emea-value2"},
+                        "tags": {"key3": "value3", "key4": "value4"},
+                    }
+                ]
+            },
         },
         "name": "sample-product",
         "workflow": "stratosphere",
+        "cloud": "aws",
     }
 
 
@@ -96,62 +101,63 @@ def starmap_response_aws() -> Dict[str, Any]:
 def starmap_response_azure() -> Dict[str, Any]:
     return {
         "mappings": {
-            "azure-na": [
-                {
-                    "architecture": "x86_64",
-                    "destination": "destination_offer_main/plan1",
-                    "overwrite": True,
-                    "restrict_version": False,
-                    "meta": {"tag1": "value1", "tag2": "value2"},
-                    "tags": {"key1": "value1", "key2": "value2"},
-                },
-                {
-                    "architecture": "x86_64",
-                    "destination": "destination_offer_main/plan2",
-                    "overwrite": False,
-                    "restrict_version": False,
-                    "meta": {"tag3": "value3", "tag4": "value5"},
-                },
-                {
-                    "architecture": "x86_64",
-                    "destination": "destination_offer_main/plan3",
-                    "overwrite": False,
-                    "restrict_version": False,
-                },
-            ]
+            "azure-na": {
+                "destinations": [
+                    {
+                        "architecture": "x86_64",
+                        "destination": "destination_offer_main/plan1",
+                        "overwrite": True,
+                        "restrict_version": False,
+                        "meta": {"tag1": "value1", "tag2": "value2"},
+                        "tags": {"key1": "value1", "key2": "value2"},
+                    },
+                    {
+                        "architecture": "x86_64",
+                        "destination": "destination_offer_main/plan2",
+                        "overwrite": False,
+                        "restrict_version": False,
+                        "meta": {"tag3": "value3", "tag4": "value5"},
+                    },
+                    {
+                        "architecture": "x86_64",
+                        "destination": "destination_offer_main/plan3",
+                        "overwrite": False,
+                        "restrict_version": False,
+                    },
+                ]
+            }
         },
         "name": "sample-product",
         "workflow": "stratosphere",
+        "cloud": "azure",
     }
 
 
 @pytest.fixture
-def starmap_query_aws(starmap_response_aws: Dict[str, Any]) -> QueryResponse:
-    return QueryResponse.from_json(starmap_response_aws)
+def starmap_query_aws(starmap_response_aws: Dict[str, Any]) -> QueryResponseEntity:
+    return QueryResponseEntity.from_json(starmap_response_aws)
 
 
 @pytest.fixture
-def starmap_query_azure(starmap_response_azure: Dict[str, Any]) -> QueryResponse:
-    return QueryResponse.from_json(starmap_response_azure)
+def starmap_query_azure(starmap_response_azure: Dict[str, Any]) -> QueryResponseEntity:
+    return QueryResponseEntity.from_json(starmap_response_azure)
 
 
 @pytest.fixture
 def mapped_ami_push_item(
-    ami_push_item: AmiPushItem, starmap_query_aws: QueryResponse
+    ami_push_item: AmiPushItem, starmap_query_aws: QueryResponseEntity
 ) -> AmiPushItem:
     destinations = []
-    for _, dest_list in starmap_query_aws.clouds.items():
-        for dest in dest_list:
-            destinations.append(dest)
+    for _, map_rsp_obj in starmap_query_aws.mappings.items():
+        destinations.extend(map_rsp_obj.destinations)
     return evolve(ami_push_item, dest=destinations)
 
 
 @pytest.fixture
 def mapped_vhd_push_item(
-    vhd_push_item: VHDPushItem, starmap_query_azure: QueryResponse
+    vhd_push_item: VHDPushItem, starmap_query_azure: QueryResponseEntity
 ) -> VHDPushItem:
     destinations = []
-    for _, dest_list in starmap_query_azure.clouds.items():
-        for dest in dest_list:
-            destinations.append(dest)
+    for _, map_rsp_obj in starmap_query_azure.mappings.items():
+        destinations.append(map_rsp_obj.destinations)
     return evolve(vhd_push_item, dest=destinations)
