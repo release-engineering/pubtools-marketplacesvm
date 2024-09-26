@@ -1,11 +1,11 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 import pytest
 from attrs import evolve
 from pushsource import AmiPushItem, AmiRelease, KojiBuildInfo
-from starmap_client.models import QueryResponse
+from starmap_client.models import QueryResponseContainer
 
 from pubtools._marketplacesvm.tasks.community_push.command import CommunityVMPush
 
@@ -82,7 +82,7 @@ def starmap_ami_billing_config() -> Dict[str, Any]:
 
 
 @pytest.fixture()
-def starmap_ami_meta(release_params, starmap_ami_billing_config) -> Dict[str, Any]:
+def starmap_ami_meta(release_params) -> Dict[str, Any]:
     return {
         "description": "Provided by Red Hat, Inc.",
         "virtualization": "hvm",
@@ -91,7 +91,6 @@ def starmap_ami_meta(release_params, starmap_ami_billing_config) -> Dict[str, An
         "sriov_net_support": "simple",
         "ena_support": True,
         "release": release_params,
-        "billing-code-config": starmap_ami_billing_config,
         "accounts": {
             "default": "000000",
             "us-east-1": "121212",
@@ -104,7 +103,7 @@ def starmap_ami_meta(release_params, starmap_ami_billing_config) -> Dict[str, An
 
 
 @pytest.fixture
-def starmap_response_aws(starmap_ami_meta) -> Dict[str, Any]:
+def starmap_response_aws(starmap_ami_meta, starmap_ami_billing_config) -> List[Dict[str, Any]]:
     destinations = [
         "us-east-1-hourly",
         "us-east-1-access",
@@ -116,37 +115,43 @@ def starmap_response_aws(starmap_ami_meta) -> Dict[str, Any]:
         "us-west-2-access",
     ]
 
-    return {
-        "mappings": {
-            "aws_storage": [
-                {
-                    "architecture": "x86_64",
-                    "destination": dest,
-                    "overwrite": False,
-                    "restrict_version": False,
+    return [
+        {
+            "mappings": {
+                "aws_storage": {
+                    "destinations": [
+                        {
+                            "architecture": "x86_64",
+                            "destination": dest,
+                            "overwrite": False,
+                            "restrict_version": False,
+                            "meta": starmap_ami_meta,
+                            "tags": {"key1": "value1", "key2": "value2"},
+                        }
+                        for dest in destinations
+                    ],
                     "provider": "awstest",
-                    "meta": starmap_ami_meta,
-                    "tags": {"key1": "value1", "key2": "value2"},
                 }
-                for dest in destinations
-            ],
-        },
-        "name": "sample_product",
-        "workflow": "community",
-    }
+            },
+            "billing-code-config": starmap_ami_billing_config,
+            "name": "sample_product",
+            "cloud": "aws",
+            "workflow": "community",
+        }
+    ]
 
 
 @pytest.fixture
-def starmap_query_aws(starmap_response_aws: Dict[str, Any]) -> QueryResponse:
-    return QueryResponse.from_json(starmap_response_aws)
+def starmap_query_aws(starmap_response_aws: Dict[str, Any]) -> QueryResponseContainer:
+    return QueryResponseContainer.from_json(starmap_response_aws)
 
 
 @pytest.fixture
 def mapped_ami_push_item(
-    ami_push_item: AmiPushItem, starmap_query_aws: QueryResponse
+    ami_push_item: AmiPushItem, starmap_query_aws: QueryResponseContainer
 ) -> AmiPushItem:
     destinations = []
-    for _, dest_list in starmap_query_aws.clouds.items():
-        for dest in dest_list:
+    for mrobj in starmap_query_aws.responses[0].mappings.values():
+        for dest in mrobj:
             destinations.append(dest)
     return evolve(ami_push_item, dest=destinations)

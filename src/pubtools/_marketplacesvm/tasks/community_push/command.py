@@ -18,7 +18,7 @@ from ...cloud_providers.aws import name_from_push_item
 from ...services.rhsm import AwsRHSMClientService
 from ...task import RUN_RESULT
 from ..push import MarketplacesVMPush
-from ..push.items import MappedVMIPushItem, State
+from ..push.items import MappedVMIPushItemV2, State
 
 log = logging.getLogger("pubtools.marketplacesvm")
 
@@ -74,7 +74,7 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                     yield item
 
     @property
-    def mapped_items(self) -> List[MappedVMIPushItem]:  # type: ignore [override]
+    def mapped_items(self) -> List[MappedVMIPushItemV2]:  # type: ignore [override]
         """
         Return the mapped push item with destinations and metadata from StArMap.
 
@@ -89,25 +89,26 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                 self.args.starmap_url,
             )
             binfo = item.build_info
-            query = self.starmap.query_image_by_name(
+            query = self.query_image_by_name(
                 name=binfo.name,
                 version=binfo.version,
-                workflow=Workflow.community,
             )
+            query = self.filter_for_workflow(Workflow.community, query)
             if query:
+                query_returned_from_starmap = query[0]
                 log.info(
-                    "starmap query returned for %s : %s ",
+                    "starmap query returned for %s : %s",
                     item.name,
                     json.dumps(
                         {
                             "name": binfo.name,
                             "version": binfo.version,
-                            "query_response": asdict(query),
+                            "query_response": asdict(query_returned_from_starmap),
                         },
                         default=str,
                     ),
                 )
-                item = MappedVMIPushItem(item, query.clouds)
+                item = MappedVMIPushItemV2(item, query_returned_from_starmap)
                 mapped_items.append(item)
             else:
                 self._SKIPPED = True
@@ -279,14 +280,16 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
         set_accounts("snapshot_accounts", result)
         return result
 
-    def enrich_mapped_items(self, mapped_items: List[MappedVMIPushItem]) -> List[EnrichedPushItem]:
+    def enrich_mapped_items(
+        self, mapped_items: List[MappedVMIPushItemV2]
+    ) -> List[EnrichedPushItem]:
         """Load all missing information for each mapped item.
 
         It returns a list of dictionaries which contains the storage account and
         the push items for each account.
 
         Args:
-            mapped_items (List[MappedVMIPushItem]): The list of mapped items.
+            mapped_items (List[MappedVMIPushItemV2]): The list of mapped items.
 
         Returns:
             List[EnrichedPushItem]: List of resulting enriched push items.
@@ -294,14 +297,20 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
         result: List[EnrichedPushItem] = []
         for mapped_item in mapped_items:
             account_dict: EnrichedPushItem = {}
-            for storage_account, destinations in mapped_item.clouds.items():
+            for storage_account, mrobj in mapped_item.starmap_query_entity.mappings.items():
                 log.info("Processing the storage account %s", storage_account)
                 pi_and_sa_list: List[PushItemAndSA] = []
-                for dest in destinations:
+                for dest in mrobj.destinations:
                     pi = mapped_item.get_push_item_for_destination(dest)
                     log.debug("Mapped push item for %s: %s", storage_account, pi)
                     beta = self.args.beta or str(pi.release.type) == "beta"
-                    epi = enrich_push_item(pi, dest, beta=beta, require_bc=self._REQUIRE_BC)
+                    epi = enrich_push_item(
+                        pi,
+                        dest,
+                        beta=beta,
+                        require_bc=self._REQUIRE_BC,
+                        billing_config=mapped_item.starmap_query_entity.billing_code_config,
+                    )
                     log.debug("Enriched push item for %s: %s", storage_account, epi)
 
                     # SAP and RHEL-HA images are expected to be

@@ -2,12 +2,12 @@
 import pytest
 from attrs import evolve
 from pushsource import AmiPushItem
-from starmap_client.models import Destination
+from starmap_client.models import BillingCodeRule, Destination
 
 from pubtools._marketplacesvm.tasks.community_push.items import (
     _fix_arm64_arch,
-    _get_push_item_billing_code,
     _get_push_item_public_image,
+    _set_push_item_billing_code,
 )
 
 
@@ -22,13 +22,15 @@ def test_get_push_item_public_image(product: str, ami_push_item: AmiPushItem) ->
     assert res.public_image is False
 
 
-def test_get_push_item_billing_code_no_name(ami_push_item: AmiPushItem) -> None:
+def test_set_push_item_billing_code_no_name(ami_push_item: AmiPushItem) -> None:
     bcode = {
-        "sample-hourly": {
-            "codes": ["bp-6fa54006"],
-            "image_name": "sample_product",
-            "image_types": ["hourly"],
-        }
+        "sample-hourly": BillingCodeRule.from_json(
+            {
+                "codes": ["bp-6fa54006"],
+                "image_name": "sample_product",
+                "image_types": ["hourly"],
+            }
+        )
     }
 
     dst = Destination.from_json(
@@ -40,7 +42,7 @@ def test_get_push_item_billing_code_no_name(ami_push_item: AmiPushItem) -> None:
         }
     )
 
-    res = _get_push_item_billing_code(ami_push_item, dst)
+    res = _set_push_item_billing_code(ami_push_item, dst, bcode)
 
     res_bcode = res.billing_codes
     assert res_bcode.name == "Hourly2"
