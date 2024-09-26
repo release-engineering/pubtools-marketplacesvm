@@ -1,4 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
+import json
 import logging
 from typing import Generator
 from unittest import mock
@@ -7,7 +8,7 @@ import pytest
 from _pytest.capture import CaptureFixture
 from attrs import evolve
 from pushsource import AmiPushItem, KojiBuildInfo, PushItem, VHDPushItem
-from starmap_client.models import QueryResponse
+from starmap_client.models import QueryResponseContainer, QueryResponseEntity
 
 from pubtools._marketplacesvm.cloud_providers.base import CloudProvider
 from pubtools._marketplacesvm.tasks.push import MarketplacesVMPush, entry_point
@@ -46,10 +47,13 @@ def fake_source(
 
 @pytest.fixture()
 def fake_starmap(
-    starmap_query_aws: QueryResponse, starmap_query_azure: QueryResponse
+    starmap_query_aws: QueryResponseEntity, starmap_query_azure: QueryResponseEntity
 ) -> Generator[mock.MagicMock, None, None]:
     with mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.starmap") as m:
-        m.query_image_by_name.side_effect = [starmap_query_aws, starmap_query_azure]
+        m.query_image_by_name.side_effect = [
+            QueryResponseContainer([x]) for x in [starmap_query_aws, starmap_query_azure]
+        ]
+
         yield m
 
 
@@ -119,33 +123,38 @@ def test_do_push_ami_correct_id(
 
     mock_cloud_instance.return_value = FakeAWSProvider()
 
-    qr = QueryResponse.from_json(
+    qre = QueryResponseEntity.from_json(
         {
             "name": "fake-policy",
             "workflow": "stratosphere",
+            "cloud": "aws",
             "mappings": {
-                "aws-na": [
-                    {
-                        "destination": "NA-DESTINATION",
-                        "overwrite": False,
-                        "restrict_version": True,
-                        "restrict_major": 3,
-                        "restrict_minor": 1,
-                    },
-                ],
-                "aws-emea": [
-                    {
-                        "destination": "EMEA-DESTINATION",
-                        "overwrite": False,
-                        "restrict_version": True,
-                        "restrict_major": 3,
-                        "restrict_minor": 1,
-                    },
-                ],
+                "aws-na": {
+                    "destinations": [
+                        {
+                            "destination": "NA-DESTINATION",
+                            "overwrite": False,
+                            "restrict_version": True,
+                            "restrict_major": 3,
+                            "restrict_minor": 1,
+                        },
+                    ]
+                },
+                "aws-emea": {
+                    "destinations": [
+                        {
+                            "destination": "EMEA-DESTINATION",
+                            "overwrite": False,
+                            "restrict_version": True,
+                            "restrict_major": 3,
+                            "restrict_minor": 1,
+                        },
+                    ]
+                },
             },
         }
     )
-    mock_starmap.query_image_by_name.return_value = qr
+    mock_starmap.query_image_by_name.return_value = QueryResponseContainer([qre])
     mock_source.get.return_value.__enter__.return_value = [ami_push_item]
 
     command_tester.test(
@@ -198,29 +207,34 @@ def test_do_push_azure_correct_sas(
 
     mock_cloud_instance.return_value = FakeAzureProvider()
 
-    qr = QueryResponse.from_json(
+    qre = QueryResponseEntity.from_json(
         {
             "name": "fake-policy",
             "workflow": "stratosphere",
+            "cloud": "azure",
             "mappings": {
-                "azure-na": [
-                    {
-                        "destination": "NA-DESTINATION",
-                        "overwrite": False,
-                        "restrict_version": False,
-                    },
-                ],
-                "azure-emea": [
-                    {
-                        "destination": "EMEA-DESTINATION",
-                        "overwrite": False,
-                        "restrict_version": False,
-                    },
-                ],
+                "azure-na": {
+                    "destinations": [
+                        {
+                            "destination": "NA-DESTINATION",
+                            "overwrite": False,
+                            "restrict_version": False,
+                        },
+                    ]
+                },
+                "azure-emea": {
+                    "destinations": [
+                        {
+                            "destination": "EMEA-DESTINATION",
+                            "overwrite": False,
+                            "restrict_version": False,
+                        },
+                    ]
+                },
             },
         }
     )
-    mock_starmap.query_image_by_name.return_value = qr
+    mock_starmap.query_image_by_name.return_value = QueryResponseContainer([qre])
     mock_source.get.return_value.__enter__.return_value = [vhd_push_item]
 
     command_tester.test(
@@ -265,8 +279,7 @@ def test_do_push_prepush(
     fake_source.get.assert_called_once()
     starmap_calls = [mock.call(name="test-build", version="7.0") for _ in range(2)]
     fake_starmap.query_image_by_name.assert_has_calls(starmap_calls)
-    # get_provider and upload only calls for "aws-na", "aws-emea", "azure-na"
-    assert fake_cloud_instance.call_count == 3
+    fake_cloud_instance.assert_has_calls([mock.call(x) for x in ["aws-na", "aws-emea", "azure-na"]])
 
 
 @mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
@@ -342,22 +355,25 @@ def test_push_item_no_mapped_arch(
     command_tester: CommandTester,
 ) -> None:
     """Ensure the push item with no arch in mappings for is not filtered out."""
-    qr = QueryResponse.from_json(
+    qre = QueryResponseEntity.from_json(
         {
             "name": "fake-policy",
             "workflow": "stratosphere",
+            "cloud": "aws",
             "mappings": {
-                "aws-na": [
-                    {
-                        "destination": "ffffffff-ffff-ffff-ffff-ffffffffffff",
-                        "overwrite": False,
-                        "restrict_version": False,
-                    }
-                ]
+                "aws-na": {
+                    "destinations": [
+                        {
+                            "destination": "ffffffff-ffff-ffff-ffff-ffffffffffff",
+                            "overwrite": False,
+                            "restrict_version": False,
+                        }
+                    ],
+                }
             },
         }
     )
-    mock_starmap.query_image_by_name.return_value = qr
+    mock_starmap.query_image_by_name.return_value = QueryResponseContainer([qre])
 
     command_tester.test(
         lambda: entry_point(MarketplacesVMPush),
@@ -382,14 +398,15 @@ def test_push_item_no_destinations(
     command_tester: CommandTester,
 ) -> None:
     """Ensure the push item with no destinations is filtered out."""
-    qr = QueryResponse.from_json(
+    qr = QueryResponseEntity.from_json(
         {
             "name": "fake-policy",
             "workflow": "stratosphere",
-            "mappings": {"aws-na": []},
+            "cloud": "aws",
+            "mappings": {"aws-na": {"destinations": []}},
         }
     )
-    mock_starmap.query_image_by_name.return_value = qr
+    mock_starmap.query_image_by_name.return_value = QueryResponseContainer([qr])
 
     command_tester.test(
         lambda: entry_point(MarketplacesVMPush),
@@ -485,6 +502,48 @@ def test_push_overridden_destination(
     vhd_push_item = evolve(vhd_push_item, build_info=binfo)
     mock_source.get.return_value.__enter__.return_value = [ami_push_item, vhd_push_item]
 
+    policy = [
+        {
+            "mappings": {
+                "aws-na": {
+                    "destinations": [
+                        {
+                            "destination": "new_aws_na_destination",
+                            "overwrite": False,
+                            "restrict_version": False,
+                        }
+                    ]
+                },
+                "aws-emea": {
+                    "destinations": [
+                        {
+                            "destination": "new_aws_emea_destination",
+                            "overwrite": True,
+                            "restrict_version": False,
+                        }
+                    ]
+                },
+                "azure-na": {
+                    "destinations": [
+                        {
+                            "destination": "new_azure_destination1",
+                            "overwrite": True,
+                            "restrict_version": False,
+                        },
+                        {
+                            "destination": "new_azure_destination2",
+                            "overwrite": False,
+                            "restrict_version": False,
+                        },
+                    ]
+                },
+            },
+            "name": "sample-product",
+            "workflow": "stratosphere",
+            "cloud": "test",
+        }
+    ]
+
     command_tester.test(
         lambda: entry_point(MarketplacesVMPush),
         [
@@ -494,16 +553,7 @@ def test_push_overridden_destination(
             "--credentials",
             "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
             "--repo",
-            "{"
-            "\"mappings\": {"
-            "    \"aws-na\": [{\"destination\": \"new_aws_na_destination\", \"overwrite\": false, \"restrict_version\": false}],"  # noqa: E501
-            "    \"aws-emea\": [{\"destination\": \"new_aws_emea_destination\", \"overwrite\": true, \"restrict_version\": false}],"  # noqa: E501
-            "    \"azure-na\": [ "
-            "    {\"destination\": \"new_azure_destination1\", \"overwrite\": true, \"restrict_version\": false},"  # noqa: E501
-            "    {\"destination\": \"new_azure_destination2\", \"overwrite\": false, \"restrict_version\": false}"  # noqa: E501
-            "]"
-            "},"
-            "\"name\": \"sample-product\", \"workflow\": \"stratosphere\"}",
+            json.dumps(policy),
             "--debug",
             "koji:https://fakekoji.com?vmi_build=ami_build,azure_build",
         ],
@@ -524,6 +574,48 @@ def test_push_offline_starmap(
     vhd_push_item = evolve(vhd_push_item, build_info=binfo)
     mock_source.get.return_value.__enter__.return_value = [ami_push_item, vhd_push_item]
 
+    policy = [
+        {
+            "mappings": {
+                "aws-na": {
+                    "destinations": [
+                        {
+                            "destination": "new_aws_na_destination",
+                            "overwrite": False,
+                            "restrict_version": False,
+                        }
+                    ]
+                },
+                "aws-emea": {
+                    "destinations": [
+                        {
+                            "destination": "new_aws_emea_destination",
+                            "overwrite": True,
+                            "restrict_version": False,
+                        }
+                    ]
+                },
+                "azure-na": {
+                    "destinations": [
+                        {
+                            "destination": "new_azure_destination1",
+                            "overwrite": True,
+                            "restrict_version": False,
+                        },
+                        {
+                            "destination": "new_azure_destination2",
+                            "overwrite": False,
+                            "restrict_version": False,
+                        },
+                    ]
+                },
+            },
+            "name": "sample-product",
+            "workflow": "stratosphere",
+            "cloud": "test",
+        }
+    ]
+
     command_tester.test(
         lambda: entry_point(MarketplacesVMPush),
         [
@@ -533,16 +625,7 @@ def test_push_offline_starmap(
             "--credentials",
             "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
             "--repo",
-            "{"
-            "\"mappings\": {"
-            "    \"aws-na\": [{\"destination\": \"new_aws_na_destination\", \"overwrite\": false, \"restrict_version\": false}],"  # noqa: E501
-            "    \"aws-emea\": [{\"destination\": \"new_aws_emea_destination\", \"overwrite\": true, \"restrict_version\": false}],"  # noqa: E501
-            "    \"azure-na\": [ "
-            "    {\"destination\": \"new_azure_destination1\", \"overwrite\": true, \"restrict_version\": false},"  # noqa: E501
-            "    {\"destination\": \"new_azure_destination2\", \"overwrite\": false, \"restrict_version\": false}"  # noqa: E501
-            "]"
-            "},"
-            "\"name\": \"sample-product\", \"workflow\": \"stratosphere\"}",
+            json.dumps(policy),
             "--offline",
             "--debug",
             "koji:https://fakekoji.com?vmi_build=ami_build,azure_build",
@@ -632,7 +715,7 @@ def test_empty_value_to_collect(
     fake_starmap: mock.MagicMock,
     ami_push_item: AmiPushItem,
     command_tester: CommandTester,
-    starmap_query_aws: QueryResponse,
+    starmap_query_aws: QueryResponseEntity,
 ) -> None:
     """Ensure the JSONL exclude missing fields."""
     mock_source.get.return_value.__enter__.return_value = [ami_push_item]
