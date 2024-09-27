@@ -357,7 +357,7 @@ def test_push_item_no_mapped_arch(
     """Ensure the push item with no arch in mappings for is not filtered out."""
     qre = QueryResponseEntity.from_json(
         {
-            "name": "fake-policy",
+            "name": "test-build",
             "workflow": "stratosphere",
             "cloud": "aws",
             "mappings": {
@@ -400,7 +400,7 @@ def test_push_item_no_destinations(
     """Ensure the push item with no destinations is filtered out."""
     qr = QueryResponseEntity.from_json(
         {
-            "name": "fake-policy",
+            "name": "test-build",
             "workflow": "stratosphere",
             "cloud": "aws",
             "mappings": {"aws-na": {"destinations": []}},
@@ -523,6 +523,13 @@ def test_push_overridden_destination(
                         }
                     ]
                 },
+            },
+            "name": "sample-product",
+            "workflow": "stratosphere",
+            "cloud": "aws",
+        },
+        {
+            "mappings": {
                 "azure-na": {
                     "destinations": [
                         {
@@ -540,8 +547,8 @@ def test_push_overridden_destination(
             },
             "name": "sample-product",
             "workflow": "stratosphere",
-            "cloud": "test",
-        }
+            "cloud": "azure",
+        },
     ]
 
     command_tester.test(
@@ -577,6 +584,27 @@ def test_push_offline_starmap(
     policy = [
         {
             "mappings": {
+                "azure-na": {
+                    "destinations": [
+                        {
+                            "destination": "new_azure_destination1",
+                            "overwrite": True,
+                            "restrict_version": False,
+                        },
+                        {
+                            "destination": "new_azure_destination2",
+                            "overwrite": False,
+                            "restrict_version": False,
+                        },
+                    ]
+                },
+            },
+            "name": "sample-product",
+            "workflow": "stratosphere",
+            "cloud": "azure",
+        },
+        {
+            "mappings": {
                 "aws-na": {
                     "destinations": [
                         {
@@ -595,25 +623,11 @@ def test_push_offline_starmap(
                         }
                     ]
                 },
-                "azure-na": {
-                    "destinations": [
-                        {
-                            "destination": "new_azure_destination1",
-                            "overwrite": True,
-                            "restrict_version": False,
-                        },
-                        {
-                            "destination": "new_azure_destination2",
-                            "overwrite": False,
-                            "restrict_version": False,
-                        },
-                    ]
-                },
             },
             "name": "sample-product",
             "workflow": "stratosphere",
-            "cloud": "test",
-        }
+            "cloud": "aws",
+        },
     ]
 
     command_tester.test(

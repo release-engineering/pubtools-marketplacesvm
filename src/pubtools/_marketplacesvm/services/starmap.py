@@ -4,7 +4,7 @@ from argparse import ArgumentParser
 from typing import Any, Dict, List, Optional
 
 from starmap_client import StarmapClient
-from starmap_client.models import QueryResponseContainer, QueryResponseEntity, Workflow
+from starmap_client.models import QueryResponseContainer, QueryResponseEntity
 from starmap_client.providers import InMemoryMapProviderV2
 from starmap_client.session import StarmapMockSession, StarmapSession
 
@@ -130,18 +130,19 @@ class StarmapService(Service):
         return self._query_server(name, version)
 
     @staticmethod
-    def filter_for_workflow(
-        workflow: Workflow, responses: List[QueryResponseEntity]
+    def filter_for(
+        responses: List[QueryResponseEntity],
+        **kwargs,
     ) -> List[QueryResponseEntity]:
-        """Filter a list of responses using the requested workflow.
+        """Filter a list of responses using the requested parameters.
 
         Args:
-            workflow (Workflow):
-                The workflow to select the list data
             responses (list):
                 A list of responses from StArMap APIv2.
+            kwargs:
+                The filter parameters to select the list data
         Returns:
-            List[QueryResponseEntity]: List with filtered data for the requested workflow.
+            List[QueryResponseEntity]: List with filtered data for the requested criteria.
         """
         qrc = QueryResponseContainer(responses)
-        return qrc.filter_by_workflow(workflow)
+        return qrc.filter_by(**kwargs)

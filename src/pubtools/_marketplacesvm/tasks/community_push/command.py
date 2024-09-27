@@ -17,6 +17,7 @@ from pubtools._marketplacesvm.tasks.community_push.items import enrich_push_item
 from ...cloud_providers.aws import name_from_push_item
 from ...services.rhsm import AwsRHSMClientService
 from ...task import RUN_RESULT
+from ...utils import CLOUD_NAME_FOR_PI
 from ..push import MarketplacesVMPush
 from ..push.items import MappedVMIPushItemV2, State
 
@@ -89,11 +90,12 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                 self.args.starmap_url,
             )
             binfo = item.build_info
+            cloud = CLOUD_NAME_FOR_PI[type(item)]
             query = self.query_image_by_name(
                 name=binfo.name,
                 version=binfo.version,
             )
-            query = self.filter_for_workflow(Workflow.community, query)
+            query = self.filter_for(query, workflow=Workflow.community, cloud=cloud)
             if query:
                 query_returned_from_starmap = query[0]
                 log.info(
@@ -112,7 +114,7 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                 mapped_items.append(item)
             else:
                 self._SKIPPED = True
-                log.error(f"No mappings found for {binfo.name}")
+                log.error(f"No community mappings found for {binfo.name} on cloud {cloud}")
         return mapped_items
 
     def in_rhsm(self, product: str, image_type: str, aws_provider_name: str) -> bool:

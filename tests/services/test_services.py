@@ -84,7 +84,7 @@ def test_starmap_filter_workflow(mock_client: MagicMock) -> None:
     instance = MarketplacesVMPush()
     with patch.object(sys, "argv", arg):
         q = instance.query_image_by_name("product-test")
-        res = instance.filter_for_workflow(Workflow.community, q)
+        res = instance.filter_for(q, workflow=Workflow.community)
 
     assert res == [expected]
 

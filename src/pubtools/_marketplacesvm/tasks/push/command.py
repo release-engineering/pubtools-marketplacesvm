@@ -14,6 +14,7 @@ from starmap_client.models import QueryResponseEntity, Workflow
 from ...arguments import SplitAndExtend
 from ...services import CloudService, CollectorService, StarmapService
 from ...task import RUN_RESULT, MarketplacesVMTask
+from ...utils import CLOUD_NAME_FOR_PI
 from ..push.items import MappedVMIPushItemV2, State
 
 log = logging.getLogger("pubtools.marketplacesvm")
@@ -71,11 +72,12 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                 name = binfo.name + "-" + item.marketplace_name
             else:
                 name = binfo.name
+            cloud = CLOUD_NAME_FOR_PI[type(item)]
             query = self.query_image_by_name(
                 name=name,
                 version=binfo.version,
             )
-            query = self.filter_for_workflow(Workflow.stratosphere, query)
+            query = self.filter_for(query, workflow=Workflow.stratosphere, cloud=cloud)
             if query:
                 query_returned_from_starmap = query[0]
                 log.info(
@@ -96,7 +98,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                 mapped_items.append({"item": item, "starmap_query": query_returned_from_starmap})
             else:
                 self._SKIPPED = True
-                log.error(f"No mappings found for {binfo.name}")
+                log.error(f"No marketplace mappings found for {binfo.name} on cloud {cloud}")
         return mapped_items
 
     def _upload(
