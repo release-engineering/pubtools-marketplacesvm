@@ -1,10 +1,11 @@
 import logging
 import threading
 from argparse import ArgumentParser
-from typing import Any, Dict
+from typing import Any, Dict, List, Optional
 
 from starmap_client import StarmapClient
-from starmap_client.providers import InMemoryMapProvider
+from starmap_client.models import QueryResponseContainer, QueryResponseEntity
+from starmap_client.providers import InMemoryMapProviderV2
 from starmap_client.session import StarmapMockSession, StarmapSession
 
 from ..arguments import RepoQueryLoad
@@ -23,6 +24,7 @@ class StarmapService(Service):
     def __init__(self, *args, **kwargs) -> None:
         """Instantiate a StarmapService object."""
         self._instance = None
+        self._container = None
         self._lock = threading.Lock()
         super(StarmapService, self).__init__(*args, **kwargs)
 
@@ -49,9 +51,9 @@ class StarmapService(Service):
             "--repo",
             help="Override the StArMap mappings for push items. "
             "e.g: {'name': 'foo', 'workflow': 'stratosphere': "
-            "{'aws-na': [{'destination': 'c39fd...'}, ...]},...}",
+            "[{'aws-na': {'destinations' [{'destination': 'c39fd...'}, ...]},...},...}]",
             type=str,
-            default={},
+            default=[],
             action=RepoQueryLoad,
         )
 
@@ -70,7 +72,8 @@ class StarmapService(Service):
         """
         local_mappings = self._service_args.repo
         if local_mappings:
-            provider = InMemoryMapProvider(local_mappings)
+            self._container = QueryResponseContainer.from_json(local_mappings)
+            provider = InMemoryMapProviderV2(container=self._container)
             return {"provider": provider}
         elif self._service_args.offline is True:
             self.parser.error("Cannot use \"--offline\" without defining \"--repo\" mappings.")  # type: ignore [attr-defined]  # noqa: E501
@@ -84,6 +87,62 @@ class StarmapService(Service):
                 offline = self._service_args.offline
                 kwargs = self._get_repo()
                 session_klass = StarmapSession if not offline else StarmapMockSession
-                session = session_klass(self._service_args.starmap_url, api_version="v1")
+                session = session_klass(self._service_args.starmap_url, api_version="v2")
                 self._instance = StarmapClient(session=session, **kwargs)
         return self._instance
+
+    def _store_container_responses(self, qrc: QueryResponseContainer) -> None:
+        for qre in qrc.responses:
+            if qre not in self._container.responses:  # type: ignore [attr-defined]
+                self._container.responses.append(qre)  # type: ignore [attr-defined]
+
+    def _query_server(self, name: str, version: Optional[str]) -> List[QueryResponseEntity]:
+        qrc = self.starmap.query_image_by_name(name=name, version=version)
+        if not qrc:
+            return []
+        if not isinstance(qrc, QueryResponseContainer):
+            raise RuntimeError(f"Unknown response format from StArMap: {type(qrc)}")
+
+        self._container = self._container or qrc
+        with self._lock:
+            self._store_container_responses(qrc)
+        return qrc.responses
+
+    def query_image_by_name(
+        self, name: str, version: Optional[str] = None
+    ) -> List[QueryResponseEntity]:
+        """Perform a query to StArMap whenever necessary.
+
+        It will use the internaly stored container for filtering whenever a mapping matches it.
+
+        This prevents unecessary calls to the server, acting like a cache for it.
+
+        Args:
+            name (str):
+                The image name to query
+            version (str, optional):
+                The version to match the destinations.
+        Returns:
+            List[QueryResponseEntity]: The requested data when found or an empty list.
+        """
+        if self._container:
+            return self._container.filter_by_name(name) or self._query_server(name, version)
+        return self._query_server(name, version)
+
+    @staticmethod
+    def filter_for(
+        responses: List[QueryResponseEntity],
+        **kwargs,
+    ) -> List[QueryResponseEntity]:
+        """Filter a list of responses using the requested parameters.
+
+        Args:
+            responses (list):
+                A list of responses from StArMap APIv2.
+            kwargs:
+                The filter parameters to select the list data
+        Returns:
+            List[QueryResponseEntity]: List with filtered data for the requested criteria.
+        """
+        qrc = QueryResponseContainer(responses)
+        return qrc.filter_by(**kwargs)

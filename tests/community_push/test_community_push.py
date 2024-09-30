@@ -3,6 +3,7 @@ import contextlib
 import io
 import json
 import re
+from copy import deepcopy
 from typing import Any, Dict, Generator
 from unittest import mock
 
@@ -10,7 +11,7 @@ import pytest
 from _pytest.capture import CaptureFixture
 from attrs import evolve
 from pushsource import AmiPushItem, KojiBuildInfo, VHDPushItem
-from starmap_client.models import QueryResponse, Workflow
+from starmap_client.models import QueryResponseContainer, QueryResponseEntity
 
 from pubtools._marketplacesvm.cloud_providers import CloudProvider
 from pubtools._marketplacesvm.tasks.community_push import CommunityVMPush, entry_point
@@ -61,9 +62,11 @@ def fake_source(ami_push_item: AmiPushItem) -> Generator[mock.MagicMock, None, N
 
 
 @pytest.fixture()
-def fake_starmap(starmap_query_aws: QueryResponse) -> Generator[mock.MagicMock, None, None]:
+def fake_starmap(
+    starmap_query_aws: QueryResponseContainer,
+) -> Generator[mock.MagicMock, None, None]:
     with mock.patch("pubtools._marketplacesvm.tasks.community_push.CommunityVMPush.starmap") as m:
-        m.query_image_by_name.side_effect = [starmap_query_aws]
+        m.query_image_by_name.return_value = starmap_query_aws
         yield m
 
 
@@ -115,14 +118,12 @@ def test_do_community_push(
     )
 
     fake_source.get.assert_called_once()
-    fake_starmap.query_image_by_name.assert_called_once_with(
-        name="test-build", version="7.0", workflow=Workflow.community
-    )
+    fake_starmap.query_image_by_name.assert_called_once_with(name="test-build", version="7.0")
 
 
 @pytest.mark.parametrize(
     "filename",
-    ["tests/community_push/data/sap-community.json"],
+    ["tests/data/starmap/sap-community.json"],
     ids=["sap-community.json"],
 )
 @mock.patch("pubtools._marketplacesvm.tasks.community_push.CommunityVMPush.starmap")
@@ -137,8 +138,7 @@ def test_do_community_push_from_starmap_data(
     # Add the custom starmap mapping
     with open(filename, 'r') as f:
         policy = json.load(f)
-
-    mock_starmap.query_image_by_name.return_value = QueryResponse.from_json(policy)
+    mock_starmap.query_image_by_name.return_value = QueryResponseContainer.from_json(policy)
 
     # Test
     command_tester.test(
@@ -207,9 +207,7 @@ def test_do_community_push_skip_billing_codes(
     )
 
     fake_source.get.assert_called_once()
-    fake_starmap.query_image_by_name.assert_called_once_with(
-        name="test-build", version="7.0", workflow=Workflow.community
-    )
+    fake_starmap.query_image_by_name.assert_called_once_with(name="test-build", version="7.0")
 
 
 @mock.patch("pubtools._marketplacesvm.tasks.community_push.command.Source")
@@ -221,10 +219,40 @@ def test_do_community_push_overridden_destination(
     ami_push_item: AmiPushItem,
 ) -> None:
     """Test a community push success with the destinations overriden from command line."""
-    b_conf_str = json.dumps(starmap_ami_billing_config)
     binfo = KojiBuildInfo(name="sample-product", version="7.0", release="20230101")
     ami_push_item = evolve(ami_push_item, build_info=binfo)
     mock_source.get.return_value.__enter__.return_value = [ami_push_item]
+
+    policy = [
+        {
+            "mappings": {
+                "aws-na": {
+                    "destinations": [
+                        {
+                            "destination": "new_aws-na_destination",
+                            "overwrite": False,
+                            "restrict_version": False,
+                        }
+                    ],
+                    "provider": "awstest",
+                },
+                "aws-emea": {
+                    "destinations": [
+                        {
+                            "destination": "new_aws-emea_destination",
+                            "overwrite": True,
+                            "restrict_version": False,
+                        }
+                    ],
+                    "provider": "awstest",
+                },
+            },
+            "billing-code-config": starmap_ami_billing_config,
+            "cloud": "aws",
+            "name": "sample-product",
+            "workflow": "community",
+        }
+    ]
 
     command_tester.test(
         lambda: entry_point(CommunityVMPush),
@@ -235,18 +263,7 @@ def test_do_community_push_overridden_destination(
             "--credentials",
             "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
             "--repo",
-            "{"
-            "\"mappings\": {"
-            "    \"aws-na\": [{\"destination\": \"new_aws-na_destination\","
-            "                  \"overwrite\": false, \"restrict_version\": false,"
-            "                  \"provider\": \"awstest\","
-            "                  \"meta\": {\"billing-code-config\": " + b_conf_str + "} }],"
-            "    \"aws-emea\": [{\"destination\": \"new_aws-emea_destination\","
-            "                  \"overwrite\": true, \"restrict_version\": false,"
-            "                  \"provider\": \"awstest\","
-            "                  \"meta\": {\"billing-code-config\": " + b_conf_str + "} }]"
-            "},"
-            "\"name\": \"sample-product\", \"workflow\": \"community\"}",
+            json.dumps(policy),
             "--rhsm-url",
             "https://rhsm.com/test/api/",
             "--debug",
@@ -264,10 +281,40 @@ def test_do_community_push_offline_starmap(
     ami_push_item: AmiPushItem,
 ) -> None:
     """Test a community push success without connection to the Starmap Server using --repo mappings."""  # noqa: E501
-    b_conf_str = json.dumps(starmap_ami_billing_config)
     binfo = KojiBuildInfo(name="sample-product", version="7.0", release="20230101")
     ami_push_item = evolve(ami_push_item, build_info=binfo)
     mock_source.get.return_value.__enter__.return_value = [ami_push_item]
+
+    policy = [
+        {
+            "mappings": {
+                "aws-na": {
+                    "destinations": [
+                        {
+                            "destination": "new_aws-na_destination",
+                            "overwrite": False,
+                            "restrict_version": False,
+                        }
+                    ],
+                    "provider": "awstest",
+                },
+                "aws-emea": {
+                    "destinations": [
+                        {
+                            "destination": "new_aws-emea_destination",
+                            "overwrite": True,
+                            "restrict_version": False,
+                        }
+                    ],
+                    "provider": "awstest",
+                },
+            },
+            "billing-code-config": starmap_ami_billing_config,
+            "cloud": "aws",
+            "name": "sample-product",
+            "workflow": "community",
+        }
+    ]
 
     command_tester.test(
         lambda: entry_point(CommunityVMPush),
@@ -278,18 +325,7 @@ def test_do_community_push_offline_starmap(
             "--credentials",
             "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
             "--repo",
-            "{"
-            "\"mappings\": {"
-            "    \"aws-na\": [{\"destination\": \"new_aws-na_destination\","
-            "                  \"overwrite\": false, \"restrict_version\": false,"
-            "                  \"provider\": \"awstest\","
-            "                  \"meta\": {\"billing-code-config\": " + b_conf_str + "} }],"
-            "    \"aws-emea\": [{\"destination\": \"new_aws-emea_destination\","
-            "                  \"overwrite\": true, \"restrict_version\": false,"
-            "                  \"provider\": \"awstest\","
-            "                  \"meta\": {\"billing-code-config\": " + b_conf_str + "} }]"
-            "},"
-            "\"name\": \"sample-product\", \"workflow\": \"community\"}",
+            json.dumps(policy),
             "--offline",
             "--rhsm-url",
             "https://rhsm.com/test/api/",
@@ -348,23 +384,28 @@ def test_do_community_push_skip_houly_sap_ha(
     mock_source.get.return_value.__enter__.return_value = [pi]
 
     # Create a fake mapping
-    policy = {
-        "name": product_name,
-        "workflow": "community",
-        "mappings": {
-            "aws_storage": [
-                {
-                    "architecture": "x86_64",
-                    "destination": "fake-destination-access",
-                    "overwrite": False,
-                    "restrict_version": False,
+    policy = [
+        {
+            "name": product_name,
+            "workflow": "community",
+            "cloud": "aws",
+            "billing-code-config": starmap_ami_billing_config,
+            "mappings": {
+                "aws_storage": {
+                    "destinations": [
+                        {
+                            "architecture": "x86_64",
+                            "destination": "fake-destination-access",
+                            "overwrite": False,
+                            "restrict_version": False,
+                        }
+                    ],
                     "provider": "awstest",
-                    "meta": {"billing-code-config": starmap_ami_billing_config},
-                }
-            ]
+                },
+            },
         },
-    }
-    mock_starmap.query_image_by_name.return_value = QueryResponse.from_json(policy)
+    ]
+    mock_starmap.query_image_by_name.return_value = QueryResponseContainer.from_json(policy)
 
     # Test
     command_tester.test(
@@ -391,23 +432,27 @@ def test_do_community_push_no_billing_config(
     command_tester: CommandTester,
 ) -> None:
     # Create a fake mapping
-    policy = {
-        "name": "sample-product",
-        "workflow": "community",
-        "mappings": {
-            "aws_storage": [
-                {
-                    "architecture": "x86_64",
-                    "destination": "fake-destination-access",
-                    "overwrite": False,
-                    "restrict_version": False,
+    policy = [
+        {
+            "name": "sample-product",
+            "workflow": "community",
+            "cloud": "aws",
+            "mappings": {
+                "aws_storage": {
+                    "destinations": [
+                        {
+                            "architecture": "x86_64",
+                            "destination": "fake-destination-access",
+                            "overwrite": False,
+                            "restrict_version": False,
+                        }
+                    ],
                     "provider": "awstest",
-                    "meta": {},
                 }
-            ]
-        },
-    }
-    mock_starmap.query_image_by_name.return_value = QueryResponse.from_json(policy)
+            },
+        }
+    ]
+    mock_starmap.query_image_by_name.return_value = QueryResponseContainer.from_json(policy)
 
     # Test
     output = io.StringIO()
@@ -442,25 +487,30 @@ def test_do_community_push_major_minor(
 ) -> None:
     # Create a fake mapping
     monkeypatch.setattr(CommunityVMPush, '_REQUIRE_BC', False)
-    policy = {
-        "name": "sample-product",
-        "workflow": "community",
-        "mappings": {
-            "aws_storage": [
-                {
-                    "architecture": "x86_64",
-                    "destination": "fake-destination-access",
-                    "overwrite": False,
-                    "restrict_version": False,
-                    "restrict_major": 2,
-                    "restrict_minor": 2,
+    policy = [
+        {
+            "name": "sample-product",
+            "workflow": "community",
+            "cloud": "aws",
+            "mappings": {
+                "aws_storage": {
+                    "destinations": [
+                        {
+                            "architecture": "x86_64",
+                            "destination": "fake-destination-access",
+                            "overwrite": False,
+                            "restrict_version": False,
+                            "restrict_major": 2,
+                            "restrict_minor": 2,
+                            "meta": {},
+                        }
+                    ],
                     "provider": "awstest",
-                    "meta": {},
                 }
-            ]
-        },
-    }
-    mock_starmap.query_image_by_name.return_value = QueryResponse.from_json(policy)
+            },
+        }
+    ]
+    mock_starmap.query_image_by_name.return_value = QueryResponseContainer.from_json(policy)
 
     # Test
     command_tester.test(
@@ -577,12 +627,12 @@ def test_no_rhsm_url(
 def test_not_in_rhsm(
     fake_starmap: mock.MagicMock,
     fake_source: mock.MagicMock,
-    starmap_query_aws: QueryResponse,
+    starmap_query_aws: QueryResponseEntity,
     command_tester: CommandTester,
 ) -> None:
     """Ensure there's an error when the product is not in RHSM."""
-    for dest_list in starmap_query_aws.clouds.values():
-        for dest in dest_list:
+    for mrojb in starmap_query_aws.responses[0].mappings.values():
+        for dest in mrojb.destinations:
             dest.meta["release"]["product"] = "not_in_rhsm_product"
 
     command_tester.test(
@@ -660,7 +710,7 @@ def test_empty_value_to_collect(
     fake_starmap: mock.MagicMock,
     ami_push_item: AmiPushItem,
     command_tester: CommandTester,
-    starmap_query_aws: QueryResponse,
+    starmap_query_aws: QueryResponseEntity,
 ) -> None:
     """Ensure the JSONL exclude missing fields."""
     mock_source.get.return_value.__enter__.return_value = [ami_push_item]
@@ -732,54 +782,64 @@ def test_do_community_push_different_sharing_accounts(
     mock_cloud_instance.return_value.upload.return_value = (ami_push_item, mock_ami)
     monkeypatch.setattr(CommunityVMPush, "cloud_instance", mock_cloud_instance)
     mock_source.get.return_value.__enter__.return_value = [ami_push_item for _ in range(2)]
-    policy1 = {
-        "name": "test-product",
-        "workflow": "community",
-        "mappings": {
-            "aws_storage": [
-                {
-                    "architecture": "x86_64",
-                    "destination": "fake-destination-access",
-                    "overwrite": False,
-                    "restrict_version": False,
+    policy1 = [
+        {
+            "name": "test-product",
+            "workflow": "community",
+            "billing-code-config": deepcopy(starmap_ami_billing_config),
+            "cloud": "aws",
+            "mappings": {
+                "aws_storage": {
+                    "destinations": [
+                        {
+                            "architecture": "x86_64",
+                            "destination": "fake-destination-access",
+                            "overwrite": False,
+                            "restrict_version": False,
+                            "volume": "/dev/sda1",
+                            "meta": {
+                                "accounts": [
+                                    "first_account",
+                                    "second_account",
+                                ],
+                            },
+                        }
+                    ],
                     "provider": "awstest",
-                    "volume": "/dev/sda1",
-                    "meta": {
-                        "billing-code-config": starmap_ami_billing_config,
-                        "accounts": [
-                            "first_account",
-                            "second_account",
-                        ],
-                    },
                 }
-            ]
-        },
-    }
-    policy2 = {
-        "name": "test-product2",
-        "workflow": "community",
-        "mappings": {
-            "aws_storage": [
-                {
-                    "architecture": "x86_64",
-                    "destination": "fake-destination-access2",
-                    "overwrite": True,
-                    "restrict_version": True,
+            },
+        }
+    ]
+    policy2 = [
+        {
+            "name": "test-product2",
+            "workflow": "community",
+            "billing-code-config": deepcopy(starmap_ami_billing_config),
+            "cloud": "aws",
+            "mappings": {
+                "aws_storage": {
+                    "destinations": [
+                        {
+                            "architecture": "x86_64",
+                            "destination": "fake-destination-access2",
+                            "overwrite": True,
+                            "restrict_version": True,
+                            "volume": "/dev/sda1",
+                            "meta": {
+                                "accounts": [
+                                    "third_account",
+                                    "fourth_account",
+                                ],
+                            },
+                        }
+                    ],
                     "provider": "anotherprovider",
-                    "volume": "/dev/sda1",
-                    "meta": {
-                        "billing-code-config": starmap_ami_billing_config,
-                        "accounts": [
-                            "third_account",
-                            "fourth_account",
-                        ],
-                    },
                 }
-            ]
-        },
-    }
+            },
+        }
+    ]
     mock_starmap.query_image_by_name.side_effect = [
-        QueryResponse.from_json(pol) for pol in [policy1, policy2]
+        QueryResponseContainer.from_json(pol) for pol in [policy1, policy2]
     ]
 
     # Test
@@ -836,28 +896,33 @@ def test_sharing_accounts_community_format(
         "account3",
     ]
     # Create a fake mapping
-    policy = {
-        "name": "test-product",
-        "workflow": "community",
-        "mappings": {
-            "aws_storage": [
-                {
-                    "architecture": "x86_64",
-                    "destination": "fake-destination-access",
-                    "overwrite": False,
-                    "restrict_version": False,
+    policy = [
+        {
+            "name": "test-product",
+            "workflow": "community",
+            "billing-code-config": starmap_ami_billing_config,
+            "cloud": "aws",
+            "mappings": {
+                "aws_storage": {
+                    "destinations": [
+                        {
+                            "architecture": "x86_64",
+                            "destination": "fake-destination-access",
+                            "overwrite": False,
+                            "restrict_version": False,
+                            "meta": {
+                                "accounts": {
+                                    "default": accounts,
+                                },
+                            },
+                        }
+                    ],
                     "provider": "awstest",
-                    "meta": {
-                        "billing-code-config": starmap_ami_billing_config,
-                        "accounts": {
-                            "default": accounts,
-                        },
-                    },
                 }
-            ]
-        },
-    }
-    mock_starmap.query_image_by_name.return_value = QueryResponse.from_json(policy)
+            },
+        }
+    ]
+    mock_starmap.query_image_by_name.return_value = QueryResponseContainer.from_json(policy)
     monkeypatch.setattr
 
     command_tester.test(
@@ -893,26 +958,31 @@ def test_sharing_accounts_marketplace_format(
         "account3",
     ]
     # Create a fake mapping
-    policy = {
-        "name": "test-product",
-        "workflow": "community",
-        "mappings": {
-            "aws_storage": [
-                {
-                    "architecture": "x86_64",
-                    "destination": "fake-destination-access",
-                    "overwrite": False,
-                    "restrict_version": False,
+    policy = [
+        {
+            "name": "test-product",
+            "workflow": "community",
+            "billing-code-config": starmap_ami_billing_config,
+            "cloud": "aws",
+            "mappings": {
+                "aws_storage": {
+                    "destinations": [
+                        {
+                            "architecture": "x86_64",
+                            "destination": "fake-destination-access",
+                            "overwrite": False,
+                            "restrict_version": False,
+                            "meta": {
+                                "sharing_accounts": accounts,
+                            },
+                        }
+                    ],
                     "provider": "awstest",
-                    "meta": {
-                        "billing-code-config": starmap_ami_billing_config,
-                        "sharing_accounts": accounts,
-                    },
                 }
-            ]
-        },
-    }
-    mock_starmap.query_image_by_name.return_value = QueryResponse.from_json(policy)
+            },
+        }
+    ]
+    mock_starmap.query_image_by_name.return_value = QueryResponseContainer.from_json(policy)
     monkeypatch.setattr
 
     command_tester.test(

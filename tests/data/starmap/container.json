@@ -1,0 +1,116 @@
+[
+    {
+        "cloud": "test",
+        "mappings": {
+            "test-emea": {
+                "destinations": [
+                    {
+                        "architecture": "x86_64",
+                        "destination": "destination1",
+                        "overwrite": false,
+                        "restrict_version": true
+                    }
+                ],
+                "meta": {
+                    "description": "EMEA description"
+                },
+                "provider": null
+            },
+            "test-na": {
+                "destinations": [
+                    {
+                        "architecture": "x86_64",
+                        "destination": "destination2",
+                        "overwrite": false,
+                        "restrict_version": true
+                    }
+                ],
+                "meta": {
+                    "description": "NA description"
+                },
+                "provider": null
+            }
+        },
+        "meta": {
+            "foo": "bar"
+        },
+        "name": "product-test",
+        "workflow": "stratosphere"
+    },
+    {
+        "cloud": "test",
+        "billing-code-config": {
+            "test-access": {
+                "codes": [
+                    "code-000"
+                ],
+                "image_name": "test",
+                "image_types": [
+                    "access"
+                ],
+                "name": "Access2"
+            },
+            "test-marketplace": {
+                "codes": [],
+                "image_name": "test",
+                "image_types": [
+                    "marketplace"
+                ],
+                "name": "Marketplace"
+            },
+            "test-hourly": {
+                "codes": [
+                    "code-0002"
+                ],
+                "image_name": "rhel",
+                "image_types": [
+                    "hourly"
+                ],
+                "name": "Hourly2"
+            }
+        },
+        "mappings": {
+            "test-storage": {
+                "destinations": [
+                    {
+                        "destination": "test-destination/foo/bar",
+                        "overwrite": false,
+                        "restrict_version": false
+                    },
+                    {
+                        "destination": "second-test-destination/foo/bar",
+                        "overwrite": true,
+                        "restrict_version": false
+                    }
+                ],
+                "provider": null,
+                "meta": {
+                    "foo": "bar"
+                }
+            },
+            "another-storage": {
+                "destinations": [
+                    {
+                        "destination": "aaaaaaaaaaaaaaa",
+                        "overwrite": false,
+                        "restrict_version": false
+                    },
+                    {
+                        "destination": "bbbbbbbbbbbbb",
+                        "overwrite": true,
+                        "restrict_version": false
+                    }
+                ],
+                "provider": null,
+                "meta": {
+                    "foo": "bar"
+                }
+            }
+        },
+        "workflow": "community",
+        "meta": {
+            "lorem": "ipsum"
+        },
+        "name": "product-test"
+    }
+]

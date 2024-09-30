@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any, Dict, List, Tuple
 
 import pytest
 from attrs import asdict, evolve
@@ -12,9 +12,9 @@ from pushsource import (
     VHDPushItem,
     VMIRelease,
 )
-from starmap_client.models import Destination, QueryResponse
+from starmap_client.models import Destination, QueryResponseEntity
 
-from pubtools._marketplacesvm.tasks.push.items import MappedVMIPushItem
+from pubtools._marketplacesvm.tasks.push.items import MappedVMIPushItemV2
 from pubtools._marketplacesvm.tasks.push.items.ami import (
     aws_access_endpoint_url_converter,
     aws_security_groups_converter,
@@ -24,25 +24,25 @@ from pubtools._marketplacesvm.tasks.push.items.ami import (
 def test_mapped_item_properties(
     ami_push_item: AmiPushItem,
     vhd_push_item: VHDPushItem,
-    starmap_query_aws: QueryResponse,
-    starmap_query_azure: QueryResponse,
+    starmap_query_aws: QueryResponseEntity,
+    starmap_query_azure: QueryResponseEntity,
 ) -> None:
-    """Ensure the MappedVMIPushItem properties return the expected values."""
-    items = [
+    """Ensure the MappedVMIPushItemV2 properties return the expected values."""
+    items: List[Tuple[VHDPushItem, QueryResponseEntity]] = [
         (ami_push_item, starmap_query_aws),
         (vhd_push_item, starmap_query_azure),
     ]
 
     for push_item, starmap_response in items:
-        mapped_item = MappedVMIPushItem(push_item, starmap_response.clouds)
+        mapped_item = MappedVMIPushItemV2(push_item, starmap_response)
 
         # -- Test Property: marketplaces
-        assert mapped_item.marketplaces == list(starmap_response.clouds.keys())
+        assert mapped_item.marketplaces == starmap_response.account_names
 
         # -- Test Property: destinations
         expected_destinations = []
-        for mkt in mapped_item.marketplaces:
-            expected_destinations.extend(starmap_response.clouds[mkt])
+        for _, mrobj in starmap_response.mappings.items():
+            expected_destinations.extend(mrobj.destinations)
         assert mapped_item.destinations == expected_destinations
 
         # -- Test Property: tags
@@ -53,9 +53,9 @@ def test_mapped_item_properties(
         assert mapped_item.tags == expected_tags
 
         # -- Test some attributes mapping
-        for mkt in starmap_response.clouds.keys():
+        for mkt in starmap_response.account_names:
             push_item = mapped_item.get_push_item_for_marketplace(mkt)
-            assert push_item.dest == starmap_response.clouds[mkt]
+            assert push_item.dest == starmap_response.mappings[mkt].destinations
             assert push_item.release.arch == "x86_64"
 
             # -- Test wrapped push_item changes
@@ -85,25 +85,25 @@ def test_mapped_item_fills_missing_attributes(
         assert not getattr(ami_push_item, f, None)
 
         # Define the missing fields in StArMap response for next test
-        starmap_response_aws["mappings"]["aws-na"][0]["meta"].update({f: f})
+        starmap_response_aws["mappings"]["aws-na"]["destinations"][0]["meta"].update({f: f})
 
     # Build the mapped item
-    starmap_response = QueryResponse.from_json(starmap_response_aws)
-    mapped_item = MappedVMIPushItem(ami_push_item, starmap_response.clouds)
+    starmap_response = QueryResponseEntity.from_json(starmap_response_aws)
+    mapped_item = MappedVMIPushItemV2(ami_push_item, starmap_response)
 
     # Ensure the missing fields were mapped
     for f in fields:
-        for mkt in starmap_response.clouds.keys():
+        for mkt in starmap_response.account_names:
             assert getattr(mapped_item.get_push_item_for_marketplace(mkt), f) == f
 
 
 def test_get_metadata_for_mapped_item(
-    vhd_push_item: VHDPushItem, starmap_query_azure: QueryResponse
+    vhd_push_item: VHDPushItem, starmap_query_azure: QueryResponseEntity
 ) -> None:
-    mapped_item = MappedVMIPushItem(vhd_push_item, starmap_query_azure.clouds)
+    mapped_item = MappedVMIPushItemV2(vhd_push_item, starmap_query_azure)
 
     # Test existing destinations
-    for dest in starmap_query_azure.clouds["azure-na"]:
+    for dest in starmap_query_azure.mappings["azure-na"].destinations:
         assert mapped_item.get_metadata_for_mapped_item(dest) == dest.meta
 
     # Test unknown destination
@@ -119,7 +119,7 @@ def test_get_metadata_for_mapped_item(
 
 
 def test_release_info_on_metadata_for_mapped_ami(
-    ami_push_item: AmiPushItem, starmap_query_aws: QueryResponse
+    ami_push_item: AmiPushItem, starmap_query_aws: QueryResponseEntity
 ) -> None:
     release_info = {
         "product": "test-product",
@@ -139,18 +139,18 @@ def test_release_info_on_metadata_for_mapped_ami(
     )
 
     # We simulate having the "release" dict on each Destination for StArMap response.
-    for list_dest in starmap_query_aws.clouds.values():
-        for dest in list_dest:
+    for mapping in starmap_query_aws.all_mappings:
+        for dest in mapping.destinations:
             dest.meta["release"] = release_info
 
-    # Test whether the MappedVMIPushItem can return the inner push item with the proper release
-    mapped_item = MappedVMIPushItem(pi, starmap_query_aws.clouds)
+    # Test whether the MappedVMIPushItemV2 can return the inner push item with the proper release
+    mapped_item = MappedVMIPushItemV2(pi, starmap_query_aws)
 
     # Pushsource converts the "date" to datetime so we must do the same here to validate
     release_info["date"] = datetime.strptime(str(release_info["date"]), "%Y-%m-%d")
 
     # Validate the release data
-    for mkt in starmap_query_aws.clouds.keys():
+    for mkt in starmap_query_aws.account_names:
         pi = mapped_item.get_push_item_for_marketplace(mkt)
         rel_obj = pi.release
 
@@ -159,7 +159,7 @@ def test_release_info_on_metadata_for_mapped_ami(
 
 
 def test_release_info_on_metadata_for_mapped_vhd(
-    vhd_push_item: VHDPushItem, starmap_query_aws: QueryResponse
+    vhd_push_item: VHDPushItem, starmap_query_aws: QueryResponseEntity
 ) -> None:
     release_info = {
         "product": "test-product",
@@ -179,18 +179,18 @@ def test_release_info_on_metadata_for_mapped_vhd(
     )
 
     # We simulate having the "release" dict on each Destination for StArMap response.
-    for list_dest in starmap_query_aws.clouds.values():
-        for dest in list_dest:
+    for mapping in starmap_query_aws.all_mappings:
+        for dest in mapping.destinations:
             dest.meta["release"] = release_info
 
-    # Test whether the MappedVMIPushItem can return the inner push item with the proper release
-    mapped_item = MappedVMIPushItem(pi, starmap_query_aws.clouds)
+    # Test whether the MappedVMIPushItemV2 can return the inner push item with the proper release
+    mapped_item = MappedVMIPushItemV2(pi, starmap_query_aws)
 
     # Pushsource converts the "date" to datetime so we must do the same here to validate
     release_info["date"] = datetime.strptime(str(release_info["date"]), "%Y-%m-%d")
 
     # Validate the release data
-    for mkt in starmap_query_aws.clouds.keys():
+    for mkt in starmap_query_aws.account_names:
         pi = mapped_item.get_push_item_for_marketplace(mkt)
         rel_obj = pi.release
 
@@ -199,12 +199,12 @@ def test_release_info_on_metadata_for_mapped_vhd(
 
 
 def test_get_tags_for_mapped_item(
-    vhd_push_item: VHDPushItem, starmap_query_azure: QueryResponse
+    vhd_push_item: VHDPushItem, starmap_query_azure: QueryResponseEntity
 ) -> None:
-    mapped_item = MappedVMIPushItem(vhd_push_item, starmap_query_azure.clouds)
+    mapped_item = MappedVMIPushItemV2(vhd_push_item, starmap_query_azure)
 
     # Test existing destinations
-    for dest in starmap_query_azure.clouds["azure-na"]:
+    for dest in starmap_query_azure.mappings["azure-na"].destinations:
         assert mapped_item.get_tags_for_mapped_item(dest) == dest.tags or {}
 
     # Test unknown destination
@@ -220,10 +220,10 @@ def test_get_tags_for_mapped_item(
 
 
 def test_get_tags_for_marketplace(
-    vhd_push_item: VHDPushItem, starmap_query_azure: QueryResponse
+    vhd_push_item: VHDPushItem, starmap_query_azure: QueryResponseEntity
 ) -> None:
     expected_tags = {"key1": "value1", "key2": "value2"}
-    mapped_item = MappedVMIPushItem(vhd_push_item, starmap_query_azure.clouds)
+    mapped_item = MappedVMIPushItemV2(vhd_push_item, starmap_query_azure)
 
     assert mapped_item.get_tags_for_marketplace("azure-na") == expected_tags
 
@@ -232,11 +232,11 @@ def test_register_converter() -> None:
     def func(x: Any) -> str:
         return str(x)
 
-    assert not MappedVMIPushItem._CONVERTER_HANDLERS.get("test")
+    assert not MappedVMIPushItemV2._CONVERTER_HANDLERS.get("test")
 
-    MappedVMIPushItem.register_converter("test", func)
+    MappedVMIPushItemV2.register_converter("test", func)
 
-    assert MappedVMIPushItem._CONVERTER_HANDLERS.get("test") == func
+    assert MappedVMIPushItemV2._CONVERTER_HANDLERS.get("test") == func
 
 
 def test_converter_aws_securitygroups() -> None:

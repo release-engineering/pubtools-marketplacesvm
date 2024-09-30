@@ -4,28 +4,22 @@ from typing import Any, Callable, ClassVar, Dict, List
 from attrs import Factory, asdict, define, evolve, field
 from attrs.validators import deep_mapping, instance_of
 from pushsource import AmiPushItem, AmiRelease, VMIPushItem, VMIRelease
-from starmap_client.models import Destination
+from starmap_client.models import Destination, QueryResponseEntity
 
 log = logging.getLogger("pubtools.marketplacesvm")
 
 
 @define
-class MappedVMIPushItem:
-    """Wrap a VMIPushItem and its variations with additional information from StArMap."""
+class MappedVMIPushItemV2:
+    """Wrap a VMIPushItem and its variations with additional information from StArMap (APIv2)."""
 
     _CONVERTER_HANDLERS: ClassVar[Dict[str, Callable]] = {}
 
     push_item: VMIPushItem = field(validator=instance_of(VMIPushItem))
     """The underlying pushsource.VMIPushItem."""
 
-    clouds: Dict[str, List[Destination]] = field(
-        validator=deep_mapping(
-            key_validator=instance_of(str),
-            value_validator=instance_of(list),
-            mapping_validator=instance_of(dict),
-        )
-    )
-    """Dictionary with the marketplace accounts and its destinations."""
+    starmap_query_entity: QueryResponseEntity = field(validator=instance_of(QueryResponseEntity))
+    """A single QueryResponseEntity from StArMap."""
 
     _mapped_push_item: Dict[str, VMIPushItem] = field(
         alias="_mapped_push_item",
@@ -41,7 +35,7 @@ class MappedVMIPushItem:
     @property
     def marketplaces(self) -> List[str]:
         """Return a list of marketplaces accounts for the stored PushItem."""
-        return list(self.clouds.keys())
+        return self.starmap_query_entity.account_names
 
     @property
     def destinations(self) -> List[Destination]:
@@ -51,7 +45,7 @@ class MappedVMIPushItem:
             dest.extend(
                 [
                     dst
-                    for dst in self.clouds[mkt]
+                    for dst in self.starmap_query_entity.mappings[mkt].destinations
                     if not dst.architecture or dst.architecture == self.push_item.release.arch
                 ]
             )
@@ -153,7 +147,7 @@ class MappedVMIPushItem:
             raise ValueError(f"No such marketplace {account}")
 
         if not self._mapped_push_item.get(account):
-            destinations = self.clouds[account]
+            destinations = self.starmap_query_entity.mappings[account].destinations
             self._mapped_push_item[account] = self._map_push_item(destinations)
 
         return self._mapped_push_item.get(account)
@@ -218,7 +212,7 @@ class MappedVMIPushItem:
             raise ValueError(f"No such marketplace {account}")
 
         res = {}
-        destinations = self.clouds[account]
+        destinations = self.starmap_query_entity.mappings[account].destinations
         for dst in destinations:
             if dst.tags:
                 res.update(dst.tags)

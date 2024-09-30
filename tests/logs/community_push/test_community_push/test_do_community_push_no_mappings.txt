@@ -1,6 +1,6 @@
 [    INFO] Loading items from koji:https://fakekoji.com?vmi_build=ami_build
 [    INFO] Retrieving the mappings for ami_pushitem from https://starmap-example.com using the community workflow.
-[   ERROR] No mappings found for test-build
+[   ERROR] No community mappings found for test-build on cloud aws
 [   ERROR] No push item was processed.
 [    INFO] Collecting results
 [   ERROR] Community VM push failed

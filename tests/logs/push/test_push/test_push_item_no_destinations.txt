@@ -1,10 +1,9 @@
 [    INFO] Loading items from koji:https://fakekoji.com?vmi_build=ami_build
 [    INFO] Retrieving the mappings for ami_pushitem from https://starmap-example.com
-[    INFO] starmap query returned for ami_pushitem : {"name": "test-build", "version": "7.0", "query_response": {"name": "fake-policy", "workflow": "stratosphere", "clouds": {"aws-na": []}}} 
+[    INFO] starmap query returned for ami_pushitem : {"name": "test-build", "version": "7.0", "query_response": {"meta": null, "name": "test-build", "billing_code_config": {}, "cloud": "aws", "workflow": "stratosphere", "mappings": {"aws-na": {"meta": {}, "destinations": [], "provider": null}}}}
 [    INFO] Filtering out archive with no destinations: None
 [    INFO] Retrieving the mappings for vhd_pushitem from https://starmap-example.com
-[    INFO] starmap query returned for vhd_pushitem : {"name": "test-build", "version": "7.0", "query_response": {"name": "fake-policy", "workflow": "stratosphere", "clouds": {"aws-na": []}}} 
-[    INFO] Filtering out archive with no destinations: None
+[   ERROR] No marketplace mappings found for test-build on cloud azure
 [    INFO] Collecting results
 [   ERROR] Marketplace VM push failed
 # Raised: 30

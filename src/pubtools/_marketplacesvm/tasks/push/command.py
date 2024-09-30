@@ -9,15 +9,16 @@ from typing import Any, Dict, Iterator, List, Optional, Tuple, Union
 from attrs import asdict, evolve
 from more_executors import Executors
 from pushsource import Source, VMIPushItem
-from starmap_client.models import QueryResponse
+from starmap_client.models import QueryResponseEntity, Workflow
 
 from ...arguments import SplitAndExtend
 from ...services import CloudService, CollectorService, StarmapService
 from ...task import RUN_RESULT, MarketplacesVMTask
-from ..push.items import MappedVMIPushItem, State
+from ...utils import CLOUD_NAME_FOR_PI
+from ..push.items import MappedVMIPushItemV2, State
 
 log = logging.getLogger("pubtools.marketplacesvm")
-UPLOAD_RESULT = Tuple[MappedVMIPushItem, QueryResponse]
+UPLOAD_RESULT = Tuple[MappedVMIPushItemV2, QueryResponseEntity]
 
 
 class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, StarmapService):
@@ -56,7 +57,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                     yield item
 
     @property
-    def mapped_items(self) -> List[Dict[str, Union[MappedVMIPushItem, QueryResponse]]]:
+    def mapped_items(self) -> List[Dict[str, Union[MappedVMIPushItemV2, QueryResponseEntity]]]:
         """
         Return the mapped push item with destinations and metadata from StArMap.
 
@@ -71,31 +72,33 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                 name = binfo.name + "-" + item.marketplace_name
             else:
                 name = binfo.name
-            query = self.starmap.query_image_by_name(
+            cloud = CLOUD_NAME_FOR_PI[type(item)]
+            query = self.query_image_by_name(
                 name=name,
                 version=binfo.version,
             )
+            query = self.filter_for(query, workflow=Workflow.stratosphere, cloud=cloud)
             if query:
-                query_returned_from_starmap = query
+                query_returned_from_starmap = query[0]
                 log.info(
-                    "starmap query returned for %s : %s ",
+                    "starmap query returned for %s : %s",
                     item.name,
                     json.dumps(
                         {
                             "name": binfo.name,
                             "version": binfo.version,
-                            "query_response": asdict(query),
+                            "query_response": asdict(query_returned_from_starmap),
                         }
                     ),
                 )
-                item = MappedVMIPushItem(item, query.clouds)
+                item = MappedVMIPushItemV2(item, query_returned_from_starmap)
                 if not item.destinations:
                     log.info("Filtering out archive with no destinations: %s", item.push_item.src)
                     continue
                 mapped_items.append({"item": item, "starmap_query": query_returned_from_starmap})
             else:
                 self._SKIPPED = True
-                log.error(f"No mappings found for {binfo.name}")
+                log.error(f"No marketplace mappings found for {binfo.name} on cloud {cloud}")
         return mapped_items
 
     def _upload(
@@ -192,21 +195,8 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             pi = evolve(push_item, state=State.NOTPUSHED)
         return pi
 
-    def _allowed_to_publish(self, mapped_item: MappedVMIPushItem) -> bool:
-        """
-        Return True whenever the Marketplace publish is allowed, False otherwise.
-
-        It uses the combination of `--pre-push` and StArMap's `stage-preview` to determine
-        whether it's safe to proceed to publish or not.
-        """
-        # The pre_push should only allow publishing when it's not a pre_push
-        if not self.args.pre_push:
-            return True
-        # For other cases we must not publish
-        return False
-
     def _push_upload(
-        self, mapped_item: MappedVMIPushItem, starmap_query: QueryResponse
+        self, mapped_item: MappedVMIPushItemV2, starmap_query: QueryResponseEntity
     ) -> UPLOAD_RESULT:
         """Upload the mapped item to the storage accounts for all its marketplaces."""
         for marketplace in mapped_item.marketplaces:
@@ -245,7 +235,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
         for mapped_item, starmap_query in upload_result:
             for marketplace in mapped_item.marketplaces:
                 pi = mapped_item.get_push_item_for_marketplace(marketplace)
-                if pi.state != State.UPLOADFAILED and self._allowed_to_publish(mapped_item):
+                if pi.state != State.UPLOADFAILED and not self.args.pre_push:
                     destination_list = pi.dest
                     for dest in pi.dest:
                         log.info(
@@ -283,7 +273,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             pi = mapped_item.get_push_item_for_marketplace(marketplace)
 
             # Associate image with Product/Offer/Plan and publish only if it's not a pre-push
-            if pi.state != State.UPLOADFAILED and self._allowed_to_publish(mapped_item):
+            if pi.state != State.UPLOADFAILED and not self.args.pre_push:
                 # The first publish should always be with `pre_push` set True because it might
                 # happen that one offer with multiple plans would receive the same image and
                 # we can't `publish` the offer with just the first plan changed and try to change
@@ -302,7 +292,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                     pi,
                     pre_push=False,
                 )
-            elif pi.state != State.UPLOADFAILED and not self._allowed_to_publish(mapped_item):
+            elif pi.state != State.UPLOADFAILED and not not self.args.pre_push:
                 # Set the state as PUSHED when the operation is nochannel
                 pi = evolve(pi, state=State.PUSHED)
 
@@ -316,7 +306,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                 "push_item": push_item_for_collection,
                 "state": pi.state,
                 "marketplace": marketplace,
-                "destinations": mapped_item.clouds[marketplace],
+                "destinations": mapped_item.starmap_query_entity.mappings[marketplace].destinations,
                 "starmap_query": starmap_query,
             }
 

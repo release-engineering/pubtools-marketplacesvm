@@ -1,10 +1,10 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 import pytest
 from pushsource import AmiPushItem, AmiRelease, KojiBuildInfo, VHDPushItem, VMIRelease
-from starmap_client.models import QueryResponse
+from starmap_client.models import QueryResponseContainer
 
 from pubtools._marketplacesvm.tasks.combined_push.command import CombinedVMPush
 from pubtools._marketplacesvm.tasks.community_push.command import CommunityVMPush
@@ -73,34 +73,41 @@ def ami_push_item(release_params: Dict[str, Any], push_item_params: Dict[str, st
 
 
 @pytest.fixture
-def starmap_response_aws_marketplace() -> Dict[str, Any]:
+def starmap_response_aws_marketplace() -> List[Dict[str, Any]]:
     """Return the dictionary corresponding to a marketplace AWS response."""
-    return {
-        "mappings": {
-            "aws-na": [
-                {
-                    "architecture": "x86_64",
-                    "destination": "ffffffff-ffff-ffff-ffff-ffffffffffff",
-                    "overwrite": True,
-                    "restrict_version": False,
-                    "meta": {"tag1": "aws-na-value1", "tag2": "aws-na-value2"},
-                    "tags": {"key1": "value1", "key2": "value2"},
-                }
-            ],
-            "aws-emea": [
-                {
-                    "architecture": "x86_64",
-                    "destination": "00000000-0000-0000-0000-000000000000",
-                    "overwrite": True,
-                    "restrict_version": False,
-                    "meta": {"tag1": "aws-emea-value1", "tag2": "aws-emea-value2"},
-                    "tags": {"key3": "value3", "key4": "value4"},
-                }
-            ],
-        },
-        "name": "sample-product",
-        "workflow": "stratosphere",
-    }
+    return [
+        {
+            "mappings": {
+                "aws-na": {
+                    "destinations": [
+                        {
+                            "architecture": "x86_64",
+                            "destination": "ffffffff-ffff-ffff-ffff-ffffffffffff",
+                            "overwrite": True,
+                            "restrict_version": False,
+                            "meta": {"tag1": "aws-na-value1", "tag2": "aws-na-value2"},
+                            "tags": {"key1": "value1", "key2": "value2"},
+                        }
+                    ]
+                },
+                "aws-emea": {
+                    "destinations": [
+                        {
+                            "architecture": "x86_64",
+                            "destination": "00000000-0000-0000-0000-000000000000",
+                            "overwrite": True,
+                            "restrict_version": False,
+                            "meta": {"tag1": "aws-emea-value1", "tag2": "aws-emea-value2"},
+                            "tags": {"key3": "value3", "key4": "value4"},
+                        }
+                    ]
+                },
+            },
+            "name": "sample-product",
+            "workflow": "stratosphere",
+            "cloud": "aws",
+        }
+    ]
 
 
 @pytest.fixture()
@@ -122,7 +129,7 @@ def starmap_ami_billing_config() -> Dict[str, Any]:
 
 
 @pytest.fixture()
-def starmap_ami_meta(release_params, starmap_ami_billing_config) -> Dict[str, Any]:
+def starmap_ami_meta(release_params) -> Dict[str, Any]:
     return {
         "description": "Provided by Red Hat, Inc.",
         "virtualization": "hvm",
@@ -131,7 +138,6 @@ def starmap_ami_meta(release_params, starmap_ami_billing_config) -> Dict[str, An
         "sriov_net_support": "simple",
         "ena_support": True,
         "release": release_params,
-        "billing-code-config": starmap_ami_billing_config,
         "accounts": {
             "default": "000000",
             "us-east-1": "121212",
@@ -144,7 +150,9 @@ def starmap_ami_meta(release_params, starmap_ami_billing_config) -> Dict[str, An
 
 
 @pytest.fixture
-def starmap_response_aws_community(starmap_ami_meta) -> Dict[str, Any]:
+def starmap_response_aws_community(
+    starmap_ami_meta, starmap_ami_billing_config
+) -> List[Dict[str, Any]]:
     """Return the dictionary corresponding to a community AWS response."""
     destinations = [
         "us-east-1-hourly",
@@ -157,72 +165,85 @@ def starmap_response_aws_community(starmap_ami_meta) -> Dict[str, Any]:
         "us-west-2-access",
     ]
 
-    return {
-        "mappings": {
-            "aws_storage": [
-                {
-                    "architecture": "x86_64",
-                    "destination": dest,
-                    "overwrite": False,
-                    "restrict_version": False,
+    return [
+        {
+            "billing-code-config": starmap_ami_billing_config,
+            "mappings": {
+                "aws_storage": {
+                    "destinations": [
+                        {
+                            "architecture": "x86_64",
+                            "destination": dest,
+                            "overwrite": False,
+                            "restrict_version": False,
+                            "tags": {"key1": "value1", "key2": "value2"},
+                        }
+                        for dest in destinations
+                    ],
                     "provider": "awstest",
                     "meta": starmap_ami_meta,
-                    "tags": {"key1": "value1", "key2": "value2"},
-                }
-                for dest in destinations
-            ],
-        },
-        "name": "sample_product",
-        "workflow": "community",
-    }
+                },
+            },
+            "name": "sample_product",
+            "workflow": "community",
+            "cloud": "aws",
+        }
+    ]
 
 
 @pytest.fixture
-def starmap_response_azure() -> Dict[str, Any]:
+def starmap_response_azure() -> List[Dict[str, Any]]:
     """Return the dictionary corresponding to a marketplace Azure response."""
-    return {
-        "mappings": {
-            "azure-na": [
-                {
-                    "architecture": "x86_64",
-                    "destination": "destination_offer_main/plan1",
-                    "overwrite": True,
-                    "restrict_version": False,
-                    "meta": {"tag1": "value1", "tag2": "value2"},
-                    "tags": {"key1": "value1", "key2": "value2"},
-                },
-                {
-                    "architecture": "x86_64",
-                    "destination": "destination_offer_main/plan2",
-                    "overwrite": False,
-                    "restrict_version": False,
-                    "meta": {"tag3": "value3", "tag4": "value5"},
-                },
-                {
-                    "architecture": "x86_64",
-                    "destination": "destination_offer_main/plan3",
-                    "overwrite": False,
-                    "restrict_version": False,
-                },
-            ]
-        },
-        "name": "sample-product",
-        "workflow": "stratosphere",
-    }
+    return [
+        {
+            "mappings": {
+                "azure-na": {
+                    "destinations": [
+                        {
+                            "architecture": "x86_64",
+                            "destination": "destination_offer_main/plan1",
+                            "overwrite": True,
+                            "restrict_version": False,
+                            "tags": {"tag1": "value1", "tag2": "value2"},
+                            "meta": {"key1": "value1", "key2": "value2"},
+                        },
+                        {
+                            "architecture": "x86_64",
+                            "destination": "destination_offer_main/plan2",
+                            "overwrite": False,
+                            "restrict_version": False,
+                            "tags": {"tag3": "value3", "tag4": "value5"},
+                        },
+                        {
+                            "architecture": "x86_64",
+                            "destination": "destination_offer_main/plan3",
+                            "overwrite": False,
+                            "restrict_version": False,
+                        },
+                    ]
+                }
+            },
+            "name": "sample-product",
+            "workflow": "stratosphere",
+            "cloud": "azure",
+        }
+    ]
 
 
 @pytest.fixture
 def starmap_query_aws_marketplace(
     starmap_response_aws_marketplace: Dict[str, Any]
-) -> QueryResponse:
-    return QueryResponse.from_json(starmap_response_aws_marketplace)
+) -> QueryResponseContainer:
+    return QueryResponseContainer.from_json(starmap_response_aws_marketplace)
 
 
 @pytest.fixture
-def starmap_query_aws_community(starmap_response_aws_community: Dict[str, Any]) -> QueryResponse:
-    return QueryResponse.from_json(starmap_response_aws_community)
+def starmap_query_aws_community(
+    starmap_response_aws_community: Dict[str, Any]
+) -> QueryResponseContainer:
+    return QueryResponseContainer.from_json(starmap_response_aws_community)
 
 
 @pytest.fixture
-def starmap_query_azure(starmap_response_azure: Dict[str, Any]) -> QueryResponse:
-    return QueryResponse.from_json(starmap_response_azure)
+def starmap_query_azure(starmap_response_azure: Dict[str, Any]) -> QueryResponseContainer:
+    return QueryResponseContainer.from_json(starmap_response_azure)

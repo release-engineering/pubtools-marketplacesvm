@@ -10,10 +10,12 @@ import pytest
 from _pytest.logging import LogCaptureFixture
 from pushcollector._impl.proxy import CollectorProxy
 from starmap_client import StarmapClient
+from starmap_client.models import QueryResponseContainer, Workflow
 
 from pubtools._marketplacesvm.cloud_providers.ms_azure import AzureProvider
 from pubtools._marketplacesvm.services.base import Service
 from pubtools._marketplacesvm.tasks.push import MarketplacesVMPush
+from tests.utils import load_json
 
 
 def test_service_args_error() -> None:
@@ -40,6 +42,63 @@ def test_starmap_service() -> None:
         assert isinstance(client, StarmapClient)
         # Single StarmapClient instance per thread
         assert instance.starmap == client
+
+
+@patch("pubtools._marketplacesvm.services.starmap.StarmapClient")
+def test_starmap_query(mock_client: MagicMock) -> None:
+    """Ensure the `StarmapService.query_image_by_name` is properly working."""
+    data = load_json("tests/data/starmap/container.json")
+    arg = ["", "-d", "fakesource"]
+
+    # Test 1: no mappings loaded: request them from the server
+    for i in [list(), data]:
+        qrc = QueryResponseContainer.from_json(i)
+        mock_client.return_value.query_image_by_name.return_value = qrc
+        instance = MarketplacesVMPush()
+        with patch.object(sys, "argv", arg):
+            res = instance.query_image_by_name("product-test")
+
+        assert res == qrc.responses
+        mock_client.return_value.query_image_by_name.assert_called_once_with(
+            name="product-test", version=None
+        )
+        mock_client.reset_mock()
+
+    # Test 2: mappings loaded: should not request from server
+    with patch.object(sys, "argv", arg):
+        res = instance.query_image_by_name("product-test")
+
+    mock_client.return_value.query_image_by_name.assert_not_called()
+    assert res == qrc.responses
+
+
+@patch("pubtools._marketplacesvm.services.starmap.StarmapClient")
+def test_starmap_filter_workflow(mock_client: MagicMock) -> None:
+    """Ensure the `StarmapService.filter_by_workflow` are properly working."""
+    data = load_json("tests/data/starmap/container.json")
+    qrc = QueryResponseContainer.from_json(data)
+    mock_client.return_value.query_image_by_name.return_value = qrc
+    arg = ["", "-d", "fakesource"]
+    expected = qrc.responses[1]
+
+    instance = MarketplacesVMPush()
+    with patch.object(sys, "argv", arg):
+        q = instance.query_image_by_name("product-test")
+        res = instance.filter_for(q, workflow=Workflow.community)
+
+    assert res == [expected]
+
+
+@patch("pubtools._marketplacesvm.services.starmap.StarmapClient")
+def test_starmap_unknown_format_exception(mock_client: MagicMock) -> None:
+    """Ensure the `StarmapService.filter_by_workflow` are properly working."""
+    mock_client.return_value.query_image_by_name.return_value = {"foo": "bar"}
+    arg = ["", "-d", "fakesource"]
+    instance = MarketplacesVMPush()
+    err = "Unknown response format from StArMap: <class 'dict'>"
+    with patch.object(sys, "argv", arg):
+        with pytest.raises(RuntimeError, match=err):
+            instance.query_image_by_name("product-test")
 
 
 def test_collector_service() -> None:

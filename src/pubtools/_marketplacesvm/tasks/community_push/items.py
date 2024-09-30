@@ -1,10 +1,12 @@
 import logging
 import os
-from typing import Any, Dict, Optional
+from typing import Dict, Optional
 
 from attrs import evolve
 from pushsource import AmiBillingCodes, AmiPushItem, AmiRelease
-from starmap_client.models import Destination
+from starmap_client.models import BillingCodeRule, Destination
+
+BILLING_CONFIG = Dict[str, BillingCodeRule]
 
 BILLING_CODES_NAME_MAPPING = {
     "hourly": "Hourly2",
@@ -20,10 +22,11 @@ def _get_push_item_region_type(push_item: AmiPushItem, destination: Destination)
     return evolve(push_item, region=region, type=image_type)
 
 
-def _get_push_item_billing_code(push_item: AmiPushItem, destination: Destination) -> AmiPushItem:
+def _set_push_item_billing_code(
+    push_item: AmiPushItem, destination: Destination, billing_config: Optional[BILLING_CONFIG]
+) -> AmiPushItem:
     # The billing code config should be provided by StArMap
-    billing_code_config: Optional[Dict[str, Any]] = destination.meta.get("billing-code-config")
-    if not billing_code_config:
+    if not billing_config:
         raise RuntimeError(
             "No billing code configuration provided for %s on %s.",
             push_item.name,
@@ -31,16 +34,16 @@ def _get_push_item_billing_code(push_item: AmiPushItem, destination: Destination
         )
 
     # Auxiliary functions
-    def is_match(bc_conf_item: Dict[str, Any], image_filename: str, image_type: str) -> bool:
+    def is_match(bc_conf_item: BillingCodeRule, image_filename: str, image_type: str) -> bool:
         return all(
             [
-                image_filename.startswith(bc_conf_item["image_name"]),
-                image_type in bc_conf_item["image_types"],
+                image_filename.startswith(bc_conf_item.image_name),
+                image_type in bc_conf_item.image_types,
             ]
         )
 
-    def billing_code_name(bc_conf_item: Dict[str, Any], image_type: str) -> str:
-        bc_name = bc_conf_item.get("name")
+    def billing_code_name(bc_conf_item: BillingCodeRule, image_type: str) -> str:
+        bc_name = bc_conf_item.name
         if bc_name is None:
             bc_name = BILLING_CODES_NAME_MAPPING[image_type]
         return bc_name
@@ -49,9 +52,9 @@ def _get_push_item_billing_code(push_item: AmiPushItem, destination: Destination
     out_codes = []
     out_name = None
 
-    for bc_conf_item in billing_code_config.values():
+    for bc_conf_item in billing_config.values():
         if is_match(bc_conf_item, os.path.basename(push_item.src), push_item.type):
-            out_codes.extend(bc_conf_item["codes"])
+            out_codes.extend(bc_conf_item.codes)
             if out_name is None:
                 out_name = billing_code_name(bc_conf_item, push_item.type)
     if out_name:
@@ -107,7 +110,11 @@ def _fix_arm64_arch(push_item: AmiPushItem) -> AmiPushItem:
 
 
 def enrich_push_item(
-    push_item: AmiPushItem, destination: Destination, beta: bool, require_bc: bool = True
+    push_item: AmiPushItem,
+    destination: Destination,
+    beta: bool,
+    require_bc: bool = True,
+    billing_config: Optional[BILLING_CONFIG] = None,
 ) -> AmiPushItem:
     """
     Set the missing push item attributes required for community workflow.
@@ -122,6 +129,8 @@ def enrich_push_item(
         require_bc:
             Whether the billing_codes are required (True) or not (False).
             Defaults to True.
+        billing_config:
+            The billing configuration dictionary to be used when ``require_bc`` is True.
     Returns:
         The enriched push item for community workflow.
     """
@@ -132,7 +141,7 @@ def enrich_push_item(
     # - public_image
     pi = _get_push_item_region_type(push_item, destination)
     if require_bc:
-        pi = _get_push_item_billing_code(pi, destination)
+        pi = _set_push_item_billing_code(pi, destination, billing_config)
     else:
         log.warning("BILLING CODES REQUIREMENT IS CURRENTLY DISABLED!")
     pi = _get_push_item_rhsm_provider(pi, destination)

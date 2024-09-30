@@ -1,5 +1,12 @@
 from typing import Any, Dict, Set
 
+from pushsource import AmiPushItem, VHDPushItem
+
+CLOUD_NAME_FOR_PI = {
+    AmiPushItem: "aws",
+    VHDPushItem: "azure",
+}
+
 
 class BuildIdBorg:
     """

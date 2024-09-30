@@ -9,8 +9,8 @@ import pytest
 from attrs import asdict, evolve
 from pushsource import AmiPushItem, AmiRelease, KojiBuildInfo
 from starmap_client import StarmapClient
-from starmap_client.models import QueryResponse
-from starmap_client.providers import InMemoryMapProvider
+from starmap_client.models import QueryResponseContainer
+from starmap_client.providers import InMemoryMapProviderV2
 
 from pubtools._marketplacesvm.cloud_providers import CloudProvider
 from pubtools._marketplacesvm.tasks.combined_push import entry_point
@@ -79,8 +79,8 @@ def fake_rhsm_api(requests_mocker):
 
 @pytest.fixture(autouse=True)
 def patch_push_objects(
-    starmap_query_aws_marketplace: QueryResponse,
-    starmap_query_aws_community: QueryResponse,
+    starmap_query_aws_marketplace: QueryResponseContainer,
+    starmap_query_aws_community: QueryResponseContainer,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     mock_cloud_instance = mock.MagicMock()
@@ -204,7 +204,7 @@ def test_do_community_push(
     community_source: mock.MagicMock,
     marketplace_source: mock.MagicMock,
     ami_push_item: AmiPushItem,
-    starmap_query_aws_community: QueryResponse,
+    starmap_query_aws_community: QueryResponseContainer,
     monkeypatch: pytest.MonkeyPatch,
     command_tester: CommandTester,
 ) -> None:
@@ -242,7 +242,7 @@ def test_do_marketplace_push(
     marketplace_source: mock.MagicMock,
     community_source: mock.MagicMock,
     ami_push_item: AmiPushItem,
-    starmap_query_aws_marketplace: QueryResponse,
+    starmap_query_aws_marketplace: QueryResponseContainer,
     monkeypatch: pytest.MonkeyPatch,
     command_tester: CommandTester,
 ) -> None:
@@ -281,8 +281,8 @@ def test_do_advisory_push(
     community_source: mock.MagicMock,
     ami_push_item: AmiPushItem,
     release_params: Dict[str, Any],
-    starmap_query_aws_marketplace: QueryResponse,
-    starmap_query_aws_community: QueryResponse,
+    starmap_query_aws_marketplace: QueryResponseContainer,
+    starmap_query_aws_community: QueryResponseContainer,
     monkeypatch: pytest.MonkeyPatch,
     command_tester: CommandTester,
 ) -> None:
@@ -339,8 +339,8 @@ def test_do_allowed_empty_mapping_push(
     community_source: mock.MagicMock,
     ami_push_item: AmiPushItem,
     release_params: Dict[str, Any],
-    starmap_query_aws_marketplace: QueryResponse,
-    starmap_query_aws_community: QueryResponse,
+    starmap_query_aws_marketplace: QueryResponseContainer,
+    starmap_query_aws_community: QueryResponseContainer,
     monkeypatch: pytest.MonkeyPatch,
     command_tester: CommandTester,
 ) -> None:
@@ -394,8 +394,8 @@ def test_do_combined_push_overriden_destination(
     marketplace_source: mock.MagicMock,
     community_source: mock.MagicMock,
     ami_push_item: AmiPushItem,
-    starmap_query_aws_marketplace: QueryResponse,
-    starmap_query_aws_community: QueryResponse,
+    starmap_query_aws_marketplace: QueryResponseContainer,
+    starmap_query_aws_community: QueryResponseContainer,
     command_tester: CommandTester,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -405,14 +405,16 @@ def test_do_combined_push_overriden_destination(
     mock_starmap_cmt = CommunityVMPush.starmap
 
     # The policy name must be the same for community and marketplace workflows
-    starmap_query_aws_marketplace = evolve(starmap_query_aws_marketplace, name="sample_product")
+    qre = starmap_query_aws_marketplace.responses.pop()
+    qre = evolve(qre, name="sample_product")
+    starmap_query_aws_marketplace.responses.append(qre)
     binfo = KojiBuildInfo(name="sample_product", version="7.0", release="20230101")
     ami_push_item = evolve(ami_push_item, build_info=binfo)
 
     # Create a testing StArMap instance which will fail to resolve the server
     # it is, it can only be used offline
-    mappings = [starmap_query_aws_community, starmap_query_aws_marketplace]
-    provider = InMemoryMapProvider(mappings)
+    responses = starmap_query_aws_community.responses + starmap_query_aws_marketplace.responses
+    provider = InMemoryMapProviderV2(QueryResponseContainer(responses))
     starmap = StarmapClient("https://foo.com/bar", provider=provider)
     monkeypatch.setattr(MarketplacesVMPush, 'starmap', starmap)
     monkeypatch.setattr(CommunityVMPush, 'starmap', starmap)
@@ -433,7 +435,7 @@ def test_do_combined_push_overriden_destination(
             "--rhsm-url",
             "https://rhsm.com/test/api/",
             "--repo",
-            json.dumps([asdict(x) for x in mappings], default=str),
+            json.dumps([asdict(x) for x in responses], default=str),
             "--debug",
             "koji:https://fakekoji.com?vmi_build=ami_build",
         ],
