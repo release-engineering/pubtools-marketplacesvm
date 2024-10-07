@@ -273,19 +273,6 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
 
             # Associate image with Product/Offer/Plan and publish only if it's not a pre-push
             if pi.state != State.UPLOADFAILED and not self.args.pre_push:
-                # The first publish should always be with `pre_push` set True because it might
-                # happen that one offer with multiple plans would receive the same image and
-                # we can't `publish` the offer with just the first plan changed and try to change
-                # the others (every plan should be changed while the offer is still on draft).
-                #
-                # Then this first `_publish` call is intended to only associate the image with
-                # all the offers/plans but not change it to live, when this is applicable.
-                pi = self._publish(marketplace, pi)
-
-                # Once we associated all the images with their offer/plans it's now safe to call
-                # again the publish if and only if `pre_push == False`.
-                # The indepondent operation will guarantee that the images are already associated
-                # with the Product/Offer/Plan and just the go-live part is called.
                 pi = self._publish(
                     marketplace,
                     pi,
