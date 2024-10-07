@@ -126,15 +126,20 @@ def test_do_community_push(
     ["tests/data/starmap/sap-community.json"],
     ids=["sap-community.json"],
 )
+@mock.patch("pubtools._marketplacesvm.tasks.community_push.command.Source")
 @mock.patch("pubtools._marketplacesvm.tasks.community_push.CommunityVMPush.starmap")
 def test_do_community_push_from_starmap_data(
     mock_starmap: mock.MagicMock,
+    mock_source: mock.MagicMock,
     filename: str,
-    fake_source: mock.MagicMock,
+    ami_push_item: AmiPushItem,
     fake_cloud_instance: mock.MagicMock,
     command_tester: CommandTester,
 ) -> None:
     """Test a successfull community-push from a given StArMap data."""
+    pi = evolve(ami_push_item, src="/foo/bar/sample_base")
+    mock_source.get.return_value.__enter__.return_value = [pi]
+
     # Add the custom starmap mapping
     with open(filename, 'r') as f:
         policy = json.load(f)
@@ -229,7 +234,7 @@ def test_do_community_push_overridden_destination(
                 "aws-na": {
                     "destinations": [
                         {
-                            "destination": "new_aws-na_destination",
+                            "destination": "new_aws-na_destination-access",
                             "overwrite": False,
                             "restrict_version": False,
                         }
@@ -239,7 +244,7 @@ def test_do_community_push_overridden_destination(
                 "aws-emea": {
                     "destinations": [
                         {
-                            "destination": "new_aws-emea_destination",
+                            "destination": "new_aws-emea_destination-hourly",
                             "overwrite": True,
                             "restrict_version": False,
                         }
@@ -291,7 +296,7 @@ def test_do_community_push_offline_starmap(
                 "aws-na": {
                     "destinations": [
                         {
-                            "destination": "new_aws-na_destination",
+                            "destination": "new_aws-na_destination-access",
                             "overwrite": False,
                             "restrict_version": False,
                         }
@@ -301,7 +306,7 @@ def test_do_community_push_offline_starmap(
                 "aws-emea": {
                     "destinations": [
                         {
-                            "destination": "new_aws-emea_destination",
+                            "destination": "new_aws-emea_destination-hourly",
                             "overwrite": True,
                             "restrict_version": False,
                         }
@@ -821,7 +826,7 @@ def test_do_community_push_different_sharing_accounts(
                     "destinations": [
                         {
                             "architecture": "x86_64",
-                            "destination": "fake-destination-access2",
+                            "destination": "fake-destination2-access",
                             "overwrite": True,
                             "restrict_version": True,
                             "volume": "/dev/sda1",
@@ -872,7 +877,7 @@ def test_do_community_push_different_sharing_accounts(
             mock.call(
                 mock.ANY,
                 custom_tags=None,
-                container='redhat-cloudimg-fake-destination',
+                container='redhat-cloudimg-fake-destination2',
                 accounts=['third_account', 'fourth_account'],
                 snapshot_accounts=None,
             ),
@@ -984,6 +989,36 @@ def test_sharing_accounts_marketplace_format(
     ]
     mock_starmap.query_image_by_name.return_value = QueryResponseContainer.from_json(policy)
     monkeypatch.setattr
+
+    command_tester.test(
+        lambda: entry_point(CommunityVMPush),
+        [
+            "test-push",
+            "--starmap-url",
+            "https://starmap-example.com",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--rhsm-url",
+            "https://rhsm.com/test/api/",
+            "--debug",
+            "--beta",
+            "koji:https://fakekoji.com?vmi_build=ami_build",
+        ],
+    )
+
+
+@mock.patch("pubtools._marketplacesvm.tasks.community_push.command.Source")
+def test_billing_config_dont_match(
+    mock_source: mock.MagicMock,
+    fake_starmap: mock.MagicMock,
+    fake_cloud_instance: mock.MagicMock,
+    ami_push_item: AmiPushItem,
+    command_tester: CommandTester,
+    monkeypatch: pytest.MonkeyPatch,
+):
+    """Ensure it raises when billing config is required and don't match."""
+    pi = evolve(ami_push_item, src="/foo/bar/some_unknown_file_name.raw")
+    mock_source.get.return_value.__enter__.return_value = [pi]
 
     command_tester.test(
         lambda: entry_point(CommunityVMPush),

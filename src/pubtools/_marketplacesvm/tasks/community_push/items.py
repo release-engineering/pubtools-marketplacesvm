@@ -52,15 +52,25 @@ def _set_push_item_billing_code(
     out_codes = []
     out_name = None
 
-    for bc_conf_item in billing_config.values():
-        if is_match(bc_conf_item, os.path.basename(push_item.src), push_item.type):
+    for bc_conf_name, bc_conf_item in billing_config.items():
+        base_src = os.path.basename(push_item.src)
+        log.debug(
+            "Attempting to match billing rule %s to %s type %s",
+            bc_conf_name,
+            base_src,
+            push_item.type,
+        )
+        if is_match(bc_conf_item, base_src, push_item.type):
+            log.debug("Matched billing rule %s for %s", bc_conf_name, base_src)
             out_codes.extend(bc_conf_item.codes)
             if out_name is None:
                 out_name = billing_code_name(bc_conf_item, push_item.type)
-    if out_name:
-        codes = {"codes": out_codes, "name": out_name}
-        push_item = evolve(push_item, billing_codes=AmiBillingCodes._from_data(codes))
+    if not out_name:
+        raise RuntimeError(f"Could not apply a billing code for {push_item}")
+    codes = {"codes": out_codes, "name": out_name}
 
+    log.debug("Billing codes for %s: %s (%s)", push_item.name, out_codes, out_name)
+    push_item = evolve(push_item, billing_codes=AmiBillingCodes._from_data(codes))
     return push_item
 
 
