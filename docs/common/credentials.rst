@@ -43,7 +43,7 @@ Required when using the "community" or "combined" workflow
 Auth format
 """""""""""
 
-The *KEY*s and *VALUE*s for the ``auth`` object are specific for each Cloud Provider implementation.
+The *KEYs* and *VALUEs* for the ``auth`` object are specific for each Cloud Provider implementation.
 
 **AWS Format**
 
