@@ -451,8 +451,6 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
             Tuple[AmiPushItem, Any]
                 The incoming push item and the dict with received parameters.
         """
-        LOG.info("Checking for active changesets in: %s", push_item.dest[0])
-        self.publish_svc.wait_active_changesets(push_item.dest[0])
         return push_item, kwargs
 
     def _publish(
@@ -474,6 +472,10 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
                 Whether to replace every image in the product with the given one or not.
                 Defaults to ``False``
         """
+        # Check if this product is locked currently and wait for it to become unlocked
+        LOG.info("Checking for active changesets in: %s", push_item.dest[0])
+        self.publish_svc.wait_active_changesets(push_item.dest[0])
+
         if push_item.release.base_product is not None:
             os_name = push_item.release.base_product
         else:

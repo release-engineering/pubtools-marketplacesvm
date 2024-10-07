@@ -34,9 +34,7 @@
 [    INFO] Preparation complete for item ami_pushitem to AWS-NA.
 [    INFO] Preparing to publish the item ami_pushitem to 00000000-0000-0000-0000-000000000000 on AWS-EMEA.
 [    INFO] Preparation complete for item ami_pushitem to AWS-EMEA.
-[    INFO] Pushing "ami_pushitem" (pre-push=True) to ffffffff-ffff-ffff-ffff-ffffffffffff on AWS-NA.
 [    INFO] Pushing "ami_pushitem" (pre-push=False) to ffffffff-ffff-ffff-ffff-ffffffffffff on AWS-NA.
-[    INFO] Pushing "ami_pushitem" (pre-push=True) to 00000000-0000-0000-0000-000000000000 on AWS-EMEA.
 [    INFO] Pushing "ami_pushitem" (pre-push=False) to 00000000-0000-0000-0000-000000000000 on AWS-EMEA.
 [    INFO] Collecting results
 [    INFO] Marketplace VM push completed

@@ -55,12 +55,8 @@
 [    INFO] Preparation complete for item vhd_pushitem to AZURE-NA.
 [    INFO] Preparing to publish the item vhd_pushitem to new_azure_destination2 on AZURE-NA.
 [    INFO] Preparation complete for item vhd_pushitem to AZURE-NA.
-[    INFO] Pushing "ami_pushitem" (pre-push=True) to new_aws_na_destination on AWS-NA.
 [    INFO] Pushing "ami_pushitem" (pre-push=False) to new_aws_na_destination on AWS-NA.
-[    INFO] Pushing "ami_pushitem" (pre-push=True) to new_aws_emea_destination on AWS-EMEA.
 [    INFO] Pushing "ami_pushitem" (pre-push=False) to new_aws_emea_destination on AWS-EMEA.
-[    INFO] Pushing "vhd_pushitem" (pre-push=True) to new_azure_destination1 on AZURE-NA.
-[    INFO] Pushing "vhd_pushitem" (pre-push=True) to new_azure_destination2 on AZURE-NA.
 [    INFO] Pushing "vhd_pushitem" (pre-push=False) to new_azure_destination1 on AZURE-NA.
 [    INFO] Pushing "vhd_pushitem" (pre-push=False) to new_azure_destination2 on AZURE-NA.
 [    INFO] Collecting results

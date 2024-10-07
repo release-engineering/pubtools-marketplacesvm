@@ -33,7 +33,6 @@
 [    INFO] Upload finished for ami_pushitem on AWS-NA
 [    INFO] Preparing to publish the item ami_pushitem to ffffffff-ffff-ffff-ffff-ffffffffffff on AWS-NA.
 [    INFO] Preparation complete for item ami_pushitem to AWS-NA.
-[    INFO] Pushing "ami_pushitem" (pre-push=True) to ffffffff-ffff-ffff-ffff-ffffffffffff on AWS-NA.
 [    INFO] Pushing "ami_pushitem" (pre-push=False) to ffffffff-ffff-ffff-ffff-ffffffffffff on AWS-NA.
 [    INFO] Collecting results
 [    INFO] Marketplace VM push completed
