@@ -5,4 +5,4 @@ pushcollector>=1.3.0
 pushsource>=2.47.2
 strenum>=0.4.15
 starmap-client>=2.0.0
-cloudpub>=1.2.0
+cloudpub>=1.2.1
