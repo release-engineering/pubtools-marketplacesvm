@@ -12,7 +12,7 @@ from requests import HTTPError, Response
 from starmap_client.models import Destination, Workflow
 from typing_extensions import NotRequired
 
-from pubtools._marketplacesvm.tasks.community_push.items import enrich_push_item
+from pubtools._marketplacesvm.tasks.community_push.items import ReleaseType, enrich_push_item
 
 from ...cloud_providers.aws import name_from_push_item
 from ...services.rhsm import AwsRHSMClientService
@@ -305,11 +305,17 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                 for dest in mrobj.destinations:
                     pi = mapped_item.get_push_item_for_destination(dest)
                     log.debug("Mapped push item for %s: %s", storage_account, pi)
-                    beta = self.args.beta or str(pi.release.type) == "beta"
+                    r = dest.meta.get("release") or {}
+                    r_type_str = str(r.get("type", "")).lower()
+                    r_type_str = "beta" if self.args.beta else r_type_str
+                    if r_type_str:
+                        release_type = ReleaseType(r_type_str)
+                    else:
+                        release_type = None
                     epi = enrich_push_item(
                         pi,
                         dest,
-                        beta=beta,
+                        release_type=release_type,
                         require_bc=self._REQUIRE_BC,
                         billing_config=mapped_item.starmap_query_entity.billing_code_config,
                     )
