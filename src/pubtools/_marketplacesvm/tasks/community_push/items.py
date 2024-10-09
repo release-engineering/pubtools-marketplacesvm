@@ -1,5 +1,6 @@
 import logging
 import os
+from enum import Enum
 from typing import Dict, Optional
 
 from attrs import evolve
@@ -15,6 +16,13 @@ BILLING_CODES_NAME_MAPPING = {
 }
 
 log = logging.getLogger("pubtools.marketplacesvm")
+
+
+class ReleaseType(str, Enum):
+    """Define the supported release type values."""
+
+    ga = "ga"
+    beta = "beta"
 
 
 def _get_push_item_region_type(push_item: AmiPushItem, destination: Destination) -> AmiPushItem:
@@ -122,7 +130,7 @@ def _fix_arm64_arch(push_item: AmiPushItem) -> AmiPushItem:
 def enrich_push_item(
     push_item: AmiPushItem,
     destination: Destination,
-    beta: bool,
+    release_type: Optional[ReleaseType],
     require_bc: bool = True,
     billing_config: Optional[BILLING_CONFIG] = None,
 ) -> AmiPushItem:
@@ -134,8 +142,8 @@ def enrich_push_item(
             The push item to enrich with the missing values
         destination:
             The destination with all required information to enrich the push item.
-        beta:
-            Whether the release type is "beta" or not ("ga")
+        release_type:
+            Whether the release type is "beta", "ga" or not set.
         require_bc:
             Whether the billing_codes are required (True) or not (False).
             Defaults to True.
@@ -161,8 +169,8 @@ def enrich_push_item(
     pi = _fix_arm64_arch(pi)
 
     # Set the release type
-    rel_type = "beta" if beta else "ga"
-    rel = evolve(pi.release, type=rel_type)
+    r_type = release_type.value if release_type else None
+    rel = evolve(pi.release, type=r_type)
     pi = evolve(pi, release=rel)
 
     # Now we need to convert the "dest" from "List[Destination]" into "List[str]"

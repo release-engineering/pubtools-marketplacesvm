@@ -254,6 +254,7 @@ def test_do_community_push_overridden_destination(
             },
             "billing-code-config": starmap_ami_billing_config,
             "cloud": "aws",
+            "meta": {"release": {"type": "ga"}},
             "name": "sample-product",
             "workflow": "community",
         }
