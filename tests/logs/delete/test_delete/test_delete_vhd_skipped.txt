@@ -1,0 +1,4 @@
+[    INFO] Loading items from pub:https://fakepub.com?task-id=12345
+[    INFO] Skipped: azure-testing.vhd.xz in build azure-testing
+[    INFO] Collecting results
+[    INFO] Delete completed

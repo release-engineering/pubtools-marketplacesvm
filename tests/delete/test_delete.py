@@ -5,7 +5,7 @@ from unittest import mock
 
 import pytest
 from attrs import evolve
-from pushsource import AmiPushItem, VMICloudInfo
+from pushsource import AmiPushItem, VHDPushItem, VMICloudInfo
 
 from pubtools._marketplacesvm.cloud_providers.base import CloudProvider
 from pubtools._marketplacesvm.tasks.delete import VMDelete, entry_point
@@ -34,14 +34,23 @@ class FakeCloudProvider(CloudProvider):
 
 
 @pytest.fixture()
-def fake_source(pub_response: List[AmiPushItem]) -> Generator[mock.MagicMock, None, None]:
+def fake_ami_source(pub_response_ami: List[AmiPushItem]) -> Generator[mock.MagicMock, None, None]:
     with mock.patch("pubtools._marketplacesvm.tasks.delete.command.Source") as m:
-        m.get.return_value.__enter__.return_value = pub_response
+        m.get.return_value.__enter__.return_value = pub_response_ami
         yield m
 
 
 @pytest.fixture()
-def fake_source_dif_amis(
+def fake_azure_source(
+    pub_response_azure: List[VHDPushItem],
+) -> Generator[mock.MagicMock, None, None]:
+    with mock.patch("pubtools._marketplacesvm.tasks.delete.command.Source") as m:
+        m.get.return_value.__enter__.return_value = pub_response_azure
+        yield m
+
+
+@pytest.fixture()
+def fake_ami_source_dif_amis(
     pub_response_diff_amis: List[AmiPushItem],
 ) -> Generator[mock.MagicMock, None, None]:
     with mock.patch("pubtools._marketplacesvm.tasks.delete.command.Source") as m:
@@ -50,11 +59,11 @@ def fake_source_dif_amis(
 
 
 @pytest.fixture()
-def bad_fake_source(
-    bad_pub_response: List[Dict[str, str]]
+def bad_fake_vmi_source(
+    bad_pub_response_vmi: List[Dict[str, str]]
 ) -> Generator[mock.MagicMock, None, None]:
     with mock.patch("pubtools._marketplacesvm.tasks.delete.command.Source") as m:
-        m.get.return_value.__enter__.return_value = bad_pub_response
+        m.get.return_value.__enter__.return_value = bad_pub_response_vmi
         yield m
 
 
@@ -102,8 +111,8 @@ def fake_rhsm_api(requests_mocker):
     requests_mocker.register_uri("POST", re.compile("amazon/amis"))
 
 
-def test_delete(
-    fake_source: mock.MagicMock,
+def test_delete_ami(
+    fake_ami_source: mock.MagicMock,
     fake_cloud_instance: mock.MagicMock,
     command_tester: CommandTester,
 ) -> None:
@@ -123,8 +132,38 @@ def test_delete(
         ],
     )
 
-    fake_source.get.assert_called_once()
+    fake_ami_source.get.assert_called_once()
+    # There's 2 as the AmiProduct deletes require trying aws-na and aws-emea
     assert fake_cloud_instance.call_count == 2
+    assert fake_cloud_instance.call_args_list[0].args == ('aws-china-storage',)
+    assert fake_cloud_instance.call_args_list[1].args == ('aws-na',)
+
+
+def test_delete_vhd(
+    fake_azure_source: mock.MagicMock,
+    fake_cloud_instance: mock.MagicMock,
+    command_tester: CommandTester,
+) -> None:
+    """Test a successfull delete."""
+    command_tester.test(
+        lambda: entry_point(VMDelete),
+        [
+            "test-delete",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--rhsm-url",
+            "https://rhsm.com/test/api/",
+            "--debug",
+            "--builds",
+            "azure-testing",
+            "pub:https://fakepub.com?task-id=12345",
+        ],
+    )
+
+    fake_azure_source.get.assert_called_once()
+    assert fake_cloud_instance.call_count == 1
+    for call in fake_cloud_instance.call_args_list:
+        assert call.args == ('azure-na',)
 
 
 @mock.patch("pubtools._marketplacesvm.tasks.delete.command.Source")
@@ -157,8 +196,39 @@ def test_delete_using_cloud_info(
     fake_cloud_instance.assert_called_once_with("aws-us-storage")
 
 
+def test_delete_vhd_cloud_info(
+    fake_azure_source: mock.MagicMock,
+    fake_cloud_instance: mock.MagicMock,
+    vhd_push_item: VHDPushItem,
+    command_tester: CommandTester,
+) -> None:
+    """Test a successfull delete."""
+    cloud_info = VMICloudInfo(provider="", account="azure-emea")
+    pi = evolve(vhd_push_item, cloud_info=cloud_info)
+    fake_azure_source.get.return_value.__enter__.return_value = [pi]
+    command_tester.test(
+        lambda: entry_point(VMDelete),
+        [
+            "test-delete",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--rhsm-url",
+            "https://rhsm.com/test/api/",
+            "--debug",
+            "--builds",
+            "azure-testing",
+            "pub:https://fakepub.com?task-id=12345",
+        ],
+    )
+
+    """ fake_azure_source.get.assert_called_once()
+    assert fake_cloud_instance.call_count == 1
+    for call in fake_cloud_instance.call_args_list:
+        assert call.args == ('azure-emea',) """
+
+
 def test_delete_skip_build(
-    fake_source: mock.MagicMock,
+    fake_ami_source: mock.MagicMock,
     fake_cloud_instance: mock.MagicMock,
     command_tester: CommandTester,
 ) -> None:
@@ -178,13 +248,39 @@ def test_delete_skip_build(
         ],
     )
 
-    fake_source.get.assert_called_once()
+    fake_ami_source.get.assert_called_once()
     # 1 call for RHCOS delete
     assert fake_cloud_instance.call_count == 1
 
 
+def test_delete_vhd_skipped(
+    fake_azure_source: mock.MagicMock,
+    fake_cloud_instance: mock.MagicMock,
+    command_tester: CommandTester,
+) -> None:
+    """Test a successfull delete."""
+    command_tester.test(
+        lambda: entry_point(VMDelete),
+        [
+            "test-delete",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--rhsm-url",
+            "https://rhsm.com/test/api/",
+            "--debug",
+            "--builds",
+            "skipping",
+            "pub:https://fakepub.com?task-id=12345",
+        ],
+    )
+
+    fake_azure_source.get.assert_called_once()
+    # 1 call for RHCOS delete
+    assert fake_cloud_instance.call_count == 0
+
+
 def test_delete_ami_id_not_found_rhsm(
-    fake_source: mock.MagicMock,
+    fake_ami_source: mock.MagicMock,
     fake_cloud_instance: mock.MagicMock,
     command_tester: CommandTester,
     requests_mocker,
@@ -222,12 +318,13 @@ def test_delete_ami_id_not_found_rhsm(
         ],
     )
 
-    fake_source.get.assert_called_once()
+    fake_ami_source.get.assert_called_once()
+    # 2 call for RHCOS delete
     assert fake_cloud_instance.call_count == 2
 
 
 def test_delete_dry_run(
-    fake_source: mock.MagicMock,
+    fake_ami_source: mock.MagicMock,
     fake_cloud_instance: mock.MagicMock,
     command_tester: CommandTester,
 ) -> None:
@@ -248,13 +345,40 @@ def test_delete_dry_run(
         ],
     )
 
-    fake_source.get.assert_called_once()
+    fake_ami_source.get.assert_called_once()
+    # 0 calls for dry-run, should just report to log
+    assert fake_cloud_instance.call_count == 0
+
+
+def test_delete_vhd_dry_run(
+    fake_azure_source: mock.MagicMock,
+    fake_cloud_instance: mock.MagicMock,
+    command_tester: CommandTester,
+) -> None:
+    """Test a successfull delete."""
+    command_tester.test(
+        lambda: entry_point(VMDelete),
+        [
+            "test-delete",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--rhsm-url",
+            "https://rhsm.com/test/api/",
+            "--debug",
+            "--dry-run",
+            "--builds",
+            "azure-testing",
+            "pub:https://fakepub.com?task-id=12345",
+        ],
+    )
+
+    fake_azure_source.get.assert_called_once()
     # 0 calls for dry-run, should just report to log
     assert fake_cloud_instance.call_count == 0
 
 
 def test_delete_failed(
-    fake_source: mock.MagicMock,
+    fake_ami_source: mock.MagicMock,
     fake_cloud_instance: mock.MagicMock,
     command_tester: CommandTester,
 ) -> None:
@@ -280,13 +404,13 @@ def test_delete_failed(
         ],
     )
 
-    fake_source.get.assert_called_once()
+    fake_ami_source.get.assert_called_once()
     # 3 calls since we errored on aws-na, aws-emea, aws-us-storage
     assert fake_cloud_instance.call_count == 1
 
 
 def test_delete_failed_one(
-    fake_source_dif_amis: mock.MagicMock,
+    fake_ami_source_dif_amis: mock.MagicMock,
     fake_cloud_instance: mock.MagicMock,
     command_tester: CommandTester,
 ) -> None:
@@ -316,13 +440,13 @@ def test_delete_failed_one(
         ],
     )
 
-    fake_source_dif_amis.get.assert_called_once()
+    fake_ami_source_dif_amis.get.assert_called_once()
     # 4 Calls since we errored on the first call
     assert fake_cloud_instance.call_count == 1
 
 
-def test_delete_not_AmiPushItem(
-    bad_fake_source: mock.MagicMock,
+def test_delete_not_VmiPushItem(
+    bad_fake_vmi_source: mock.MagicMock,
     fake_cloud_instance: mock.MagicMock,
     command_tester: CommandTester,
 ) -> None:
@@ -342,13 +466,13 @@ def test_delete_not_AmiPushItem(
         ],
     )
 
-    bad_fake_source.get.assert_called_once()
+    bad_fake_vmi_source.get.assert_called_once()
     # No calls as there was nothing to work
     assert fake_cloud_instance.call_count == 0
 
 
 def test_delete_bad_rhsm(
-    fake_source: mock.MagicMock,
+    fake_ami_source: mock.MagicMock,
     fake_cloud_instance: mock.MagicMock,
     command_tester: CommandTester,
     requests_mocker,
@@ -371,4 +495,4 @@ def test_delete_bad_rhsm(
         ],
     )
 
-    fake_source.get.assert_called_once()
+    fake_ami_source.get.assert_called_once()
