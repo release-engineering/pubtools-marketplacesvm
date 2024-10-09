@@ -35,12 +35,8 @@
 [    INFO] Preparation complete for item ami_pushitem to AWS-NA.
 [    INFO] Preparing to publish the item ami_pushitem to EMEA-DESTINATION on AWS-EMEA.
 [    INFO] Preparation complete for item ami_pushitem to AWS-EMEA.
-[    INFO] Pushing "ami_pushitem" (pre-push=True) to NA-DESTINATION on AWS-NA.
-[   DEBUG] Pushing ami_pushitem with image: fake-ami-id-for-na
 [    INFO] Pushing "ami_pushitem" (pre-push=False) to NA-DESTINATION on AWS-NA.
 [   DEBUG] Pushing ami_pushitem with image: fake-ami-id-for-na
-[    INFO] Pushing "ami_pushitem" (pre-push=True) to EMEA-DESTINATION on AWS-EMEA.
-[   DEBUG] Pushing ami_pushitem with image: fake-ami-id-for-emea
 [    INFO] Pushing "ami_pushitem" (pre-push=False) to EMEA-DESTINATION on AWS-EMEA.
 [   DEBUG] Pushing ami_pushitem with image: fake-ami-id-for-emea
 [    INFO] Collecting results
