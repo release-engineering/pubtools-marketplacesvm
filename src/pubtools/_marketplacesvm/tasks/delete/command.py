@@ -6,7 +6,6 @@ import os
 from typing import Any, Dict, Iterator, List
 
 from attrs import asdict, evolve
-from more_executors import Executors
 from pushsource import AmiPushItem, Source, VMIPushItem
 
 from ...arguments import SplitAndExtend
@@ -173,9 +172,10 @@ class VMDelete(MarketplacesVMTask, CloudService, CollectorService, AwsRHSMClient
                     self.update_rhsm_metadata(push_item)
                     return pi
                 except Exception as exc:
-                    # If we failed the image might not exist, not necessarily an error
+                    # If we failed, the image might not exist, not necessarily an error
                     delete_error = exc
                     failed_marketplace.append(marketplace)
+                    pass
             if len(failed_marketplace) == len(marketplaces):
                 log.info(
                     "Failed to delete %s in %s:%s",
@@ -227,24 +227,15 @@ class VMDelete(MarketplacesVMTask, CloudService, CollectorService, AwsRHSMClient
     def run(self, collect_results: bool = True, allow_empty_targets: bool = False) -> RUN_RESULT:
         """Execute the delete command workflow."""
         mapped_items = [x for x in self.raw_items]
-        executor = Executors.thread_pool(
-            name="pubtools-marketplacesvm-delete",
-            max_workers=min(max(len(mapped_items), 1), self._REQUEST_THREADS),
-        )
-
-        to_await = []
         result = []
-        if len(mapped_items) == 0:
-            log.error("No AmiPushItems to process")
-            return RUN_RESULT(False, self._SKIPPED, [])
         for mapped_item in mapped_items:
-            to_await.append(executor.submit(self._delete, mapped_item))
+            result.append(self._delete(mapped_item))
 
-        # waiting for results
-        for f_out in to_await:
-            result.append(f_out.result())
         # process result for failures
         failed = False
+        if not result:
+            failed = True
+            log.error("No AmiPushItems to process")
         for r in result:
             if r.state == State.UPLOADFAILED:
                 failed = True
