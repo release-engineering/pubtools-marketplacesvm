@@ -253,7 +253,7 @@ def test_delete_failed(
 
     fake_source.get.assert_called_once()
     # 3 calls since we errored on aws-na, aws-emea, aws-us-storage
-    assert fake_cloud_instance.call_count == 3
+    assert fake_cloud_instance.call_count == 1
 
 
 def test_delete_failed_one(
@@ -289,7 +289,7 @@ def test_delete_failed_one(
 
     fake_source_dif_amis.get.assert_called_once()
     # 4 Calls since we errored on the first call
-    assert fake_cloud_instance.call_count == 4
+    assert fake_cloud_instance.call_count == 1
 
 
 def test_delete_not_AmiPushItem(

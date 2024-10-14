@@ -6,7 +6,6 @@ import os
 from typing import Any, Dict, Iterator, List
 
 from attrs import asdict, evolve
-from more_executors import Executors
 from pushsource import AmiPushItem, Source, VMIPushItem
 
 from ...arguments import SplitAndExtend
@@ -153,39 +152,22 @@ class VMDelete(MarketplacesVMTask, CloudService, CollectorService, AwsRHSMClient
                 return pi
             # Cycle through potential marketplaces, this only matters in AmiProducts
             # as the build could exist in either aws-na or aws-emea.
-            failed_marketplace = []
             for marketplace in marketplaces:
-                try:
-                    log.info(
-                        "Deleting %s in account %s",
-                        push_item.image_id,
-                        marketplace,
-                    )
-                    pi = self.cloud_instance(marketplace).delete_push_images(
-                        push_item, keep_snapshot=self.args.keep_snapshot, **kwargs
-                    )
-                    log.info(
-                        "Delete finished for %s in account %s",
-                        push_item.image_id,
-                        marketplace,
-                    )
-                    pi = evolve(pi, state=State.DELETED)
-                    self.update_rhsm_metadata(push_item)
-                    return pi
-                except Exception as exc:
-                    # If we failed the image might not exist, not necessarily an error
-                    delete_error = exc
-                    failed_marketplace.append(marketplace)
-            if len(failed_marketplace) == len(marketplaces):
                 log.info(
-                    "Failed to delete %s in %s:%s",
+                    "Deleting %s in account %s",
                     push_item.image_id,
-                    ",".join(failed_marketplace),
-                    delete_error,
-                    stack_info=True,
+                    marketplace,
                 )
-                self._SKIPPED = True
-                pi = evolve(push_item, state=State.UPLOADFAILED)
+                pi = self.cloud_instance(marketplace).delete_push_images(
+                    push_item, keep_snapshot=self.args.keep_snapshot, **kwargs
+                )
+                log.info(
+                    "Delete finished for %s in account %s",
+                    push_item.image_id,
+                    marketplace,
+                )
+                pi = evolve(pi, state=State.DELETED)
+                self.update_rhsm_metadata(push_item)
                 return pi
         log.info("Skipped: %s in build %s", push_item.image_id, push_item.build)
         self._SKIPPED = True
@@ -227,27 +209,16 @@ class VMDelete(MarketplacesVMTask, CloudService, CollectorService, AwsRHSMClient
     def run(self, collect_results: bool = True, allow_empty_targets: bool = False) -> RUN_RESULT:
         """Execute the delete command workflow."""
         mapped_items = [x for x in self.raw_items]
-        executor = Executors.thread_pool(
-            name="pubtools-marketplacesvm-delete",
-            max_workers=min(max(len(mapped_items), 1), self._REQUEST_THREADS),
-        )
-
-        to_await = []
         result = []
-        if len(mapped_items) == 0:
-            log.error("No AmiPushItems to process")
-            return RUN_RESULT(False, self._SKIPPED, [])
         for mapped_item in mapped_items:
-            to_await.append(executor.submit(self._delete, mapped_item))
+            result.append(self._delete(mapped_item))
 
-        # waiting for results
-        for f_out in to_await:
-            result.append(f_out.result())
         # process result for failures
         failed = False
+        if not result:
+            failed = True
+            log.error("No AmiPushItems to process")
         for r in result:
-            if r.state == State.UPLOADFAILED:
-                failed = True
             # Store the successful build ID for future evaluation if needed
             build_id = r.build_info.id
             self.builds_borg.processed_builds.add(build_id)
