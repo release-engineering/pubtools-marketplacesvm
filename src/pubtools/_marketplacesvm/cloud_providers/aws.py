@@ -644,7 +644,7 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         }
         self._delete(region, **delete_meta_kwargs)
 
-        return AmiPushItem
+        return push_item
 
 
 register_provider(

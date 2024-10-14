@@ -1,0 +1,7 @@
+[    INFO] Loading items from pub:https://fakepub.com?task-id=12345
+[    INFO] Deleting azure-testing.vhd.xz in account azure-na
+[    INFO] Delete finished for azure-testing.vhd.xz in account azure-na
+[   DEBUG] Listing all images from rhsm, https://rhsm.com/v1/internal/cloud_access_providers/amazon/amis
+[ WARNING] AMI image: None not found, skipping update in rhsm.
+[    INFO] Collecting results
+[    INFO] Delete completed

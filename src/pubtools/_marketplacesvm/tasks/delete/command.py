@@ -143,10 +143,16 @@ class VMDelete(MarketplacesVMTask, CloudService, CollectorService, AwsRHSMClient
         push_item: VMIPushItem,
         **kwargs,
     ) -> VMIPushItem:
-        marketplaces = self._convert_provider_name(push_item.marketplace_entity_type)
+        # We only support two hyperscalers (Azure, AWS)
+        if push_item.marketplace_entity_type:
+            image_identifier = push_item.image_id
+            marketplaces = self._convert_provider_name(push_item.marketplace_entity_type)
+        else:
+            image_identifier = push_item.name
+            marketplaces = ["azure-na", "azure-emea"]
         if push_item.build in self.args.builds:
             if self.args.dry_run:
-                log.info("Would have deleted: %s in build %s", push_item.image_id, push_item.build)
+                log.info("Would have deleted: %s in build %s", image_identifier, push_item.build)
                 self._SKIPPED = True
                 pi = evolve(push_item, state=State.SKIPPED)
                 self.update_rhsm_metadata(push_item)
@@ -158,7 +164,7 @@ class VMDelete(MarketplacesVMTask, CloudService, CollectorService, AwsRHSMClient
                 try:
                     log.info(
                         "Deleting %s in account %s",
-                        push_item.image_id,
+                        image_identifier,
                         marketplace,
                     )
                     pi = self.cloud_instance(marketplace).delete_push_images(
@@ -166,7 +172,7 @@ class VMDelete(MarketplacesVMTask, CloudService, CollectorService, AwsRHSMClient
                     )
                     log.info(
                         "Delete finished for %s in account %s",
-                        push_item.image_id,
+                        image_identifier,
                         marketplace,
                     )
                     pi = evolve(pi, state=State.DELETED)
@@ -179,7 +185,7 @@ class VMDelete(MarketplacesVMTask, CloudService, CollectorService, AwsRHSMClient
             if len(failed_marketplace) == len(marketplaces):
                 log.info(
                     "Failed to delete %s in %s:%s",
-                    push_item.image_id,
+                    image_identifier,
                     ",".join(failed_marketplace),
                     delete_error,
                     stack_info=True,
@@ -187,7 +193,7 @@ class VMDelete(MarketplacesVMTask, CloudService, CollectorService, AwsRHSMClient
                 self._SKIPPED = True
                 pi = evolve(push_item, state=State.UPLOADFAILED)
                 return pi
-        log.info("Skipped: %s in build %s", push_item.image_id, push_item.build)
+        log.info("Skipped: %s in build %s", image_identifier, push_item.build)
         self._SKIPPED = True
         pi = evolve(push_item, state=State.SKIPPED)
         return pi
