@@ -21,7 +21,7 @@ LOG = logging.getLogger("pubtools.marketplacesvm")
 UploadResult = namedtuple("UploadResult", "id")  # NOSONAR
 
 
-def name_from_push_item(push_item: AmiPushItem) -> str:
+def name_from_push_item(push_item: AmiPushItem, ami_version_template: str = "") -> str:
     """
     Create an image name from the metadata provided.
 
@@ -35,6 +35,13 @@ def name_from_push_item(push_item: AmiPushItem) -> str:
     def get_2_digits(version: str) -> str:
         v = version.split(".")[:2]
         return ".".join(v)
+
+    def format_version(version: str, format_template: str) -> str:
+        v = version.split(".")
+        major = v[0]
+        minor = v[1]
+        patch = v[2] or 0
+        return format_template.format(major=major, minor=minor, patch=patch, version=version)
 
     parts = []
     release = push_item.release
@@ -50,7 +57,10 @@ def name_from_push_item(push_item: AmiPushItem) -> str:
     underscore_parts = []
 
     if release.version is not None:
-        underscore_parts.append(get_2_digits(release.version))
+        if ami_version_template:
+            underscore_parts.append(format_version(release.version, ami_version_template))
+        else:
+            underscore_parts.append(get_2_digits(release.version))
 
     underscore_parts.append(push_item.virtualization.upper())
 
@@ -356,7 +366,8 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
             The EC2 image with the data from uploaded image.
         """
         # Check if the AMI is already created for this push item.
-        name = name_from_push_item(push_item)
+        ami_version_template = kwargs.get("ami_version_template", "")
+        name = name_from_push_item(push_item, ami_version_template)
         binfo = push_item.build_info
         default_groups = self.aws_groups or []
         groups = kwargs.get("groups") or default_groups
