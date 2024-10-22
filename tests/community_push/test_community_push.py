@@ -802,6 +802,7 @@ def test_do_community_push_different_sharing_accounts(
                             "destination": "fake-destination-access",
                             "overwrite": False,
                             "restrict_version": False,
+                            "ami_version_template": "{major}.{minor}.0",
                             "volume": "/dev/sda1",
                             "meta": {
                                 "accounts": [
@@ -874,6 +875,7 @@ def test_do_community_push_different_sharing_accounts(
                 container='redhat-cloudimg-fake-destination',
                 accounts=['first_account', 'second_account'],
                 snapshot_accounts=None,
+                ami_version_template='{major}.{minor}.0',
             ),
             mock.call(
                 mock.ANY,
@@ -881,6 +883,7 @@ def test_do_community_push_different_sharing_accounts(
                 container='redhat-cloudimg-fake-destination2',
                 accounts=['third_account', 'fourth_account'],
                 snapshot_accounts=None,
+                ami_version_template=None,
             ),
         ]
     )

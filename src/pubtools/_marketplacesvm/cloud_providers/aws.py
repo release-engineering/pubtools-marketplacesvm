@@ -21,20 +21,28 @@ LOG = logging.getLogger("pubtools.marketplacesvm")
 UploadResult = namedtuple("UploadResult", "id")  # NOSONAR
 
 
-def name_from_push_item(push_item: AmiPushItem) -> str:
+def name_from_push_item(
+    push_item: AmiPushItem, ami_version_template: Optional[str] = "{major}.{minor}"
+) -> str:
     """
     Create an image name from the metadata provided.
 
     Args:
         push_item (AmiPushItem)
             The input push item.
+        ami_version_template(Optional[str])
+            The ami_version_template to use.
     Returns:
         str: The image name from push item.
     """
 
-    def get_2_digits(version: str) -> str:
-        v = version.split(".")[:2]
-        return ".".join(v)
+    def format_version(version: str, format_template: str = "{major}.{minor}") -> str:
+        version_split = version.split(".")
+        variables = ["major", "minor", "patch"]
+        format_args = {"version": version}
+        for v in range(len(version_split)):
+            format_args[variables[v]] = version_split[v]
+        return format_template.format(**format_args)
 
     parts = []
     release = push_item.release
@@ -42,7 +50,7 @@ def name_from_push_item(push_item: AmiPushItem) -> str:
     if release.base_product is not None:
         parts.append(release.base_product)
         if release.base_version is not None:
-            parts.append(get_2_digits(release.base_version))
+            parts.append(format_version(release.base_version))
 
     parts.append(release.product)
 
@@ -50,7 +58,10 @@ def name_from_push_item(push_item: AmiPushItem) -> str:
     underscore_parts = []
 
     if release.version is not None:
-        underscore_parts.append(get_2_digits(release.version))
+        if ami_version_template:
+            underscore_parts.append(format_version(release.version, ami_version_template))
+        else:
+            underscore_parts.append(format_version(release.version))
 
     underscore_parts.append(push_item.virtualization.upper())
 
@@ -259,25 +270,29 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
             }
         return None
 
-    def _copy_image_from_ami_catalog(self, push_item: AmiPushItem, tags: Dict[str, str]):
+    def _copy_image_from_ami_catalog(
+        self, push_item: AmiPushItem, tags: Dict[str, str], name: Optional[str] = None
+    ):
         """
         Copy AMI from AMI-Catalog (AWS-Marketplace AMIs and Community-AMIs) to account.
 
         Args:
             push_item(AmiPushItem): The push item containing the source of AMI ID.
+            tags(Dict[str, str]): Tags to be used for the copy of the image.
+            name(Optional[str]): The name of the image to copy.
         Returns:
             ami_id (namedtuple): An named tuple object which contains AMI ID.
         Raises:
             RuntimeError if AMI is not found.
         """
         upload_svc = self.upload_svc_partial(region=push_item.region)
+        name = name or name_from_push_item(push_item)
 
         img = upload_svc.get_image_from_ami_catalog(push_item.src)
         if img is None:
             raise RuntimeError("AMI not found.")
 
         # Search if the AMI is already in the Account
-        name = name_from_push_item(push_item)
         ami = upload_svc.get_image_by_name(name)
         if ami:
             LOG.info("AMI already exits in account.Skipping Copying AMI.")
@@ -356,7 +371,8 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
             The EC2 image with the data from uploaded image.
         """
         # Check if the AMI is already created for this push item.
-        name = name_from_push_item(push_item)
+        ami_version_template = kwargs.get("ami_version_template", "")
+        name = name_from_push_item(push_item, ami_version_template)
         binfo = push_item.build_info
         default_groups = self.aws_groups or []
         groups = kwargs.get("groups") or default_groups
@@ -389,7 +405,7 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
                 f"{binfo.name}-{tags['version']}-{binfo.release}.{push_item.release.arch}"  # noqa: E501
             )
 
-            result = self._copy_image_from_ami_catalog(push_item, tags=tags)
+            result = self._copy_image_from_ami_catalog(push_item, name=name, tags=tags)
             return push_item, result
 
         upload_metadata_kwargs = {
@@ -632,14 +648,8 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         """
         region = push_item.region or self.default_region
         keep_snapshot = kwargs.get("keep_snapshot") or False
-        name = name_from_push_item(push_item)
         delete_meta_kwargs = {
             "image_id": push_item.image_id,
-            "image_name": name,
-            # currently using getattr for snapshot_id/name because
-            # snapshot related fields are not available in pushitem
-            "snapshot_id": getattr(push_item, "snapshot_id", None),
-            "snapshot_name": getattr(push_item, "snapshot_name", name),
             "skip_snapshot": keep_snapshot,
         }
         self._delete(region, **delete_meta_kwargs)

@@ -202,6 +202,21 @@ def test_name_from_push_item_community(aws_push_item: AmiPushItem, fake_aws_prov
     assert res == expected_name
 
 
+def test_name_from_push_item_templated(aws_push_item: AmiPushItem, fake_aws_provider: AWSProvider):
+    ami_version_template = "{major}.{minor}.{patch}"
+    expected_name = "base_product-1.1-sample_product-1.0.1_VIRT_GA-20230130-x86_64-0"
+    res = name_from_push_item(aws_push_item, ami_version_template)
+    assert res == expected_name
+    ami_version_template = "{major}.{minor}"
+    expected_name = "base_product-1.1-sample_product-1.0_VIRT_GA-20230130-x86_64-0"
+    res = name_from_push_item(aws_push_item, ami_version_template)
+    assert res == expected_name
+    ami_version_template = "v{version}"
+    expected_name = "base_product-1.1-sample_product-v1.0.1_VIRT_GA-20230130-x86_64-0"
+    res = name_from_push_item(aws_push_item, ami_version_template)
+    assert res == expected_name
+
+
 def test_get_access_endpoint_url(
     aws_push_item: AmiPushItem,
     access_endpoint_url: AmiAccessEndpointUrl,
@@ -847,13 +862,9 @@ def test_delete_push_images(
 ):
     fake_aws_provider.image_id = "ami-97969874573"
     fake_image = FakeImageResp()
-    name = name_from_push_item(aws_push_item)
     fake_aws_provider.upload_svc_partial.return_value.delete.return_value = fake_image  # type: ignore [attr-defined] # noqa: E501
     delete_meta_kwargs = {
         "image_id": aws_push_item.image_id,
-        "image_name": name,
-        "snapshot_id": None,
-        "snapshot_name": name,
         "skip_snapshot": True,
     }
     meta_obj = MagicMock(**delete_meta_kwargs)

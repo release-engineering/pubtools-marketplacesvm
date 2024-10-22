@@ -125,6 +125,7 @@ def starmap_response_aws(starmap_ami_meta, starmap_ami_billing_config) -> List[D
                             "destination": dest,
                             "overwrite": False,
                             "restrict_version": False,
+                            "ami_version_template": "{major}.{minor}.0",
                             "meta": starmap_ami_meta,
                             "tags": {"key1": "value1", "key2": "value2"},
                         }

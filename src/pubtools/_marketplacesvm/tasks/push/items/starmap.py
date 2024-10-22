@@ -199,6 +199,20 @@ class MappedVMIPushItemV2:
                 return dst.tags
         return {}
 
+    def get_ami_version_template_for_mapped_item(self, destination: Destination) -> str:
+        """Return the ami version template for a single destination.
+
+        Args:
+            destination
+                A single Destination to obtain the related custom tags.
+        Returns:
+            The AMI version template associated with this destination.
+        """
+        for dst in self.destinations:
+            if dst == destination:
+                return dst.ami_version_template
+        return ""
+
     def get_tags_for_marketplace(self, account: str) -> Dict[str, str]:
         """Return all custom tags for the destinations of a given marketplace account.
 

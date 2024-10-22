@@ -211,12 +211,14 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             meta = {}
             for d in pi.dest:
                 meta.update(mapped_item.get_metadata_for_mapped_item(d) or {})
-
             pi = self._upload(
                 marketplace,
                 pi,
                 custom_tags=mapped_item.get_tags_for_marketplace(marketplace),
                 accounts=meta.get("sharing_accounts", []),
+                ami_version_template=mapped_item.get_ami_version_template_for_mapped_item(
+                    marketplace
+                ),
             )
             mapped_item.update_push_item_for_marketplace(marketplace, pi)
         return mapped_item, starmap_query

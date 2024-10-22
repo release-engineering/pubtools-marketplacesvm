@@ -85,6 +85,7 @@ def starmap_response_aws_marketplace() -> List[Dict[str, Any]]:
                             "destination": "ffffffff-ffff-ffff-ffff-ffffffffffff",
                             "overwrite": True,
                             "restrict_version": False,
+                            "ami_version_template": "{major}.{minor}.0",
                             "meta": {"tag1": "aws-na-value1", "tag2": "aws-na-value2"},
                             "tags": {"key1": "value1", "key2": "value2"},
                         }
