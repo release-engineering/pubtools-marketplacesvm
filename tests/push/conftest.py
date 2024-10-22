@@ -75,6 +75,7 @@ def starmap_response_aws() -> Dict[str, Any]:
                         "restrict_version": False,
                         "meta": {"tag1": "aws-na-value1", "tag2": "aws-na-value2"},
                         "tags": {"key1": "value1", "key2": "value2"},
+                        "ami_version_template": "{major}.{minor}.{patch}",
                     }
                 ]
             },

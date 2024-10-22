@@ -228,6 +228,28 @@ def test_get_tags_for_marketplace(
     assert mapped_item.get_tags_for_marketplace("azure-na") == expected_tags
 
 
+def test_get_ami_template_for_marketplace(
+    ami_push_item: AmiPushItem, starmap_query_aws: QueryResponseEntity
+) -> None:
+    mapped_item = MappedVMIPushItemV2(ami_push_item, starmap_query_aws)
+
+    # Test existing destinations
+    for dest in starmap_query_aws.mappings["aws-na"].destinations:
+        avt = mapped_item.get_ami_version_template_for_mapped_item(dest)
+        assert avt == dest.ami_version_template or ""
+
+    # Test unknown destination
+    dest = Destination.from_json(
+        {
+            "destination": "foo/bar",
+            "overwrite": True,
+            "restrict_version": False,
+            "architecture": "x86_64",
+        }
+    )
+    assert mapped_item.get_ami_version_template_for_mapped_item(dest) == ""
+
+
 def test_register_converter() -> None:
     def func(x: Any) -> str:
         return str(x)
