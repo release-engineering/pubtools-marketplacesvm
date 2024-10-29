@@ -24,8 +24,10 @@ from ..push.items import MappedVMIPushItemV2, State
 log = logging.getLogger("pubtools.marketplacesvm")
 
 SharingAccounts = Dict[str, List[str]]
-PushItemAndSA = namedtuple("PushItemAndSA", ["push_item", "sharing_accounts"])
-EnrichedPushItem = Dict[str, List[PushItemAndSA]]
+ExtendedPushItem = namedtuple(
+    "ExtendedPushItem", ["push_item", "sharing_accounts", "ami_version_template"]
+)
+EnrichedPushItem = Dict[str, List[ExtendedPushItem]]
 
 
 class UploadParams(TypedDict):
@@ -36,6 +38,7 @@ class UploadParams(TypedDict):
     accounts: NotRequired[List[str]]
     sharing_accounts: NotRequired[List[str]]
     snapshot_accounts: NotRequired[List[str]]
+    ami_version_template: NotRequired[str]
 
 
 class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
@@ -301,7 +304,7 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
             account_dict: EnrichedPushItem = {}
             for storage_account, mrobj in mapped_item.starmap_query_entity.mappings.items():
                 log.info("Processing the storage account %s", storage_account)
-                pi_and_sa_list: List[PushItemAndSA] = []
+                ex_pi_list: List[ExtendedPushItem] = []
                 for dest in mrobj.destinations:
                     pi = mapped_item.get_push_item_for_destination(dest)
                     log.debug("Mapped push item for %s: %s", storage_account, pi)
@@ -339,9 +342,13 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                         epi.dest[0],
                         epi.type,
                     )
-                    pi_and_sa = PushItemAndSA(epi, self._get_sharing_accounts(dest))
-                    pi_and_sa_list.append(pi_and_sa)
-                account_dict[storage_account] = pi_and_sa_list
+                    ex_pi = ExtendedPushItem(
+                        epi,
+                        self._get_sharing_accounts(dest),
+                        mapped_item.get_ami_version_template_for_mapped_item(dest),
+                    )
+                    ex_pi_list.append(ex_pi)
+                account_dict[storage_account] = ex_pi_list
             result.append(account_dict)
         return result
 
@@ -358,6 +365,7 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
         try:
             accounts = kwargs.get("accounts") or kwargs.get("sharing_accounts")
             snapshot_accounts = kwargs.get("snapshot_accounts")
+            ami_version_template = kwargs.get("ami_version_template")
             log.info(
                 "Uploading %s to region %s (type: %s, ship: %s, account: %s) with sharing accounts: %s and snapshot accounts: %s",  # noqa: E501
                 push_item.src,
@@ -374,6 +382,7 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                 container=container,
                 accounts=accounts,
                 snapshot_accounts=snapshot_accounts,
+                ami_version_template=ami_version_template,
             )
             log.info("Upload finished for %s on %s", push_item.name, push_item.region)
         except Exception as exc:
@@ -404,6 +413,7 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                         accounts=accounts,
                         snapshot_accounts=snapshot_accounts,
                         groups=groups,
+                        ami_version_template=ami_version_template,
                     )
             except Exception as exc:
                 log.exception("Failed to publish %s: %s", push_item.name, str(exc), stack_info=True)
@@ -417,8 +427,8 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
 
     def _check_product_in_rhsm(self, enriched_push_items: List[EnrichedPushItem]) -> bool:
         for enriched_item in enriched_push_items:
-            for _, pi_and_sa_list in enriched_item.items():
-                push_items = [x.push_item for x in pi_and_sa_list]
+            for _, ex_pi_list in enriched_item.items():
+                push_items = [x.push_item for x in ex_pi_list]
                 if not self.items_in_metadata_service(push_items):
                     log.error("Pre-push verification of push items in metadata service failed")
                     return False
@@ -471,9 +481,9 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                 List of dictionaries and storage accounts with the region name and the push items.
         """
         for enriched_push_item in enriched_push_items:
-            for storage_account, push_items_and_sa in enriched_push_item.items():
-                for pi_and_sa in push_items_and_sa:
-                    pi, sharing_accts = pi_and_sa
+            for storage_account, extend_push_item in enriched_push_item.items():
+                for ex_pi in extend_push_item:
+                    pi, sharing_accts, ami_version_template = ex_pi
 
                     # Prepare the sharing accounts
                     additional_args = {}
@@ -484,7 +494,12 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                             additional_args[arg] = content
 
                     # Generate the push items to upload
-                    params = {"marketplace": storage_account, "push_item": pi, **additional_args}
+                    params = {
+                        "marketplace": storage_account,
+                        "push_item": pi,
+                        "ami_version_template": ami_version_template,
+                        **additional_args,
+                    }
                     yield cast(UploadParams, params)
 
     def add_args(self):
