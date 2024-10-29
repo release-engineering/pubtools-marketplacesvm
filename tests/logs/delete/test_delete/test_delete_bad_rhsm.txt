@@ -7,11 +7,4 @@
 [   DEBUG] 5 Products(AWS provider) in rhsm: RHEL_HA(awstest), SAP(awstest), rhcos(ACN), sample_product(fake), sample_product_HOURLY(ACN)
 [    INFO] Attempting to update the existing image ami-rhcos1 in rhsm
 [   ERROR] Failed updating image ami-rhcos1
-[    INFO] Failed to delete ami-rhcos1 in aws-china-storage:400 Client Error: None for url: https://rhsm.com/v1/internal/cloud_access_providers/amazon/amis
-[    INFO] Deleting ami-aws1 in account aws-na
-[    INFO] Delete finished for ami-aws1 in account aws-na
-[   DEBUG] Searching for product sample_product for provider AmiProduct in rhsm
-[    INFO] sample_product not found in RHSM
-[    INFO] Collecting results
-[   ERROR] Delete failed
-# Raised: 30
+# Raised: 400 Client Error: None for url: https://rhsm.com/v1/internal/cloud_access_providers/amazon/amis

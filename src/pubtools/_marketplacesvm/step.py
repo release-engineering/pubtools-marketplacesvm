@@ -117,11 +117,12 @@ def as_futures(args: Optional[List[Any]]) -> Optional[List[Future]]:
         list of futures when the first element from args is a Future.
     """
     arg0 = args[0] if args else None
-    if is_future(arg0):
-        return [arg0]
+    if arg0:
+        if is_future(arg0):
+            return [arg0]
 
-    if isinstance(arg0, list) and arg0 and is_future(arg0[0]):
-        return arg0
+        if isinstance(arg0, list) and arg0 and is_future(arg0[0]):
+            return arg0
 
     return None
 

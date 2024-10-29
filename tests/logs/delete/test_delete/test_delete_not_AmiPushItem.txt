@@ -2,4 +2,6 @@
 [ WARNING] Push Item vhd_pushitem at None is not an AmiPushItem, dropping it from the queue.
 [ WARNING] Push Item vhd_pushitem at None is not an AmiPushItem, dropping it from the queue.
 [   ERROR] No AmiPushItems to process
+[    INFO] Collecting results
+[   ERROR] Delete failed
 # Raised: 30

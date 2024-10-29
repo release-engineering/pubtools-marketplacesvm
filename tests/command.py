@@ -186,7 +186,6 @@ class CommandTester(object):
             if exception_changed and exception:
                 # if exception differs from expected, re-raise it for the sake of
                 # a meaningful backtrace and ability to run "py.test --pdb"
-                print(message)
                 raise exception
 
             raise AssertionError(message)
