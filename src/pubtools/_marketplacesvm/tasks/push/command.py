@@ -294,7 +294,10 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             return {
                 "push_item": push_item_for_collection,
                 "state": pi.state,
-                "marketplace": marketplace,
+                "cloud_info": {
+                    "account": marketplace,
+                    "provider": mapped_item.starmap_query_entity.cloud,
+                },
                 "destinations": mapped_item.starmap_query_entity.mappings[marketplace].destinations,
                 "starmap_query": starmap_query,
             }
@@ -337,6 +340,8 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             res_dict = asdict(result["push_item"])
             if result.get("starmap_query"):
                 res_dict["starmap_query"] = asdict(result["starmap_query"])
+            if result.get("cloud_info"):
+                res_dict["cloud_info"] = result["cloud_info"]
             # dict can't be modified during iteration.
             # so iterate over list of keys.
             for key in list(res_dict):

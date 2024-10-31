@@ -3,7 +3,7 @@ import json
 import logging
 import os
 from collections import namedtuple
-from typing import Any, Dict, Iterator, List, Optional, TypedDict, cast
+from typing import Any, Dict, Iterator, List, Optional, Tuple, TypedDict, cast
 
 from attrs import asdict, evolve
 from more_executors import Executors
@@ -358,7 +358,7 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
         push_item: VMIPushItem,
         custom_tags: Optional[Dict[str, str]] = None,
         **kwargs,
-    ) -> VMIPushItem:
+    ) -> Tuple[VMIPushItem, str]:
         # First we do the AMI upload in a similar way of the base class
         ship = not self.args.pre_push
         container = "%s-%s" % (self.args.container_prefix, push_item.region)
@@ -395,7 +395,7 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                 stack_info=True,
             )
             pi = evolve(push_item, state=State.UPLOADFAILED)
-            return pi
+            return pi, marketplace
 
         # Then, if we're shipping the community image, we should update the RHSM
         # and change the the AWS group to "all" for the uploaded image
@@ -418,12 +418,12 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
             except Exception as exc:
                 log.exception("Failed to publish %s: %s", push_item.name, str(exc), stack_info=True)
                 pi = evolve(push_item, state=State.NOTPUSHED)
-                return pi
+                return pi, marketplace
 
         # Finally, if everything went well we return the updated push item
         log.info("Successfully uploaded %s [%s] [%s]", pi.name, pi.region, image.id)
         pi = evolve(pi, state=State.PUSHED)
-        return pi
+        return pi, marketplace
 
     def _check_product_in_rhsm(self, enriched_push_items: List[EnrichedPushItem]) -> bool:
         for enriched_item in enriched_push_items:
@@ -466,8 +466,12 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                 "state": pi.state,
                 "image_id": pi.image_id,
                 "image_name": name_from_push_item(pi),
+                "cloud_info": {
+                    "account": marketplace,
+                    "provider": "aws",
+                },
             }
-            for pi in upload_result
+            for pi, marketplace in upload_result
         ]
 
     def _data_to_upload(
