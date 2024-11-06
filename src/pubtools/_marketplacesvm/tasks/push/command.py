@@ -281,7 +281,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                     pi,
                     pre_push=False,
                 )
-            elif pi.state != State.UPLOADFAILED and not not self.args.pre_push:
+            elif pi.state != State.UPLOADFAILED and self.args.pre_push:
                 # Set the state as PUSHED when the operation is nochannel
                 pi = evolve(pi, state=State.PUSHED)
 
