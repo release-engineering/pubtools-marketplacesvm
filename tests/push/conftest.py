@@ -38,7 +38,7 @@ def release_params() -> Dict[str, Any]:
 
 
 @pytest.fixture
-def push_item_params() -> Dict[str, str]:
+def push_item_params() -> Dict[str, Any]:
     return {
         "name": "name",
         "description": "",
@@ -55,10 +55,10 @@ def vhd_push_item(release_params: Dict[str, Any], push_item_params: Dict[str, st
 
 
 @pytest.fixture
-def ami_push_item(release_params: Dict[str, Any], push_item_params: Dict[str, str]) -> AmiPushItem:
+def ami_push_item(release_params: Dict[str, Any], push_item_params: Dict[str, Any]) -> AmiPushItem:
     """Return a minimal AmiPushItem."""
     release = AmiRelease(**release_params)
-    push_item_params.update({"name": "ami_pushitem", "release": release})
+    push_item_params.update({"name": "ami_pushitem", "release": release, "dest": ["starmap"]})
     return AmiPushItem(**push_item_params)
 
 

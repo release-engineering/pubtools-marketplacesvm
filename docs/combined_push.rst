@@ -24,6 +24,16 @@ A typical invocation of push would look like this:
     --credentials PATH_TO_CREDS_1.json,PATH_TO_CREDS_2.json \
     koji:https://koji.example.com/kojihub?vmi_build=build-example1,build-example2
 
+using a staged source
+
+.. code-block::
+
+  pubtools-marketplacesvm-push \
+    --workflow all \
+    --starmap-url https://starmap.example.com \
+    --credentials PATH_TO_CREDS_1.json,PATH_TO_CREDS_2.json \
+    staged:/direct/path/to/folder
+
 
 .. include:: common/credentials.rst
 .. include:: common/sources.rst
