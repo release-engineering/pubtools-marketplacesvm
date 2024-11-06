@@ -497,6 +497,10 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                         if content:
                             additional_args[arg] = content
 
+                    # Add the billing type on tags if it's set
+                    if pi.type:
+                        additional_args["custom_tags"] = {"billing_type": pi.type}
+
                     # Generate the push items to upload
                     params = {
                         "marketplace": storage_account,
