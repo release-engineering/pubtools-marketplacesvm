@@ -33,13 +33,16 @@
             
   <section id="supported-sources">
 <h1>Supported Sources<a class="headerlink" href="#supported-sources" title="Link to this heading">¶</a></h1>
-<p>The tooling supports the <a class="reference external" href="https://release-engineering.github.io/pushsource/sources/koji.html#accessing-virtual-machine-images">KojiSource</a> and <a class="reference external" href="https://release-engineering.github.io/pushsource/sources/errata.html">ErrataSource</a> from <code class="docutils literal notranslate"><span class="pre">pushsource</span></code>.</p>
+<p>The tooling supports the <a class="reference external" href="https://release-engineering.github.io/pushsource/sources/koji.html#accessing-virtual-machine-images">KojiSource</a> , <a class="reference external" href="https://release-engineering.github.io/pushsource/sources/errata.html">ErrataSource</a> , and <a class="reference external" href="https://release-engineering.github.io/pushsource/sources/staged.html">StagedSource</a> from <code class="docutils literal notranslate"><span class="pre">pushsource</span></code>.</p>
 <p>All the VM images in the given source path will be uploaded
 to the corresponding cloud provider and published to its marketplace.</p>
 <p>The expected parameter for the VM images is <code class="docutils literal notranslate"><span class="pre">vmi_build</span></code>:</p>
 <p><strong>Example:</strong></p>
 <blockquote>
 <div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span>koji:https://koji.example.com/kojihub?vmi_build=build-example1,build-example2
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">staged</span><span class="p">:</span><span class="o">/</span><span class="n">direct</span><span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">folder</span>
 </pre></div>
 </div>
 </div></blockquote>

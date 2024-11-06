@@ -111,6 +111,13 @@
   koji:https://koji.example.com/kojihub?vmi_build=build-example1,build-example2
 </pre></div>
 </div>
+<p>or using a staged source</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pubtools</span><span class="o">-</span><span class="n">marketplacesvm</span><span class="o">-</span><span class="n">marketplace</span><span class="o">-</span><span class="n">push</span> \
+  <span class="o">--</span><span class="n">starmap</span><span class="o">-</span><span class="n">url</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">starmap</span><span class="o">.</span><span class="n">example</span><span class="o">.</span><span class="n">com</span> \
+  <span class="o">--</span><span class="n">credentials</span> <span class="n">PATH_TO_CREDS_1</span><span class="o">.</span><span class="n">json</span><span class="p">,</span><span class="n">PATH_TO_CREDS_2</span><span class="o">.</span><span class="n">json</span> \
+  <span class="n">staged</span><span class="p">:</span><span class="o">/</span><span class="n">direct</span><span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">folder</span>
+</pre></div>
+</div>
 </section>
 <section id="credentials">
 <h3>Credentials<a class="headerlink" href="#credentials" title="Link to this heading">¶</a></h3>
@@ -284,13 +291,16 @@ substrings of <code class="docutils literal notranslate"><span class="pre">base6
 </section>
 <section id="supported-sources">
 <h3>Supported Sources<a class="headerlink" href="#supported-sources" title="Link to this heading">¶</a></h3>
-<p>The tooling supports the <a class="reference external" href="https://release-engineering.github.io/pushsource/sources/koji.html#accessing-virtual-machine-images">KojiSource</a> and <a class="reference external" href="https://release-engineering.github.io/pushsource/sources/errata.html">ErrataSource</a> from <code class="docutils literal notranslate"><span class="pre">pushsource</span></code>.</p>
+<p>The tooling supports the <a class="reference external" href="https://release-engineering.github.io/pushsource/sources/koji.html#accessing-virtual-machine-images">KojiSource</a> , <a class="reference external" href="https://release-engineering.github.io/pushsource/sources/errata.html">ErrataSource</a> , and <a class="reference external" href="https://release-engineering.github.io/pushsource/sources/staged.html">StagedSource</a> from <code class="docutils literal notranslate"><span class="pre">pushsource</span></code>.</p>
 <p>All the VM images in the given source path will be uploaded
 to the corresponding cloud provider and published to its marketplace.</p>
 <p>The expected parameter for the VM images is <code class="docutils literal notranslate"><span class="pre">vmi_build</span></code>:</p>
 <p><strong>Example:</strong></p>
 <blockquote>
 <div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span>koji:https://koji.example.com/kojihub?vmi_build=build-example1,build-example2
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">staged</span><span class="p">:</span><span class="o">/</span><span class="n">direct</span><span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">folder</span>
 </pre></div>
 </div>
 </div></blockquote>
