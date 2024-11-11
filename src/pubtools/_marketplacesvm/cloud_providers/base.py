@@ -151,13 +151,15 @@ class CloudProvider(ABC, Generic[T, C]):
         self,
         push_item: T,
         **kwargs,
-    ) -> T:
+    ) -> Tuple[T, Any]:
         """
         Abstract method for deleting images from a public cloud provider.
 
         Args:
             push_item (VMIPushItem)
                 The push item to associate and publish a VM image into a product.
+        Returns:
+            Tuple: The processed push item and the delete result data.
         """
 
     #
@@ -196,7 +198,7 @@ class CloudProvider(ABC, Generic[T, C]):
         """
         return push_item, publish_result
 
-    def _post_delete(self, push_item: T, **kwargs) -> T:
+    def _post_delete(self, push_item: T, delete_result: Any, **kwargs) -> Tuple[T, Any]:
         """
         Define the default method for post publishing actions.
 
@@ -206,9 +208,9 @@ class CloudProvider(ABC, Generic[T, C]):
             delete_result (Any)
                 The resulting data from delete.
         Returns:
-            The delete result data.
+            Tuple: The processed push item and the resulting data from delete.
         """
-        return push_item
+        return push_item, delete_result
 
     #
     # Public interfaces - not intended to be changed by subclasses
@@ -286,7 +288,7 @@ class CloudProvider(ABC, Generic[T, C]):
         self,
         push_item: T,
         **kwargs,
-    ) -> T:
+    ) -> Tuple[T, Any]:
         """
         Associate an existing VM image with a product and publish the changes.
 
@@ -296,10 +298,10 @@ class CloudProvider(ABC, Generic[T, C]):
             builds (List[str])
                 List of builds to delete uploaded images from.
         Returns:
-            object: The publish result data.
+            Tuple: The processed push item and the delete result data.
         """
-        pi = self._delete_push_images(push_item, **kwargs)
-        return self._post_delete(pi, **kwargs)
+        pi, res = self._delete_push_images(push_item, **kwargs)
+        return self._post_delete(pi, res, **kwargs)
 
 
 P = TypeVar('P', bound=CloudProvider)

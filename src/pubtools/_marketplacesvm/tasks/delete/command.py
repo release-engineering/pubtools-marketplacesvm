@@ -158,7 +158,7 @@ class VMDelete(MarketplacesVMTask, CloudService, CollectorService, AwsRHSMClient
                     push_item.image_id,
                     marketplace,
                 )
-                pi = self.cloud_instance(marketplace).delete_push_images(
+                pi, _ = self.cloud_instance(marketplace).delete_push_images(
                     push_item, keep_snapshot=self.args.keep_snapshot, **kwargs
                 )
                 log.info(
