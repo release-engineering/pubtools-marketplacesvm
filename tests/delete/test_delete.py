@@ -29,7 +29,7 @@ class FakeCloudProvider(CloudProvider):
         return push_item, nochannel
 
     def _delete_push_images(self, push_item, **kwargs):
-        return push_item
+        return push_item, kwargs
 
 
 @pytest.fixture()
@@ -123,7 +123,6 @@ def test_delete(
     )
 
     fake_source.get.assert_called_once()
-    # There's 2 as the AmiProduct deletes require trying aws-na and aws-emea
     assert fake_cloud_instance.call_count == 2
 
 
@@ -193,7 +192,6 @@ def test_delete_ami_id_not_found_rhsm(
     )
 
     fake_source.get.assert_called_once()
-    # 2 call for RHCOS delete
     assert fake_cloud_instance.call_count == 2
 
 
@@ -269,7 +267,7 @@ def test_delete_failed_one(
             if push_item.image_id not in image_seen:
                 image_seen.append(push_item.image_id)
                 raise Exception("Random exception")
-            return push_item
+            return push_item, kwargs
 
     fake_cloud_instance.return_value = FakePublish()
     command_tester.test(

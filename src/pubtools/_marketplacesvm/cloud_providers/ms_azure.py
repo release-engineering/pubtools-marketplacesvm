@@ -341,7 +341,7 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
 
         return push_item, update_res
 
-    def _delete_push_images(self, push_item, **kwargs):
+    def _delete_push_images(self, push_item, **kwargs) -> Tuple[VHDPushItem, Any]:
         """
         Not implemented for Azure. Passes back push_item without changing anything.
 
@@ -351,11 +351,11 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
             builds (List[str])
                 The builds to delete.
         Returns:
-            A VHDPushItem
+            A tuple of VHDPushItem and None at the moment.
         """
         # TODO: Add delete functionality to Azure
         LOG.info("Deleting of Azure images from a push is not implemented yet")
-        return push_item
+        return push_item, None
 
     def ensure_offer_is_writable(self, destination: str, nochannel: bool) -> None:
         """

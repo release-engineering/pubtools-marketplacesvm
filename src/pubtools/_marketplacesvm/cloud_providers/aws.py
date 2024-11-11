@@ -19,6 +19,7 @@ from .base import UPLOAD_CONTAINER_NAME, CloudCredentials, CloudProvider, regist
 
 LOG = logging.getLogger("pubtools.marketplacesvm")
 UploadResult = namedtuple("UploadResult", "id")  # NOSONAR
+DeletedImage = namedtuple("DeletedImage", ["image_id", "snapshot_id"])
 
 
 def name_from_push_item(
@@ -640,9 +641,9 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
 
         return push_item, publish_result
 
-    def _delete(self, region: str, **kwargs) -> None:
+    def _delete(self, region: str, **kwargs) -> DeletedImage:
         metadata = AWSDeleteMetadata(**kwargs)
-        self.upload_svc_partial(region).delete(metadata)
+        return self.upload_svc_partial(region).delete(metadata)
 
     def _delete_push_images(self, push_item: AmiPushItem, **kwargs) -> Tuple[AmiPushItem, Any]:
         """
@@ -662,9 +663,8 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
             "image_id": push_item.image_id,
             "skip_snapshot": keep_snapshot,
         }
-        self._delete(region, **delete_meta_kwargs)
-
-        return AmiPushItem
+        res = self._delete(region, **delete_meta_kwargs)
+        return push_item, res
 
 
 register_provider(

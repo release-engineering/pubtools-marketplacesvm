@@ -49,7 +49,7 @@ class VMDelete(MarketplacesVMTask, CloudService, CollectorService, AwsRHSMClient
                     self.builds_borg.received_builds.add(item.build_info.id)
                     yield item
 
-    def update_rhsm_metadata(self, push_item: AmiPushItem) -> None:
+    def set_ami_invisible_rhsm(self, push_item: AmiPushItem, provider: str) -> None:
         """
         Update image in RHSM to 'invisible'.
 
@@ -64,9 +64,7 @@ class VMDelete(MarketplacesVMTask, CloudService, CollectorService, AwsRHSMClient
         else:
             try:
                 img_type = push_item.type or ""
-                product = self.get_rhsm_product(
-                    push_item.release.product, img_type, push_item.marketplace_entity_type
-                )
+                product = self.get_rhsm_product(push_item.release.product, img_type, provider)
             except RuntimeError:
                 log.info("%s not found in RHSM", push_item.release.product)
                 return
@@ -137,6 +135,21 @@ class VMDelete(MarketplacesVMTask, CloudService, CollectorService, AwsRHSMClient
         }
         return accounts[provider_name]
 
+    def _set_ami_invisible(self, push_item: AmiPushItem) -> None:
+        img_id = push_item.image_id
+        provider = push_item.marketplace_entity_type
+        log.debug("Marking AMI %s as invisible on RHSM for the provider %s.", img_id, provider)
+        try:
+            self.set_ami_invisible_rhsm(push_item, provider)
+        except Exception as err:
+            log.warning(
+                "Failed to mark %s invisible on RHSM: %s",
+                img_id,
+                err,
+                stack_info=True,
+                exc_info=True,
+            )
+
     def _delete(
         self,
         push_item: VMIPushItem,
@@ -145,20 +158,21 @@ class VMDelete(MarketplacesVMTask, CloudService, CollectorService, AwsRHSMClient
         marketplaces = self._convert_provider_name(push_item.marketplace_entity_type)
         if push_item.build in self.args.builds:
             if self.args.dry_run:
+                self._set_ami_invisible(push_item)
                 log.info("Would have deleted: %s in build %s", push_item.image_id, push_item.build)
                 self._SKIPPED = True
                 pi = evolve(push_item, state=State.SKIPPED)
-                self.update_rhsm_metadata(push_item)
                 return pi
             # Cycle through potential marketplaces, this only matters in AmiProducts
             # as the build could exist in either aws-na or aws-emea.
             for marketplace in marketplaces:
+                self._set_ami_invisible(push_item)
                 log.info(
                     "Deleting %s in account %s",
                     push_item.image_id,
                     marketplace,
                 )
-                pi = self.cloud_instance(marketplace).delete_push_images(
+                pi, _ = self.cloud_instance(marketplace).delete_push_images(
                     push_item, keep_snapshot=self.args.keep_snapshot, **kwargs
                 )
                 log.info(
@@ -167,7 +181,6 @@ class VMDelete(MarketplacesVMTask, CloudService, CollectorService, AwsRHSMClient
                     marketplace,
                 )
                 pi = evolve(pi, state=State.DELETED)
-                self.update_rhsm_metadata(push_item)
                 return pi
         log.info("Skipped: %s in build %s", push_item.image_id, push_item.build)
         self._SKIPPED = True

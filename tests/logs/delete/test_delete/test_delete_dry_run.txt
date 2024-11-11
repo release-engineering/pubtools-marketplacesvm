@@ -1,12 +1,14 @@
 [    INFO] Loading items from pub:https://fakepub.com?task-id=12345
-[    INFO] Would have deleted: ami-rhcos1 in build rhcos-x86_64-414.92.202405201754-0
+[   DEBUG] Marking AMI ami-rhcos1 as invisible on RHSM for the provider ACN.
 [   DEBUG] Listing all images from rhsm, https://rhsm.com/v1/internal/cloud_access_providers/amazon/amis
 [   DEBUG] Searching for product sample_product_HOURLY for provider ACN in rhsm
 [   DEBUG] Fetching product from https://rhsm.com/v1/internal/cloud_access_providers/amazon/provider_image_groups
 [   DEBUG] 5 Products(AWS provider) in rhsm: RHEL_HA(awstest), SAP(awstest), rhcos(ACN), sample_product(fake), sample_product_HOURLY(ACN)
 [    INFO] Would have updated image ami-rhcos1 in rhsm
-[    INFO] Would have deleted: ami-aws1 in build sample_product-1.0.1-1-x86_64
+[    INFO] Would have deleted: ami-rhcos1 in build rhcos-x86_64-414.92.202405201754-0
+[   DEBUG] Marking AMI ami-aws1 as invisible on RHSM for the provider AmiProduct.
 [   DEBUG] Searching for product sample_product for provider AmiProduct in rhsm
 [    INFO] sample_product not found in RHSM
+[    INFO] Would have deleted: ami-aws1 in build sample_product-1.0.1-1-x86_64
 [    INFO] Collecting results
 [    INFO] Delete completed
