@@ -1,4 +1,5 @@
 [    INFO] Loading items from pub:https://fakepub.com?task-id=12345
+[   DEBUG] Marking AMI ami-aws1 as invisible on RHSM for the provider AmiProduct.
 [   DEBUG] Listing all images from rhsm, https://rhsm.com/v1/internal/cloud_access_providers/amazon/amis
 [   DEBUG] Searching for product sample_product for provider AmiProduct in rhsm
 [   DEBUG] Fetching product from https://rhsm.com/v1/internal/cloud_access_providers/amazon/provider_image_groups
