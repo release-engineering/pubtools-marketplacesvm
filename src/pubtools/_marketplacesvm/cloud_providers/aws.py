@@ -333,6 +333,8 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         self,
         push_item: AmiPushItem,
         custom_tags: Optional[Dict[str, str]] = None,
+        ami_tags: Optional[Dict[str, str]] = None,
+        snapshot_tags: Optional[Dict[str, str]] = None,
         **kwargs,
     ) -> Tuple[AmiPushItem, Any]:
         """
@@ -358,6 +360,10 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
                 The push item with the required data to upload the AMI image into AWS.
             custom_tags (dict, optional)
                 Dictionary with keyword values to be added as custom tags.
+            snapshot_tags (dict, optional)
+                Dictionary with keyword values to be added as tags for the snapshot
+            ami_tags (dict, optional)
+                Dictionary with keyword values to be added as tags for the AMI
             groups (list, optional)
                 List of groups to share the image with. Defaults to ``self.aws_groups``.
             accounts (list, optional)
@@ -430,6 +436,10 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
             upload_metadata_kwargs.update({"boot_mode": push_item.boot_mode.value})
         if push_item.billing_codes:
             upload_metadata_kwargs.update({"billing_products": push_item.billing_codes.codes})
+        if ami_tags:
+            upload_metadata_kwargs.update({"ami_tags": ami_tags})
+        if snapshot_tags:
+            upload_metadata_kwargs.update({"snapshot_tags": snapshot_tags})
 
         LOG.debug("%s", upload_metadata_kwargs)
         metadata = AWSUploadMetadata(**upload_metadata_kwargs)

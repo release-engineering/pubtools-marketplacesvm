@@ -871,7 +871,9 @@ def test_do_community_push_different_sharing_accounts(
         [
             mock.call(
                 mock.ANY,
-                custom_tags={'billing_type': 'access'},
+                custom_tags=None,
+                ami_tags={'billing_type': 'access'},
+                snapshot_tags={'billing_type': 'access'},
                 container='redhat-cloudimg-fake-destination',
                 accounts=['first_account', 'second_account'],
                 snapshot_accounts=None,
@@ -879,7 +881,9 @@ def test_do_community_push_different_sharing_accounts(
             ),
             mock.call(
                 mock.ANY,
-                custom_tags={'billing_type': 'access'},
+                custom_tags=None,
+                ami_tags={'billing_type': 'access'},
+                snapshot_tags={'billing_type': 'access'},
                 container='redhat-cloudimg-fake-destination2',
                 accounts=['third_account', 'fourth_account'],
                 snapshot_accounts=None,
