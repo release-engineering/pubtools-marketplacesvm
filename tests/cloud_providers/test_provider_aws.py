@@ -584,6 +584,8 @@ def test_upload_custom_tags(
     binfo = aws_push_item.build_info
 
     custom_tags = {"custom_key": "custom_value"}
+    ami_tags = {"ami_key": "ami_value"}
+    snapshot_tags = {"snapshot_key": "snapshot_value"}
 
     tags = {
         "arch": aws_push_item.release.arch,
@@ -611,13 +613,17 @@ def test_upload_custom_tags(
         "sriov_net_support": aws_push_item.sriov_net_support,
         "ena_support": aws_push_item.ena_support,
         "tags": tags,
+        "ami_tags": ami_tags,
+        "snapshot_tags": snapshot_tags,
     }
     meta_obj = MagicMock(**metadata)
     mock_metadata.return_value = meta_obj
 
     fake_aws_provider.upload_svc_partial.return_value.publish.return_value = FakeImageResp()  # type: ignore [attr-defined] # noqa: E501
 
-    fake_aws_provider.upload(aws_push_item, custom_tags=custom_tags)
+    fake_aws_provider.upload(
+        aws_push_item, custom_tags=custom_tags, ami_tags=ami_tags, snapshot_tags=snapshot_tags
+    )
 
     mock_metadata.assert_called_once_with(**metadata)
     fake_aws_provider.upload_svc_partial.return_value.publish.assert_called_once_with(meta_obj)  # type: ignore [attr-defined] # noqa: E501

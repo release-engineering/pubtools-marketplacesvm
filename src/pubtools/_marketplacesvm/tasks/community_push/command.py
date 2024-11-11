@@ -366,6 +366,8 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
             accounts = kwargs.get("accounts") or kwargs.get("sharing_accounts")
             snapshot_accounts = kwargs.get("snapshot_accounts")
             ami_version_template = kwargs.get("ami_version_template")
+            ami_tags = kwargs.get("ami_tags")
+            snapshot_tags = kwargs.get("snapshot_tags")
             log.info(
                 "Uploading %s to region %s (type: %s, ship: %s, account: %s) with sharing accounts: %s and snapshot accounts: %s",  # noqa: E501
                 push_item.src,
@@ -379,6 +381,8 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
             pi, image = self.cloud_instance(marketplace).upload(
                 push_item,
                 custom_tags=custom_tags,
+                ami_tags=ami_tags,
+                snapshot_tags=snapshot_tags,
                 container=container,
                 accounts=accounts,
                 snapshot_accounts=snapshot_accounts,
@@ -409,6 +413,8 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                     pi, _ = self.cloud_instance(marketplace).upload(
                         push_item,
                         custom_tags=custom_tags,
+                        ami_tags=ami_tags,
+                        snapshot_tags=snapshot_tags,
                         container=container,
                         accounts=accounts,
                         snapshot_accounts=snapshot_accounts,
@@ -499,7 +505,8 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
 
                     # Add the billing type on tags if it's set
                     if pi.type:
-                        additional_args["custom_tags"] = {"billing_type": pi.type}
+                        additional_args["ami_tags"] = {"billing_type": pi.type}
+                        additional_args["snapshot_tags"] = {"billing_type": pi.type}
 
                     # Generate the push items to upload
                     params = {
