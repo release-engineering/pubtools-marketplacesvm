@@ -1,14 +1,14 @@
 [    INFO] Loading items from pub:https://fakepub.com?task-id=12345
-[    INFO] Deleting ami-rhcos1 in account aws-china-storage
-[    INFO] Delete finished for ami-rhcos1 in account aws-china-storage
 [   DEBUG] Listing all images from rhsm, https://rhsm.com/v1/internal/cloud_access_providers/amazon/amis
 [   DEBUG] Searching for product sample_product_HOURLY for provider ACN in rhsm
 [   DEBUG] Fetching product from https://rhsm.com/v1/internal/cloud_access_providers/amazon/provider_image_groups
 [   DEBUG] 5 Products(AWS provider) in rhsm: RHEL_HA(awstest), SAP(awstest), rhcos(ACN), sample_product(fake), sample_product_HOURLY(ACN)
 [    INFO] Attempting to update the existing image ami-rhcos1 in rhsm
 [    INFO] Existing image ami-rhcos1 succesfully updated in rhsm
+[    INFO] Deleting ami-rhcos1 in account aws-china-storage
+[    INFO] Delete finished for ami-rhcos1 in account aws-china-storage
+[ WARNING] AMI image: ami-aws1 not found, skipping update in rhsm.
 [    INFO] Deleting ami-aws1 in account aws-na
 [    INFO] Delete finished for ami-aws1 in account aws-na
-[ WARNING] AMI image: ami-aws1 not found, skipping update in rhsm.
 [    INFO] Collecting results
 [    INFO] Delete completed
