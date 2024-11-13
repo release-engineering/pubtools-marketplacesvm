@@ -4,7 +4,8 @@ from typing import Dict, Generator, List
 from unittest import mock
 
 import pytest
-from pushsource import AmiPushItem
+from attrs import evolve
+from pushsource import AmiPushItem, VMICloudInfo
 
 from pubtools._marketplacesvm.cloud_providers.base import CloudProvider
 from pubtools._marketplacesvm.tasks.delete import VMDelete, entry_point
@@ -124,6 +125,36 @@ def test_delete(
 
     fake_source.get.assert_called_once()
     assert fake_cloud_instance.call_count == 2
+
+
+@mock.patch("pubtools._marketplacesvm.tasks.delete.command.Source")
+def test_delete_using_cloud_info(
+    mock_source: mock.MagicMock,
+    fake_cloud_instance: mock.MagicMock,
+    aws_push_item: AmiPushItem,
+    command_tester: CommandTester,
+) -> None:
+    """Test a successfull delete using the cloud_info properties."""
+    cloud_info = VMICloudInfo(provider="AWS", account="aws-us-storage")
+    pi = evolve(aws_push_item, marketplace_entity_type=None, cloud_info=cloud_info)
+    mock_source.get.return_value.__enter__.return_value = [pi]
+    command_tester.test(
+        lambda: entry_point(VMDelete),
+        [
+            "test-delete",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--rhsm-url",
+            "https://rhsm.com/test/api/",
+            "--debug",
+            "--builds",
+            "sample_product-1.0.1-1-x86_64",
+            "pub:https://fakepub.com?task-id=12345",
+        ],
+    )
+
+    mock_source.get.assert_called_once()
+    fake_cloud_instance.assert_called_once_with("aws-us-storage")
 
 
 def test_delete_skip_build(
