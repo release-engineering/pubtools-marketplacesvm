@@ -1,0 +1,11 @@
+[    INFO] Loading items from pub:https://fakepub.com?task-id=12345
+[   DEBUG] Marking AMI ami-aws1 as invisible on RHSM for the provider AWS.
+[   DEBUG] Listing all images from rhsm, https://rhsm.com/v1/internal/cloud_access_providers/amazon/amis
+[   DEBUG] Searching for product sample_product for provider AWS in rhsm
+[   DEBUG] Fetching product from https://rhsm.com/v1/internal/cloud_access_providers/amazon/provider_image_groups
+[   DEBUG] 5 Products(AWS provider) in rhsm: RHEL_HA(awstest), SAP(awstest), rhcos(ACN), sample_product(fake), sample_product_HOURLY(ACN)
+[    INFO] sample_product not found in RHSM
+[    INFO] Deleting ami-aws1 in account aws-us-storage
+[    INFO] Delete finished for ami-aws1 in account aws-us-storage
+[    INFO] Collecting results
+[    INFO] Delete completed

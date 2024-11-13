@@ -3,7 +3,7 @@ import datetime
 import json
 import logging
 import os
-from typing import Any, Dict, Iterator, List
+from typing import Any, Dict, Iterator, List, Tuple
 
 from attrs import asdict, evolve
 from pushsource import AmiPushItem, Source, VMIPushItem
@@ -135,9 +135,15 @@ class VMDelete(MarketplacesVMTask, CloudService, CollectorService, AwsRHSMClient
         }
         return accounts[provider_name]
 
-    def _set_ami_invisible(self, push_item: AmiPushItem) -> None:
-        img_id = push_item.image_id
+    def _get_provider_details(self, push_item: VMIPushItem) -> Tuple[str, List[str]]:
+        if push_item.cloud_info:
+            return push_item.cloud_info.provider, [push_item.cloud_info.account]
         provider = push_item.marketplace_entity_type
+        account = self._convert_provider_name(provider)
+        return provider, account
+
+    def _set_ami_invisible(self, push_item: AmiPushItem, provider: str) -> None:
+        img_id = push_item.image_id
         log.debug("Marking AMI %s as invisible on RHSM for the provider %s.", img_id, provider)
         try:
             self.set_ami_invisible_rhsm(push_item, provider)
@@ -155,10 +161,10 @@ class VMDelete(MarketplacesVMTask, CloudService, CollectorService, AwsRHSMClient
         push_item: VMIPushItem,
         **kwargs,
     ) -> VMIPushItem:
-        marketplaces = self._convert_provider_name(push_item.marketplace_entity_type)
+        provider, marketplaces = self._get_provider_details(push_item)
         if push_item.build in self.args.builds:
             if self.args.dry_run:
-                self._set_ami_invisible(push_item)
+                self._set_ami_invisible(push_item, provider)
                 log.info("Would have deleted: %s in build %s", push_item.image_id, push_item.build)
                 self._SKIPPED = True
                 pi = evolve(push_item, state=State.SKIPPED)
@@ -166,7 +172,7 @@ class VMDelete(MarketplacesVMTask, CloudService, CollectorService, AwsRHSMClient
             # Cycle through potential marketplaces, this only matters in AmiProducts
             # as the build could exist in either aws-na or aws-emea.
             for marketplace in marketplaces:
-                self._set_ami_invisible(push_item)
+                self._set_ami_invisible(push_item, provider)
                 log.info(
                     "Deleting %s in account %s",
                     push_item.image_id,
