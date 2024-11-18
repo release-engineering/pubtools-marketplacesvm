@@ -398,6 +398,7 @@ def test_do_combined_push_overriden_destination(
     starmap_query_aws_community: QueryResponseContainer,
     command_tester: CommandTester,
     monkeypatch: pytest.MonkeyPatch,
+    tmpdir: pytest.Testdir,
 ) -> None:
     """Test a successfull combined push for marketplaces and community workflows."""
     # Store the auto-assigned mocks for StArMap on both workflows
@@ -436,6 +437,68 @@ def test_do_combined_push_overriden_destination(
             "https://rhsm.com/test/api/",
             "--repo",
             json.dumps([asdict(x) for x in responses], default=str),
+            "--debug",
+            "koji:https://fakekoji.com?vmi_build=ami_build",
+        ],
+    )
+
+    # Ensure the "server" was not called
+    mock_starmap_mkt.query_image_by_name.assert_not_called()
+    mock_starmap_cmt.query_image_by_name.assert_not_called()
+
+
+@mock.patch("pubtools._marketplacesvm.tasks.community_push.command.Source")
+@mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
+def test_do_combined_push_overriden_destination_file(
+    marketplace_source: mock.MagicMock,
+    community_source: mock.MagicMock,
+    ami_push_item: AmiPushItem,
+    starmap_query_aws_marketplace: QueryResponseContainer,
+    starmap_query_aws_community: QueryResponseContainer,
+    command_tester: CommandTester,
+    monkeypatch: pytest.MonkeyPatch,
+    tmpdir: pytest.Testdir,
+) -> None:
+    """Test a successfull combined push for marketplaces and community workflows."""
+    # Store the auto-assigned mocks for StArMap on both workflows
+    mock_starmap_mkt = MarketplacesVMPush.starmap
+    mock_starmap_cmt = CommunityVMPush.starmap
+
+    # The policy name must be the same for community and marketplace workflows
+    qre = starmap_query_aws_marketplace.responses.pop()
+    qre = evolve(qre, name="sample_product")
+    starmap_query_aws_marketplace.responses.append(qre)
+    binfo = KojiBuildInfo(name="sample_product", version="7.0", release="20230101")
+    ami_push_item = evolve(ami_push_item, build_info=binfo)
+
+    # Create a testing StArMap instance which will fail to resolve the server
+    # it is, it can only be used offline
+    responses = starmap_query_aws_community.responses + starmap_query_aws_marketplace.responses
+    provider = InMemoryMapProviderV2(QueryResponseContainer(responses))
+    starmap = StarmapClient("https://foo.com/bar", provider=provider)
+    monkeypatch.setattr(MarketplacesVMPush, 'starmap', starmap)
+    monkeypatch.setattr(CommunityVMPush, 'starmap', starmap)
+
+    # Add the push items in the queue
+    marketplace_source.get.return_value.__enter__.return_value = [ami_push_item]
+    community_source.get.return_value.__enter__.return_value = [ami_push_item]
+
+    p = tmpdir.mkdir('data').join('test.json')
+    p.write(json.dumps([asdict(x) for x in responses], default=str))
+
+    # Test file
+    command_tester.test(
+        lambda: entry_point(CombinedVMPush),
+        [
+            "test-push",
+            "--starmap-url",
+            "https://starmap-example.com",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--rhsm-url",
+            "https://rhsm.com/test/api/",
+            "--repo-file",
+            f"{p}",
             "--debug",
             "koji:https://fakekoji.com?vmi_build=ami_build",
         ],
