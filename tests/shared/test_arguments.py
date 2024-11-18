@@ -9,7 +9,12 @@ from unittest.mock import patch
 import pytest
 from _pytest.capture import CaptureFixture
 
-from pubtools._marketplacesvm.arguments import RepoQueryLoad, SplitAndExtend, from_environ
+from pubtools._marketplacesvm.arguments import (
+    RepoFileQueryLoad,
+    RepoQueryLoad,
+    SplitAndExtend,
+    from_environ,
+)
 
 
 @pytest.fixture
@@ -160,9 +165,38 @@ def test_repo_query_load(
     assert args.repo == request.getfixturevalue(expected)
 
 
+def test_repo_file_query_load(
+    parser: ArgumentParser,
+    tmpdir: pytest.Testdir,
+) -> None:
+    """Test RepoQueryLoad argparse Action."""
+    p = tmpdir.mkdir('data').join('test.json')
+    json_file = [{"testing": "test"}]
+    p.write(json.dumps(json_file))
+    parser.add_argument("--repo-file", type=str, action=RepoFileQueryLoad)
+    sys.argv = ["command", "--repo-file", f"{p}"]
+    args = parser.parse_args()
+    assert args.repo_file == [{"testing": "test"}]
+
+
 def test_invalid_repo_query_load(parser: ArgumentParser, capsys: CaptureFixture) -> None:
     parser.add_argument("--foo", action=RepoQueryLoad)
     sys.argv = ["command", "--foo", "{\"foo\": \"bar\"}"]
+    err = "argument --foo: Expected value to be a list, got: <class 'dict'>"
+    with pytest.raises(SystemExit):
+        parser.parse_args()
+
+    assert err in capsys.readouterr().err
+
+
+def test_invalid_repo_file_query_load(
+    parser: ArgumentParser, capsys: CaptureFixture, tmpdir: pytest.Testdir
+) -> None:
+    p = tmpdir.mkdir('data').join('test.json')
+    json_file = {"testing": "test"}
+    p.write(json.dumps(json_file))
+    parser.add_argument("--foo", type=str, action=RepoFileQueryLoad)
+    sys.argv = ["command", "--foo", f"{p}"]
     err = "argument --foo: Expected value to be a list, got: <class 'dict'>"
     with pytest.raises(SystemExit):
         parser.parse_args()

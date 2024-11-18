@@ -222,6 +222,7 @@ def test_do_community_push_overridden_destination(
     command_tester: CommandTester,
     starmap_ami_billing_config: Dict[str, Any],
     ami_push_item: AmiPushItem,
+    tmpdir: pytest.Testdir,
 ) -> None:
     """Test a community push success with the destinations overriden from command line."""
     binfo = KojiBuildInfo(name="sample-product", version="7.0", release="20230101")
@@ -270,6 +271,73 @@ def test_do_community_push_overridden_destination(
             "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
             "--repo",
             json.dumps(policy),
+            "--rhsm-url",
+            "https://rhsm.com/test/api/",
+            "--debug",
+            "koji:https://fakekoji.com?vmi_build=ami_build",
+        ],
+    )
+
+
+@mock.patch("pubtools._marketplacesvm.tasks.community_push.command.Source")
+def test_do_community_push_overridden_destination_file(
+    mock_source: mock.MagicMock,
+    fake_cloud_instance: mock.MagicMock,
+    command_tester: CommandTester,
+    starmap_ami_billing_config: Dict[str, Any],
+    ami_push_item: AmiPushItem,
+    tmpdir: pytest.Testdir,
+) -> None:
+    """Test a community push success with the destinations overriden from command line."""
+    binfo = KojiBuildInfo(name="sample-product", version="7.0", release="20230101")
+    ami_push_item = evolve(ami_push_item, build_info=binfo)
+    mock_source.get.return_value.__enter__.return_value = [ami_push_item]
+
+    policy = [
+        {
+            "mappings": {
+                "aws-na": {
+                    "destinations": [
+                        {
+                            "destination": "new_aws-na_destination-access",
+                            "overwrite": False,
+                            "restrict_version": False,
+                        }
+                    ],
+                    "provider": "awstest",
+                },
+                "aws-emea": {
+                    "destinations": [
+                        {
+                            "destination": "new_aws-emea_destination-hourly",
+                            "overwrite": True,
+                            "restrict_version": False,
+                        }
+                    ],
+                    "provider": "awstest",
+                },
+            },
+            "billing-code-config": starmap_ami_billing_config,
+            "cloud": "aws",
+            "meta": {"release": {"type": "ga"}},
+            "name": "sample-product",
+            "workflow": "community",
+        }
+    ]
+
+    p = tmpdir.mkdir('data').join('test.json')
+    p.write(json.dumps(policy))
+
+    command_tester.test(
+        lambda: entry_point(CommunityVMPush),
+        [
+            "test-push",
+            "--starmap-url",
+            "https://starmap-example.com",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--repo-file",
+            f"{p}",
             "--rhsm-url",
             "https://rhsm.com/test/api/",
             "--debug",

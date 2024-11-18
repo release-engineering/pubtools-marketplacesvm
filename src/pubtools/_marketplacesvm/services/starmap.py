@@ -8,7 +8,7 @@ from starmap_client.models import QueryResponseContainer, QueryResponseEntity
 from starmap_client.providers import InMemoryMapProviderV2
 from starmap_client.session import StarmapMockSession, StarmapSession
 
-from ..arguments import RepoQueryLoad
+from ..arguments import RepoFileQueryLoad, RepoQueryLoad
 from .base import Service
 
 log = logging.getLogger("pubtools.marketplacesvm")
@@ -58,6 +58,13 @@ class StarmapService(Service):
         )
 
         group.add_argument(
+            "--repo-file",
+            help="Override the StArMap mappings for push items with json file.",
+            type=str,
+            action=RepoFileQueryLoad,
+        )
+
+        group.add_argument(
             "--offline",
             help="Do not connect to a real StArMap server, use a mock session instead. "
             "It requires --repo to be set.",
@@ -65,12 +72,12 @@ class StarmapService(Service):
         )
 
     def _get_repo(self) -> Dict[str, Any]:
-        """Instantiate the InMemoryMapProvider when ``--repo`` is passed.
+        """Instantiate the InMemoryMapProvider when ``--repo`` or ``--repo-file`` is passed.
 
         This will make starmap_client load the list of mappings from memory
         first and only call the server whenever the local mapping is not found.
         """
-        local_mappings = self._service_args.repo
+        local_mappings = self._service_args.repo or self._service_args.repo_file
         if local_mappings:
             self._container = QueryResponseContainer.from_json(local_mappings)
             provider = InMemoryMapProviderV2(container=self._container)
