@@ -4,7 +4,8 @@ Destination Mapping
 The destination mapping is given by an internal service named ``StArMap`` throught the `Starmap Client`_ library.
 
 The tool expects a valid endpoint to the StArMap service and/or a JSON string containing the list of mappings
-using the parameter ``--repo``.
+using the parameter ``--repo``. Instead of using ``--repo`` you can instead use ``--repo-file`` and provide
+a json file to be parsed.
 
 The following sections will cover all the details about the destination mappings.
 

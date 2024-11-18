@@ -41,7 +41,8 @@
                                     <span class="p">[</span><span class="o">--</span><span class="n">rhsm</span><span class="o">-</span><span class="n">cert</span> <span class="n">RHSM_CERT</span><span class="p">]</span>
                                     <span class="p">[</span><span class="o">--</span><span class="n">rhsm</span><span class="o">-</span><span class="n">key</span> <span class="n">RHSM_KEY</span><span class="p">]</span>
                                     <span class="p">[</span><span class="o">--</span><span class="n">starmap</span><span class="o">-</span><span class="n">url</span> <span class="n">STARMAP_URL</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">repo</span> <span class="n">REPO</span><span class="p">]</span>
-                                    <span class="p">[</span><span class="o">--</span><span class="n">offline</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">credentials</span> <span class="n">CREDENTIALS</span><span class="p">]</span>
+                                    <span class="p">[</span><span class="o">--</span><span class="n">repo</span><span class="o">-</span><span class="n">file</span> <span class="n">REPO_FILE</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">offline</span><span class="p">]</span>
+                                    <span class="p">[</span><span class="o">--</span><span class="n">credentials</span> <span class="n">CREDENTIALS</span><span class="p">]</span>
                                     <span class="p">[</span><span class="o">--</span><span class="n">azure</span><span class="o">-</span><span class="n">allow</span><span class="o">-</span><span class="n">draft</span><span class="o">-</span><span class="n">push</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">skip</span> <span class="n">SKIP</span><span class="p">]</span>
                                     <span class="p">[</span><span class="o">--</span><span class="n">pre</span><span class="o">-</span><span class="n">push</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">beta</span><span class="p">]</span>
                                     <span class="p">[</span><span class="o">--</span><span class="n">container</span><span class="o">-</span><span class="n">prefix</span> <span class="n">CONTAINER_PREFIX</span><span class="p">]</span>
@@ -82,6 +83,9 @@
 <dt><kbd>--repo</kbd></dt>
 <dd><p>Override the StArMap mappings for push items. e.g: {‘name’: ‘foo’, ‘workflow’: ‘stratosphere’: [{‘aws-na’: {‘destinations’ [{‘destination’: ‘c39fd…’}, …]},…},…}]</p>
 <p>Default: []</p>
+</dd>
+<dt><kbd>--repo-file</kbd></dt>
+<dd><p>Override the StArMap mappings for push items with json file.</p>
 </dd>
 <dt><kbd>--offline</kbd></dt>
 <dd><p>Do not connect to a real StArMap server, use a mock session instead. It requires –repo to be set.</p>
@@ -352,7 +356,8 @@ to the corresponding cloud provider and published to its marketplace.</p>
 <h3>Destination Mapping<a class="headerlink" href="#destination-mapping" title="Link to this heading">¶</a></h3>
 <p>The destination mapping is given by an internal service named <code class="docutils literal notranslate"><span class="pre">StArMap</span></code> throught the <a class="reference external" href="https://release-engineering.github.io/starmap-client/">Starmap Client</a> library.</p>
 <p>The tool expects a valid endpoint to the StArMap service and/or a JSON string containing the list of mappings
-using the parameter <code class="docutils literal notranslate"><span class="pre">--repo</span></code>.</p>
+using the parameter <code class="docutils literal notranslate"><span class="pre">--repo</span></code>. Instead of using <code class="docutils literal notranslate"><span class="pre">--repo</span></code> you can instead use <code class="docutils literal notranslate"><span class="pre">--repo-file</span></code> and provide
+a json file to be parsed.</p>
 <p>The following sections will cover all the details about the destination mappings.</p>
 <p><strong>NOTE:</strong> This tooling supports the input format for StArMap APIv2 only.</p>
 <section id="mapping-request-modes">
