@@ -59,7 +59,7 @@ class StarmapService(Service):
 
         group.add_argument(
             "--repo-file",
-            help="Override the StArMap mappings for push items with json file.",
+            help="Override the StArMap mappings for push items with yaml file.",
             type=str,
             action=RepoFileQueryLoad,
         )

@@ -9,4 +9,5 @@ sphinx
 sphinx-argparse
 requests_mock
 types-mock
+types-PyYAML
 types-requests

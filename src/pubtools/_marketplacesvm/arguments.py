@@ -4,6 +4,8 @@ import os
 from argparse import Action, ArgumentError
 from typing import Callable, Optional
 
+import yaml
+
 
 def from_environ(key, delegate_converter=lambda x: x):
     """
@@ -187,7 +189,7 @@ class RepoFileQueryLoad(Action):
     """
     Argparse Action subclass for loading StArMap mappings from the ``repo-file`` argument.
 
-    This action is intended to allow the optional load of mappings from a json file
+    This action is intended to allow the optional load of mappings from a yaml file
     instead of having to request data from server.
 
     It will evaluate the input file and set it as a StArMap's QueryResponseContainer.
@@ -202,7 +204,7 @@ class RepoFileQueryLoad(Action):
         items = getattr(namespace, self.dest, None) or []
         if values and isinstance(values, str):
             with open(values, "r") as v:
-                items = json.load(v)
+                items = yaml.safe_load(v)
                 if not isinstance(items, list):
                     raise ArgumentError(self, f"Expected value to be a list, got: {type(items)}")
         setattr(namespace, self.dest, items)
