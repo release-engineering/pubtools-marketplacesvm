@@ -3,10 +3,10 @@ import datetime
 import json
 import logging
 import os
-from typing import Any, Dict, Iterator, List, Tuple
+from typing import Any, Dict, Iterator, List, Optional, Tuple
 
 from attrs import asdict, evolve
-from pushsource import AmiPushItem, Source, VMIPushItem
+from pushsource import AmiPushItem, Source, VHDPushItem, VMIPushItem
 
 from ...arguments import SplitAndExtend
 from ...services import CloudService, CollectorService
@@ -28,20 +28,20 @@ class VMDelete(MarketplacesVMTask, CloudService, CollectorService, AwsRHSMClient
         super(VMDelete, self).__init__(*args, **kwargs)
 
     @property
-    def raw_items(self) -> Iterator[AmiPushItem]:
+    def raw_items(self) -> Iterator[VMIPushItem]:
         """
         Load all push items from the given source(s) and yield them.
 
         Yields:
-            The AmiPushItems from the given sources.
+            The VMIPushItems from the given sources.
         """
         for source_url in self.args.source:
             with Source.get(source_url) as source:
                 log.info("Loading items from %s", source_url)
                 for item in source:
-                    if not isinstance(item, AmiPushItem):
+                    if not isinstance(item, VMIPushItem):
                         log.warning(
-                            "Push Item %s at %s is not an AmiPushItem, dropping it from the queue.",
+                            "Push Item %s at %s is not a VMIPushItem, dropping it from the queue.",
                             item.name,
                             item.src,
                         )
@@ -142,7 +142,9 @@ class VMDelete(MarketplacesVMTask, CloudService, CollectorService, AwsRHSMClient
         account = self._convert_provider_name(provider)
         return provider, account
 
-    def _set_ami_invisible(self, push_item: AmiPushItem, provider: str) -> None:
+    def _set_ami_invisible(self, push_item: AmiPushItem, provider: Optional[str] = None) -> None:
+        if not provider:
+            return
         img_id = push_item.image_id
         log.debug("Marking AMI %s as invisible on RHSM for the provider %s.", img_id, provider)
         try:
@@ -156,26 +158,26 @@ class VMDelete(MarketplacesVMTask, CloudService, CollectorService, AwsRHSMClient
                 exc_info=True,
             )
 
-    def _delete(
+    def _delete_vmi(
         self,
         push_item: VMIPushItem,
+        marketplaces: List[str],
+        image_reference: str,
+        provider: Optional[str] = None,
         **kwargs,
     ) -> VMIPushItem:
-        provider, marketplaces = self._get_provider_details(push_item)
         if push_item.build in self.args.builds:
             if self.args.dry_run:
                 self._set_ami_invisible(push_item, provider)
-                log.info("Would have deleted: %s in build %s", push_item.image_id, push_item.build)
+                log.info("Would have deleted: %s in build %s", image_reference, push_item.build)
                 self._SKIPPED = True
                 pi = evolve(push_item, state=State.SKIPPED)
                 return pi
-            # Cycle through potential marketplaces, this only matters in AmiProducts
-            # as the build could exist in either aws-na or aws-emea.
             for marketplace in marketplaces:
                 self._set_ami_invisible(push_item, provider)
                 log.info(
                     "Deleting %s in account %s",
-                    push_item.image_id,
+                    image_reference,
                     marketplace,
                 )
                 pi, _ = self.cloud_instance(marketplace).delete_push_images(
@@ -183,15 +185,33 @@ class VMDelete(MarketplacesVMTask, CloudService, CollectorService, AwsRHSMClient
                 )
                 log.info(
                     "Delete finished for %s in account %s",
-                    push_item.image_id,
+                    image_reference,
                     marketplace,
                 )
                 pi = evolve(pi, state=State.DELETED)
                 return pi
-        log.info("Skipped: %s in build %s", push_item.image_id, push_item.build)
+        log.info("Skipped: %s in build %s", image_reference, push_item.build)
         self._SKIPPED = True
         pi = evolve(push_item, state=State.SKIPPED)
         return pi
+
+    def _delete(
+        self,
+        push_item: VMIPushItem,
+        **kwargs,
+    ) -> VMIPushItem:
+        if isinstance(push_item, AmiPushItem):
+            image_ref = push_item.image_id
+            provider, marketplaces = self._get_provider_details(push_item)
+        elif isinstance(push_item, VHDPushItem):
+            image_ref = push_item.name
+            provider = None
+            if push_item.cloud_info:
+                marketplaces = [push_item.cloud_info.account]
+            else:
+                # If we don't have cloud info we will need to try either
+                marketplaces = ["azure-na", "azure-emea"]
+        return self._delete_vmi(push_item, marketplaces, image_ref, provider, **kwargs)
 
     def add_args(self):
         """Include the required CLI arguments for VMDelete."""

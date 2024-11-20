@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-from typing import List
+from datetime import datetime
+from typing import Any, Dict, List
 
 import pytest
 from pushsource import (
@@ -9,6 +10,7 @@ from pushsource import (
     AmiSecurityGroup,
     KojiBuildInfo,
     VHDPushItem,
+    VMIRelease,
 )
 
 from pubtools._marketplacesvm.tasks.delete.command import VMDelete
@@ -42,6 +44,26 @@ def ami_release() -> AmiRelease:
         "type": "GA",
     }
     return AmiRelease(**params)
+
+
+@pytest.fixture
+def release_params() -> Dict[str, Any]:
+    return {
+        "product": "sample-product",
+        "version": "7.0",
+        "arch": "x86_64",
+        "respin": 1,
+        "date": datetime.now(),
+    }
+
+
+@pytest.fixture
+def push_item_params() -> Dict[str, str]:
+    return {
+        "name": "name",
+        "description": "",
+        "build_info": KojiBuildInfo(name="test-build", version="7.0", release="20230101"),
+    }
 
 
 @pytest.fixture
@@ -149,8 +171,31 @@ def aws_rhcos_push_item(ami_release: AmiRelease, security_group: AmiSecurityGrou
 
 
 @pytest.fixture
-def pub_response(aws_rhcos_push_item: AmiPushItem, aws_push_item: AmiPushItem) -> List[AmiPushItem]:
+def vhd_push_item(release_params: Dict[str, Any], push_item_params: Dict[str, Any]) -> VHDPushItem:
+    """Return a minimal VHDPushItem."""
+    release = VMIRelease(**release_params)
+    push_item_params.update(
+        {
+            "name": "azure-testing.vhd.xz",
+            "release": release,
+            "src": "mnt/azure/azure-testing.vhd.xz",
+            "dest": ["azure-testing"],
+            "build": "azure-testing",
+        }
+    )
+    return VHDPushItem(**push_item_params)
+
+
+@pytest.fixture
+def pub_response_ami(
+    aws_rhcos_push_item: AmiPushItem, aws_push_item: AmiPushItem
+) -> List[AmiPushItem]:
     return [aws_rhcos_push_item, aws_push_item]
+
+
+@pytest.fixture
+def pub_response_azure(vhd_push_item: VHDPushItem) -> List[VHDPushItem]:
+    return [vhd_push_item]
 
 
 @pytest.fixture
@@ -160,11 +205,22 @@ def pub_response_diff_amis(
     return [aws_push_item, aws_push_item_2]
 
 
+class BadPubResponse:
+    name: str
+    description: str
+    src: str
+
+    def __init__(self, name, description, src):
+        self.name = name
+        self.description = description
+        self.src = src
+
+
 @pytest.fixture
-def bad_pub_response() -> List[VHDPushItem]:
+def bad_pub_response_vmi() -> List[BadPubResponse]:
     params = {
         "name": "vhd_pushitem",
         "description": "fakevhd",
+        "src": "fake-src",
     }
-    vhd_push_item = VHDPushItem(**params)
-    return [vhd_push_item, vhd_push_item]
+    return [BadPubResponse(**params), BadPubResponse(**params)]

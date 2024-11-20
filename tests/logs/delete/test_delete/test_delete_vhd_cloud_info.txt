@@ -1,0 +1,5 @@
+[    INFO] Loading items from pub:https://fakepub.com?task-id=12345
+[    INFO] Deleting azure-testing.vhd.xz in account azure-emea
+[    INFO] Delete finished for azure-testing.vhd.xz in account azure-emea
+[    INFO] Collecting results
+[    INFO] Delete completed
