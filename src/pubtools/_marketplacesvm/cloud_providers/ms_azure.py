@@ -353,9 +353,10 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
         Returns:
             A tuple of VHDPushItem and None at the moment.
         """
-        # TODO: Add delete functionality to Azure
-        LOG.info("Deleting of Azure images from a push is not implemented yet")
-        return push_item, None
+        name = self._name_from_push_item(push_item)
+        delete_meta_kwargs = {"image_name": name, "container": UPLOAD_CONTAINER_NAME}
+        self.upload_svc.delete(**delete_meta_kwargs)
+        return push_item
 
     def ensure_offer_is_writable(self, destination: str, nochannel: bool) -> None:
         """
