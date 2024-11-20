@@ -7,6 +7,7 @@ from typing import Any, Dict, List
 from unittest.mock import patch
 
 import pytest
+import yaml
 from _pytest.capture import CaptureFixture
 
 from pubtools._marketplacesvm.arguments import (
@@ -170,9 +171,9 @@ def test_repo_file_query_load(
     tmpdir: pytest.Testdir,
 ) -> None:
     """Test RepoQueryLoad argparse Action."""
-    p = tmpdir.mkdir('data').join('test.json')
+    p = tmpdir.mkdir('data').join('test.yaml')
     json_file = [{"testing": "test"}]
-    p.write(json.dumps(json_file))
+    p.write(yaml.dump(json_file))
     parser.add_argument("--repo-file", type=str, action=RepoFileQueryLoad)
     sys.argv = ["command", "--repo-file", f"{p}"]
     args = parser.parse_args()
@@ -192,9 +193,9 @@ def test_invalid_repo_query_load(parser: ArgumentParser, capsys: CaptureFixture)
 def test_invalid_repo_file_query_load(
     parser: ArgumentParser, capsys: CaptureFixture, tmpdir: pytest.Testdir
 ) -> None:
-    p = tmpdir.mkdir('data').join('test.json')
+    p = tmpdir.mkdir('data').join('test.yaml')
     json_file = {"testing": "test"}
-    p.write(json.dumps(json_file))
+    p.write(yaml.dump(json_file))
     parser.add_argument("--foo", type=str, action=RepoFileQueryLoad)
     sys.argv = ["command", "--foo", f"{p}"]
     err = "argument --foo: Expected value to be a list, got: <class 'dict'>"

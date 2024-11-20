@@ -8,6 +8,7 @@ from typing import Any, Dict, Generator
 from unittest import mock
 
 import pytest
+import yaml
 from _pytest.capture import CaptureFixture
 from attrs import evolve
 from pushsource import AmiPushItem, KojiBuildInfo, VHDPushItem
@@ -325,8 +326,8 @@ def test_do_community_push_overridden_destination_file(
         }
     ]
 
-    p = tmpdir.mkdir('data').join('test.json')
-    p.write(json.dumps(policy))
+    p = tmpdir.mkdir('data').join('test.yaml')
+    p.write(yaml.dump(policy))
 
     command_tester.test(
         lambda: entry_point(CommunityVMPush),
