@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 from datetime import datetime
 from typing import Any, Dict, Union
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, call, patch
 
 import pytest
 from attrs import evolve
@@ -704,9 +704,7 @@ def test_publish(
     mock_metadata.assert_called_once_with(**metadata)
     fake_aws_provider.publish_svc.publish.assert_called_once_with(meta_obj)
     fake_aws_provider.upload_svc_partial.upload.assert_not_called()  # type: ignore [attr-defined] # noqa: E501
-    fake_aws_provider.publish_svc.wait_active_changesets.assert_called_once_with(
-        aws_push_item.dest[0]
-    )
+    fake_aws_provider.publish_svc.wait_active_changesets.assert_has_calls([call('product-uuid')])
 
 
 @pytest.mark.parametrize("new_base_product", ["test-base", None])
@@ -795,6 +793,7 @@ def test_publish_version_exists(
     assert res == {}
 
     mock_metadata.assert_not_called()
+    fake_aws_provider.publish_svc.wait_active_changesets.assert_has_calls([call('product-uuid')])
     fake_aws_provider.publish_svc.publish.assert_not_called()
     fake_aws_provider.upload_svc_partial.upload.assert_not_called()  # type: ignore [attr-defined] # noqa: E501
 
