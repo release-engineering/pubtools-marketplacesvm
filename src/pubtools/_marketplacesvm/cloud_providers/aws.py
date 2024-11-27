@@ -626,6 +626,9 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         restrict_minor = kwargs.get("restrict_minor")
 
         if restrict_version:
+            # Check if this product is locked currently and wait for it to become unlocked
+            LOG.info("Checking for active changesets in: %s", push_item.dest[0])
+            self.publish_svc.wait_active_changesets(push_item.dest[0])
             LOG.info(
                 "Starting to restrict versions: restrict_major = %s, restrict_minor = %s",
                 restrict_major,
