@@ -8,8 +8,8 @@ from starmap_client.models import QueryResponseContainer, QueryResponseEntity
 from starmap_client.providers import InMemoryMapProviderV2
 from starmap_client.session import StarmapMockSession, StarmapSession
 
-from ..arguments import RepoFileQueryLoad, RepoQueryLoad
-from .base import Service
+from pubtools._marketplacesvm.arguments import RepoFileQueryLoad, RepoQueryLoad
+from pubtools._marketplacesvm.services.base import Service
 
 log = logging.getLogger("pubtools.marketplacesvm")
 

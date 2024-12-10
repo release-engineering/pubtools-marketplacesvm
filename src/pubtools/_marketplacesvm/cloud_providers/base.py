@@ -1,18 +1,13 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 import logging
 import os
-import sys
 from abc import ABC, abstractmethod
 from typing import Any, Dict, Generic, NoReturn, Optional, Tuple, Type, TypeVar
-
-if sys.version_info >= (3, 8):
-    from typing import TypedDict  # pragma: no cover
-else:
-    from typing_extensions import TypedDict  # pragma: no cover
 
 from attrs import Attribute, field, frozen
 from attrs.validators import instance_of
 from pushsource import VMIPushItem
+from typing_extensions import TypedDict
 
 log = logging.getLogger("pubtools.marketplacesvm")
 

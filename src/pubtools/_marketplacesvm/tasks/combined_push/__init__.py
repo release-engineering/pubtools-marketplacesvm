@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-from .command import CombinedVMPush
+from pubtools._marketplacesvm.tasks.combined_push.command import CombinedVMPush
 
 
 def entry_point(cls=CombinedVMPush):

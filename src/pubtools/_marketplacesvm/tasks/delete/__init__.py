@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-from .command import VMDelete
+from pubtools._marketplacesvm.tasks.delete.command import VMDelete
 
 
 def entry_point(cls=VMDelete):

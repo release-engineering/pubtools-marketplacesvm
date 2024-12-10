@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-from .command import CommunityVMPush
+from pubtools._marketplacesvm.tasks.community_push.command import CommunityVMPush
 
 
 def entry_point(cls=CommunityVMPush):

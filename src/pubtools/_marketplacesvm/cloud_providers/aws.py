@@ -15,7 +15,12 @@ from cloudpub.aws import AWSVersionMetadata as AWSPublishMetadata
 from cloudpub.models.aws import VersionMapping as AWSVersionMapping
 from pushsource import AmiPushItem
 
-from .base import UPLOAD_CONTAINER_NAME, CloudCredentials, CloudProvider, register_provider
+from pubtools._marketplacesvm.cloud_providers.base import (
+    UPLOAD_CONTAINER_NAME,
+    CloudCredentials,
+    CloudProvider,
+    register_provider,
+)
 
 LOG = logging.getLogger("pubtools.marketplacesvm")
 UploadResult = namedtuple("UploadResult", "id")  # NOSONAR

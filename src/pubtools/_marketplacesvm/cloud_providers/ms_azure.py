@@ -12,7 +12,12 @@ from cloudpub.ms_azure import AzurePublishingMetadata as AzurePublishMetadata
 from cloudpub.ms_azure import AzureService as AzurePublishService
 from pushsource import VHDPushItem
 
-from .base import UPLOAD_CONTAINER_NAME, CloudCredentials, CloudProvider, register_provider
+from pubtools._marketplacesvm.cloud_providers.base import (
+    UPLOAD_CONTAINER_NAME,
+    CloudCredentials,
+    CloudProvider,
+    register_provider,
+)
 
 LOG = logging.getLogger("pubtools.marketplacesvm")
 

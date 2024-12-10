@@ -10,11 +10,11 @@ from more_executors import Executors
 from pushsource import Source, VMIPushItem
 from starmap_client.models import QueryResponseEntity, Workflow
 
-from ...arguments import SplitAndExtend
-from ...services import CloudService, CollectorService, StarmapService
-from ...task import RUN_RESULT, MarketplacesVMTask
-from ...utils import CLOUD_NAME_FOR_PI
-from ..push.items import MappedVMIPushItemV2, State
+from pubtools._marketplacesvm.arguments import SplitAndExtend
+from pubtools._marketplacesvm.services import CloudService, CollectorService, StarmapService
+from pubtools._marketplacesvm.task import RUN_RESULT, MarketplacesVMTask
+from pubtools._marketplacesvm.tasks.push.items import MappedVMIPushItemV2, State
+from pubtools._marketplacesvm.utils import CLOUD_NAME_FOR_PI
 
 log = logging.getLogger("pubtools.marketplacesvm")
 UPLOAD_RESULT = Tuple[MappedVMIPushItemV2, QueryResponseEntity]

@@ -2,7 +2,7 @@ import threading
 
 import pushcollector
 
-from .base import Service
+from pubtools._marketplacesvm.services.base import Service
 
 
 class CollectorService(Service):

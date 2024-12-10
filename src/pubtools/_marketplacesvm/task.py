@@ -9,8 +9,8 @@ from typing import Optional
 
 from pubtools.pluggy import task_context
 
-from .step import StepDecorator
-from .utils import BuildIdBorg
+from pubtools._marketplacesvm.step import StepDecorator
+from pubtools._marketplacesvm.utils import BuildIdBorg
 
 LOG = logging.getLogger("pubtools.marketplacesvm")
 LOG_FORMAT = "%(asctime)s [%(levelname)-8s] %(message)s"

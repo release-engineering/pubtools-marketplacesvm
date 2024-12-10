@@ -6,9 +6,9 @@ import threading
 from argparse import ArgumentParser
 from typing import Any, Dict
 
-from ..arguments import from_environ
-from ..cloud_providers import CloudProvider, MarketplaceAuth, get_provider
-from .base import Service
+from pubtools._marketplacesvm.arguments import from_environ
+from pubtools._marketplacesvm.cloud_providers import CloudProvider, MarketplaceAuth, get_provider
+from pubtools._marketplacesvm.services.base import Service
 
 log = logging.getLogger("pubtools.marketplacesvm")
 

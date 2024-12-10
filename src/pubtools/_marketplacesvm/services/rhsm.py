@@ -18,8 +18,8 @@ from more_executors import Executors
 from more_executors.futures import f_map
 from pubtools.pluggy import pm
 
-from ..arguments import from_environ
-from .base import Service
+from pubtools._marketplacesvm.arguments import from_environ
+from pubtools._marketplacesvm.services.base import Service
 
 T = TypeVar("T")
 

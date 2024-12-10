@@ -8,11 +8,11 @@ from typing import Any, Dict, Iterator, List, Optional, Tuple
 from attrs import asdict, evolve
 from pushsource import AmiPushItem, Source, VHDPushItem, VMIPushItem
 
-from ...arguments import SplitAndExtend
-from ...services import CloudService, CollectorService
-from ...services.rhsm import AwsRHSMClientService
-from ...task import RUN_RESULT, MarketplacesVMTask
-from ..push.items import State
+from pubtools._marketplacesvm.arguments import SplitAndExtend
+from pubtools._marketplacesvm.services import CloudService, CollectorService
+from pubtools._marketplacesvm.services.rhsm import AwsRHSMClientService
+from pubtools._marketplacesvm.task import RUN_RESULT, MarketplacesVMTask
+from pubtools._marketplacesvm.tasks.push.items import State
 
 log = logging.getLogger("pubtools.marketplacesvm")
 

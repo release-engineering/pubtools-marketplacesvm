@@ -4,12 +4,12 @@ from typing import Any, Dict, List
 
 from more_executors import Executors
 
-from ...arguments import SplitAndExtend
-from ...services import CloudService, StarmapService
-from ...services.rhsm import AwsRHSMClientService
-from ...task import RUN_RESULT, MarketplacesVMTask
-from ..community_push import CommunityVMPush
-from ..push import MarketplacesVMPush
+from pubtools._marketplacesvm.arguments import SplitAndExtend
+from pubtools._marketplacesvm.services import CloudService, StarmapService
+from pubtools._marketplacesvm.services.rhsm import AwsRHSMClientService
+from pubtools._marketplacesvm.task import RUN_RESULT, MarketplacesVMTask
+from pubtools._marketplacesvm.tasks.community_push import CommunityVMPush
+from pubtools._marketplacesvm.tasks.push import MarketplacesVMPush
 
 log = logging.getLogger("pubtools.marketplacesvm")
 

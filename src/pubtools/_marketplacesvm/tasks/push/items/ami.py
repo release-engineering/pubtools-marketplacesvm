@@ -3,7 +3,7 @@ from typing import Any, Dict, List
 
 from pushsource import AmiAccessEndpointUrl, AmiSecurityGroup
 
-from .starmap import MappedVMIPushItemV2
+from pubtools._marketplacesvm.tasks.push.items.starmap import MappedVMIPushItemV2
 
 log = logging.getLogger(__name__)
 
