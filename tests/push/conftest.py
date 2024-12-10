@@ -99,6 +99,30 @@ def starmap_response_aws() -> Dict[str, Any]:
 
 
 @pytest.fixture
+def starmap_response_aws_1m() -> Dict[str, Any]:
+    return {
+        "mappings": {
+            "aws-na": {
+                "destinations": [
+                    {
+                        "architecture": "x86_64",
+                        "destination": "ffffffff-ffff-ffff-ffff-ffffffffffff",
+                        "overwrite": True,
+                        "restrict_version": False,
+                        "meta": {"tag1": "aws-na-value1", "tag2": "aws-na-value2"},
+                        "tags": {"key1": "value1", "key2": "value2"},
+                        "ami_version_template": "{major}.{minor}.{patch}",
+                    }
+                ]
+            },
+        },
+        "name": "sample-product",
+        "workflow": "stratosphere",
+        "cloud": "aws",
+    }
+
+
+@pytest.fixture
 def starmap_response_azure() -> Dict[str, Any]:
     return {
         "mappings": {
@@ -137,6 +161,11 @@ def starmap_response_azure() -> Dict[str, Any]:
 @pytest.fixture
 def starmap_query_aws(starmap_response_aws: Dict[str, Any]) -> QueryResponseEntity:
     return QueryResponseEntity.from_json(starmap_response_aws)
+
+
+@pytest.fixture
+def starmap_query_aws_1m(starmap_response_aws_1m: Dict[str, Any]) -> QueryResponseEntity:
+    return QueryResponseEntity.from_json(starmap_response_aws_1m)
 
 
 @pytest.fixture

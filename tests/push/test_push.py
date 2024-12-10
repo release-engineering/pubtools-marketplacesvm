@@ -46,12 +46,33 @@ def fake_source(
 
 
 @pytest.fixture()
+def fake_source_1m(
+    ami_push_item: AmiPushItem, vhd_push_item: VHDPushItem
+) -> Generator[mock.MagicMock, None, None]:
+    with mock.patch("pubtools._marketplacesvm.tasks.push.command.Source") as m:
+        m.get.return_value.__enter__.return_value = [ami_push_item]
+        yield m
+
+
+@pytest.fixture()
 def fake_starmap(
     starmap_query_aws: QueryResponseEntity, starmap_query_azure: QueryResponseEntity
 ) -> Generator[mock.MagicMock, None, None]:
     with mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.starmap") as m:
         m.query_image_by_name.side_effect = [
             QueryResponseContainer([x]) for x in [starmap_query_aws, starmap_query_azure]
+        ]
+
+        yield m
+
+
+@pytest.fixture()
+def fake_starmap_1m(
+    starmap_query_aws_1m: QueryResponseEntity, starmap_query_azure: QueryResponseEntity
+) -> Generator[mock.MagicMock, None, None]:
+    with mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.starmap") as m:
+        m.query_image_by_name.side_effect = [
+            QueryResponseContainer([x]) for x in [starmap_query_aws_1m]
         ]
 
         yield m
@@ -455,8 +476,8 @@ def test_push_item_fail_upload(
 @mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.cloud_instance")
 def test_push_item_fail_publish(
     mock_cloud_instance: mock.MagicMock,
-    fake_source: mock.MagicMock,
-    fake_starmap: mock.MagicMock,
+    fake_source_1m: mock.MagicMock,
+    fake_starmap_1m: mock.MagicMock,
     ami_push_item: AmiPushItem,
     vhd_push_item: VHDPushItem,
     command_tester: CommandTester,
@@ -478,14 +499,14 @@ def test_push_item_fail_publish(
             "--credentials",
             "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
             "--debug",
-            "koji:https://fakekoji.com?vmi_build=ami_build,azure_build",
+            "koji:https://fakekoji.com?vmi_build=ami_build",
         ],
     )
-    starmap_calls = [mock.call(name="test-build", version="7.0") for _ in range(2)]
-    fake_starmap.query_image_by_name.assert_has_calls(starmap_calls)
+    starmap_calls = [mock.call(name="test-build", version="7.0") for _ in range(1)]
+    fake_starmap_1m.query_image_by_name.assert_has_calls(starmap_calls)
     # get_provider, upload calls for "aws-na", "aws-emea", "azure-na" with
     # publish calls only for "aws-na" and "azure-na"
-    assert mock_cloud_instance.call_count == 11
+    assert mock_cloud_instance.call_count == 3
 
 
 @mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")

@@ -276,11 +276,10 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
 
             # Associate image with Product/Offer/Plan and publish only if it's not a pre-push
             if pi.state != State.UPLOADFAILED and not self.args.pre_push:
-                pi = self._publish(
-                    marketplace,
-                    pi,
-                    pre_push=False,
-                )
+                kwargs = {"marketplace": marketplace, "push_item": pi, "pre_push": False}
+                coro = asyncio.to_thread(self._publish, **kwargs)
+                task = asyncio.create_task(coro)
+                pi = await task
             elif pi.state != State.UPLOADFAILED and self.args.pre_push:
                 # Set the state as PUSHED when the operation is nochannel
                 pi = evolve(pi, state=State.PUSHED)

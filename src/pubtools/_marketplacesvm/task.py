@@ -13,7 +13,7 @@ from .step import StepDecorator
 from .utils import BuildIdBorg
 
 LOG = logging.getLogger("pubtools.marketplacesvm")
-LOG_FORMAT = "%(asctime)s [%(levelname)-8s] %(message)s"
+LOG_FORMAT = "%(asctime)s [%(levelname)-8s][%(threadName)s] %(message)s"
 
 
 RUN_RESULT = namedtuple('RUN_RESULT', ['success', 'skipped', 'collected_result'])
