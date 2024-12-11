@@ -388,6 +388,7 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                 snapshot_accounts=snapshot_accounts,
                 ami_version_template=ami_version_template,
             )
+            print(push_item)
             log.info("Upload finished for %s on %s", push_item.name, push_item.region)
         except Exception as exc:
             log.exception(
@@ -398,14 +399,14 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                 str(exc),
                 stack_info=True,
             )
+            # At this point pi doesn't exist so we update push_item
             pi = evolve(push_item, state=State.UPLOADFAILED)
             return pi, marketplace
-
         # Then, if we're shipping the community image, we should update the RHSM
         # and change the the AWS group to "all" for the uploaded image
         if ship:
             try:
-                self.update_rhsm_metadata(image, push_item)
+                self.update_rhsm_metadata(image, pi)
                 if push_item.public_image:
                     log.info("Releasing image %s publicly", image.id)
                     groups = ["all"]
@@ -423,7 +424,8 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                     )
             except Exception as exc:
                 log.exception("Failed to publish %s: %s", push_item.name, str(exc), stack_info=True)
-                pi = evolve(push_item, state=State.NOTPUSHED)
+                # At this point pi exists so we need to make sure we don't lose anything
+                pi = evolve(pi, state=State.NOTPUSHED)
                 return pi, marketplace
 
         # Finally, if everything went well we return the updated push item
