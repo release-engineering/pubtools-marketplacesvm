@@ -85,7 +85,7 @@
 [    INFO] Attempting to update the existing image ami-00000000000000000 in RHSM
 [   DEBUG] {'image_id': 'ami-00000000000000000', 'image_name': 'fake-name', 'arch': 'x86_64', 'product_name': 'sample_product', 'version': '7.0', 'variant': 'variant'}
 [    INFO] Successfully registered image ami-00000000000000000 with RHSM
-[    INFO] Successfully uploaded ami_pushitem [None] [ami-00000000000000000]
+[    INFO] Successfully uploaded ami_pushitem [fake-destination] [ami-00000000000000000]
 [    INFO] Uploading /foo/bar/sample_product_test.raw to region fake-destination2 (type: access, ship: True, account: aws_storage) with sharing accounts: ['third_account', 'fourth_account'] and snapshot accounts: None
 [    INFO] Upload finished for ami_pushitem on fake-destination2
 [    INFO] Creating region fake-destination2 [anotherprovider]
@@ -94,6 +94,6 @@
 [    INFO] Attempting to update the existing image ami-00000000000000000 in RHSM
 [   DEBUG] {'image_id': 'ami-00000000000000000', 'image_name': 'fake-name', 'arch': 'x86_64', 'product_name': 'sample_product', 'version': '7.0', 'variant': 'variant'}
 [    INFO] Successfully registered image ami-00000000000000000 with RHSM
-[    INFO] Successfully uploaded ami_pushitem [None] [ami-00000000000000000]
+[    INFO] Successfully uploaded ami_pushitem [fake-destination2] [ami-00000000000000000]
 [    INFO] Collecting results
 [    INFO] Community VM push completed
