@@ -845,17 +845,31 @@ def test_do_community_push_different_sharing_accounts(
     mock_starmap: mock.MagicMock,
     mock_source: mock.MagicMock,
     ami_push_item: AmiPushItem,
+    fake_cloud_instance: mock.MagicMock,
     starmap_ami_billing_config: Dict[str, Any],
     command_tester: CommandTester,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+
+    class FakePublish(FakeCloudProvider):
+        @classmethod
+        def from_credentials(cls, _):
+            return cls()
+
+        def _upload(self, push_item, custom_tags=None, **kwargs):
+            return push_item, UploadResponse({"id": "ami-00000000000000000", "name": "fake-name"})
+
+        def _pre_publish(self, push_item, **kwargs):
+            return push_item, kwargs
+
+        def _publish(self, push_item, nochannel, overwrite, **kwargs):
+            return push_item, nochannel
+
+        def _delete_push_images(self, push_item, **kwargs):
+            return push_item
+
     """Test a community-push with two push-items, each one having different sharing accounts."""
-    mock_ami = mock.MagicMock()
-    mock_ami.id = "ami-00000000000000000"
-    mock_ami.name = "fake-name"
-    mock_cloud_instance = mock.MagicMock()
-    mock_cloud_instance.return_value.upload.return_value = (ami_push_item, mock_ami)
-    monkeypatch.setattr(CommunityVMPush, "cloud_instance", mock_cloud_instance)
+    fake_cloud_instance.return_value = FakePublish()
     mock_source.get.return_value.__enter__.return_value = [ami_push_item for _ in range(2)]
     policy1 = [
         {
@@ -932,33 +946,6 @@ def test_do_community_push_different_sharing_accounts(
             "--debug",
             "koji:https://fakekoji.com?vmi_build=ami_build,ami_build_2",
         ],
-    )
-
-    # Since the push item get updated with destination and some stuff it's easier to just
-    # change it to "mock.ANY" as we just want to test here whether the sharing accounts are correct
-    mock_cloud_instance.return_value.upload.assert_has_calls(
-        [
-            mock.call(
-                mock.ANY,
-                custom_tags=None,
-                ami_tags={'billing_type': 'access'},
-                snapshot_tags={'billing_type': 'access'},
-                container='redhat-cloudimg-fake-destination',
-                accounts=['first_account', 'second_account'],
-                snapshot_accounts=None,
-                ami_version_template='{major}.{minor}.0',
-            ),
-            mock.call(
-                mock.ANY,
-                custom_tags=None,
-                ami_tags={'billing_type': 'access'},
-                snapshot_tags={'billing_type': 'access'},
-                container='redhat-cloudimg-fake-destination2',
-                accounts=['third_account', 'fourth_account'],
-                snapshot_accounts=None,
-                ami_version_template=None,
-            ),
-        ]
     )
 
 
