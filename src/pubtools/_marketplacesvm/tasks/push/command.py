@@ -215,6 +215,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                 pi,
                 custom_tags=mapped_item.get_tags_for_marketplace(marketplace),
                 accounts=meta.get("sharing_accounts", []),
+                snapshot_accounts=meta.get("snapshot_accounts", []),
                 ami_version_template=mapped_item.get_ami_version_template_for_mapped_item(
                     marketplace
                 ),
