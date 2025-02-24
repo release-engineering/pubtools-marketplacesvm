@@ -5,6 +5,7 @@
 [   DEBUG] Merging original release information with data from StArMap
 [   DEBUG] Creating a VMIRelease object with {'product': 'sample_product', 'date': datetime.datetime(2023, 12, 12, 0, 0), 'arch': 'x86_64', 'respin': 1, 'version': '7.0', 'base_product': 'sample_base', 'base_version': '1.0', 'variant': 'variant', 'type': 'ga'}
 [ WARNING] Missing information for the attribute ami_pushitem.build, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.opener, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.boot_mode, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.cloud_info, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.marketplace_title_template, leaving it unset.
@@ -35,6 +36,7 @@
 [   DEBUG] Merging original release information with data from StArMap
 [   DEBUG] Creating a VMIRelease object with {'product': 'sample_product', 'date': datetime.datetime(2023, 12, 12, 0, 0), 'arch': 'x86_64', 'respin': 1, 'version': '7.0', 'base_product': 'sample_base', 'base_version': '1.0', 'variant': 'variant', 'type': 'ga'}
 [ WARNING] Missing information for the attribute ami_pushitem.build, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.opener, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.boot_mode, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.cloud_info, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.marketplace_title_template, leaving it unset.
@@ -65,6 +67,7 @@
 [   DEBUG] Merging original release information with data from StArMap
 [   DEBUG] Creating a VMIRelease object with {'product': 'sample_product', 'date': datetime.datetime(2023, 12, 12, 0, 0), 'arch': 'x86_64', 'respin': 1, 'version': '7.0', 'base_product': 'sample_base', 'base_version': '1.0', 'variant': 'variant', 'type': 'ga'}
 [ WARNING] Missing information for the attribute ami_pushitem.build, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.opener, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.boot_mode, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.cloud_info, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.marketplace_title_template, leaving it unset.
@@ -95,6 +98,7 @@
 [   DEBUG] Merging original release information with data from StArMap
 [   DEBUG] Creating a VMIRelease object with {'product': 'sample_product', 'date': datetime.datetime(2023, 12, 12, 0, 0), 'arch': 'x86_64', 'respin': 1, 'version': '7.0', 'base_product': 'sample_base', 'base_version': '1.0', 'variant': 'variant', 'type': 'ga'}
 [ WARNING] Missing information for the attribute ami_pushitem.build, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.opener, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.boot_mode, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.cloud_info, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.marketplace_title_template, leaving it unset.
@@ -125,6 +129,7 @@
 [   DEBUG] Merging original release information with data from StArMap
 [   DEBUG] Creating a VMIRelease object with {'product': 'sample_product', 'date': datetime.datetime(2023, 12, 12, 0, 0), 'arch': 'x86_64', 'respin': 1, 'version': '7.0', 'base_product': 'sample_base', 'base_version': '1.0', 'variant': 'variant', 'type': 'ga'}
 [ WARNING] Missing information for the attribute ami_pushitem.build, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.opener, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.boot_mode, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.cloud_info, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.marketplace_title_template, leaving it unset.
@@ -155,6 +160,7 @@
 [   DEBUG] Merging original release information with data from StArMap
 [   DEBUG] Creating a VMIRelease object with {'product': 'sample_product', 'date': datetime.datetime(2023, 12, 12, 0, 0), 'arch': 'x86_64', 'respin': 1, 'version': '7.0', 'base_product': 'sample_base', 'base_version': '1.0', 'variant': 'variant', 'type': 'ga'}
 [ WARNING] Missing information for the attribute ami_pushitem.build, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.opener, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.boot_mode, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.cloud_info, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.marketplace_title_template, leaving it unset.
@@ -185,6 +191,7 @@
 [   DEBUG] Merging original release information with data from StArMap
 [   DEBUG] Creating a VMIRelease object with {'product': 'sample_product', 'date': datetime.datetime(2023, 12, 12, 0, 0), 'arch': 'x86_64', 'respin': 1, 'version': '7.0', 'base_product': 'sample_base', 'base_version': '1.0', 'variant': 'variant', 'type': 'ga'}
 [ WARNING] Missing information for the attribute ami_pushitem.build, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.opener, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.boot_mode, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.cloud_info, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.marketplace_title_template, leaving it unset.
@@ -215,6 +222,7 @@
 [   DEBUG] Merging original release information with data from StArMap
 [   DEBUG] Creating a VMIRelease object with {'product': 'sample_product', 'date': datetime.datetime(2023, 12, 12, 0, 0), 'arch': 'x86_64', 'respin': 1, 'version': '7.0', 'base_product': 'sample_base', 'base_version': '1.0', 'variant': 'variant', 'type': 'ga'}
 [ WARNING] Missing information for the attribute ami_pushitem.build, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.opener, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.boot_mode, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.cloud_info, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.marketplace_title_template, leaving it unset.

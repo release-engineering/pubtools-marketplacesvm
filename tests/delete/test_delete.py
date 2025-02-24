@@ -60,7 +60,7 @@ def fake_ami_source_dif_amis(
 
 @pytest.fixture()
 def bad_fake_vmi_source(
-    bad_pub_response_vmi: List[Dict[str, str]]
+    bad_pub_response_vmi: List[Dict[str, str]],
 ) -> Generator[mock.MagicMock, None, None]:
     with mock.patch("pubtools._marketplacesvm.tasks.delete.command.Source") as m:
         m.get.return_value.__enter__.return_value = bad_pub_response_vmi

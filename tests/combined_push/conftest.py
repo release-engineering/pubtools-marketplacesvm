@@ -233,14 +233,14 @@ def starmap_response_azure() -> List[Dict[str, Any]]:
 
 @pytest.fixture
 def starmap_query_aws_marketplace(
-    starmap_response_aws_marketplace: Dict[str, Any]
+    starmap_response_aws_marketplace: Dict[str, Any],
 ) -> QueryResponseContainer:
     return QueryResponseContainer.from_json(starmap_response_aws_marketplace)
 
 
 @pytest.fixture
 def starmap_query_aws_community(
-    starmap_response_aws_community: Dict[str, Any]
+    starmap_response_aws_community: Dict[str, Any],
 ) -> QueryResponseContainer:
     return QueryResponseContainer.from_json(starmap_response_aws_community)
 
