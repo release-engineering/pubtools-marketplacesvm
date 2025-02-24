@@ -3,6 +3,7 @@
 [    INFO] starmap query returned for ami_pushitem : {"name": "test-build", "version": "7.0", "query_response": {"meta": null, "name": "fake-policy", "billing_code_config": {}, "cloud": "aws", "workflow": "stratosphere", "mappings": {"aws-na": {"meta": {}, "destinations": [{"meta": {}, "id": null, "architecture": null, "destination": "NA-DESTINATION", "overwrite": false, "restrict_version": true, "restrict_major": 3, "restrict_minor": 1, "ami_version_template": null, "provider": null, "tags": null}], "provider": null}, "aws-emea": {"meta": {}, "destinations": [{"meta": {}, "id": null, "architecture": null, "destination": "EMEA-DESTINATION", "overwrite": false, "restrict_version": true, "restrict_major": 3, "restrict_minor": 1, "ami_version_template": null, "provider": null, "tags": null}], "provider": null}}}}
 [ WARNING] Missing information for the attribute ami_pushitem.src, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.build, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.opener, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.description, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.boot_mode, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.cloud_info, leaving it unset.

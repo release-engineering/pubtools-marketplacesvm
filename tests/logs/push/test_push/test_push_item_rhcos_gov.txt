@@ -6,6 +6,7 @@
 [    INFO] starmap query returned for vhd_pushitem : {"name": "test-build", "version": "7.0", "query_response": {"meta": null, "name": "sample-product", "billing_code_config": {}, "cloud": "azure", "workflow": "stratosphere", "mappings": {"azure-na": {"meta": {}, "destinations": [{"meta": {"tag1": "value1", "tag2": "value2"}, "id": null, "architecture": "x86_64", "destination": "destination_offer_main/plan1", "overwrite": true, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "ami_version_template": null, "provider": null, "tags": {"key1": "value1", "key2": "value2"}}, {"meta": {"tag3": "value3", "tag4": "value5"}, "id": null, "architecture": "x86_64", "destination": "destination_offer_main/plan2", "overwrite": false, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "ami_version_template": null, "provider": null, "tags": null}, {"meta": {}, "id": null, "architecture": "x86_64", "destination": "destination_offer_main/plan3", "overwrite": false, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "ami_version_template": null, "provider": null, "tags": null}], "provider": null}}}}
 [ WARNING] Missing information for the attribute ami_pushitem.src, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.build, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.opener, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.description, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.boot_mode, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.cloud_info, leaving it unset.
@@ -36,6 +37,7 @@
 [    INFO] Upload finished for ami_pushitem on AWS-EMEA
 [ WARNING] Missing information for the attribute vhd_pushitem.src, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.build, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.opener, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.description, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.boot_mode, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.cloud_info, leaving it unset.
