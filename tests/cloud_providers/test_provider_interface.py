@@ -39,7 +39,7 @@ class TestCloudCredentials:
 class TestCloudProvider:
     def test_abstract_class(self) -> None:
         with pytest.raises(TypeError, match="Can't instantiate abstract class"):
-            CloudProvider()  # type: ignore
+            CloudProvider()
 
     def test_raise_error_with_logs(self, caplog: LogCaptureFixture) -> None:
         message = "something bad happended"

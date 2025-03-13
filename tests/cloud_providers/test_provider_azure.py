@@ -82,7 +82,7 @@ def test_get_provider(marketplace_account: str, fake_credentials: AzureCredentia
     creds = fake_credentials.credentials
     creds.update({"AZURE_STORAGE_CONNECTION_STRING": conn_str})
     auth_data = {"marketplace_account": marketplace_account, "auth": creds}
-    provider = get_provider(auth_data)  # type: ignore
+    provider = get_provider(auth_data)
     assert isinstance(provider, AzureProvider)
 
 
