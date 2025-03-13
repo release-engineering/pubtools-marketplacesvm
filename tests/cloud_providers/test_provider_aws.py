@@ -35,7 +35,7 @@ def fake_credentials() -> AWSCredentials:
         "AWS_SNAPSHOT_ACCOUNTS": ["23532", "32532234"],
         "AWS_REGION": "us-east-1",
     }
-    return AWSCredentials(**params)  # type: ignore
+    return AWSCredentials(**params)
 
 
 @pytest.fixture
@@ -183,7 +183,7 @@ def test_get_provider(
     creds = fake_credentials.credentials
     creds.update({"AWS_IMAGE_ACCESS_KEY": "updated-access-key"})
     auth_data = {"marketplace_account": marketplace_account, "auth": creds}
-    provider = get_provider(auth_data)  # type: ignore
+    provider = get_provider(auth_data)
     assert isinstance(provider, AWSProvider)
 
 
@@ -258,8 +258,10 @@ def test_upload_of_rhcos_image(
         "version": "414.92.202405201754",
     }
 
-    fake_aws_provider.upload_svc_partial.return_value.get_image_from_ami_catalog.return_value = FakeImageResp()  # type: ignore [attr-defined] # noqa: E501
-    fake_aws_provider.upload_svc_partial.return_value.copy_ami.return_value = {  # type: ignore [attr-defined] # noqa: E501
+    fake_aws_provider.upload_svc_partial.return_value.get_image_from_ami_catalog.return_value = (
+        FakeImageResp()
+    )
+    fake_aws_provider.upload_svc_partial.return_value.copy_ami.return_value = {
         "ImageId": "fake-ami-02"
     }
     fake_aws_provider.upload_svc_partial.return_value.get_image_by_name.return_value = None
@@ -267,14 +269,14 @@ def test_upload_of_rhcos_image(
 
     _, result = fake_aws_provider.upload(aws_rhcos_push_item)
     assert result.id == "fake-ami-02"
-    fake_aws_provider.upload_svc_partial.return_value.get_image_from_ami_catalog.assert_called_once()  # type: ignore [attr-defined] # noqa: E501
+    fake_aws_provider.upload_svc_partial.return_value.get_image_from_ami_catalog.assert_called_once()  # noqa: E501
     fake_aws_provider.upload_svc_partial.return_value.get_image_by_name.assert_called_once_with(
         "base_product-1.1-sample_product-1.0_VIRT_GA-20230130-x86_64-0"
     )
     fake_aws_provider.upload_svc_partial.return_value.get_image_by_id.assert_called_once_with(
         "fake-ami-02"
     )
-    fake_aws_provider.upload_svc_partial.return_value.copy_ami.assert_called_once()  # type: ignore [attr-defined] # noqa: E501
+    fake_aws_provider.upload_svc_partial.return_value.copy_ami.assert_called_once()
     fake_aws_provider.upload_svc_partial.return_value.tag_image.assert_called_once_with(
         "test_image", tags
     )
@@ -284,30 +286,34 @@ def test_upload_of_rhcos_image_not_found(
     aws_rhcos_push_item: AmiPushItem,
     fake_aws_provider: AWSProvider,
 ):
-    fake_aws_provider.upload_svc_partial.return_value.get_image_from_ami_catalog.return_value = None  # type: ignore [attr-defined] # noqa: E501
+    fake_aws_provider.upload_svc_partial.return_value.get_image_from_ami_catalog.return_value = None
     with pytest.raises(Exception) as execinfo:
         fake_aws_provider.upload(aws_rhcos_push_item)
 
     assert "AMI not found." in str(execinfo)
-    fake_aws_provider.upload_svc_partial.return_value.get_image_from_ami_catalog.assert_called_once()  # type: ignore [attr-defined] # noqa: E501
+    fake_aws_provider.upload_svc_partial.return_value.get_image_from_ami_catalog.assert_called_once()  # noqa: E501
 
 
 def test_upload_of_rhcos_image_ami_already_coppied(
     aws_rhcos_push_item: AmiPushItem,
     fake_aws_provider: AWSProvider,
 ):
-    fake_aws_provider.upload_svc_partial.return_value.get_image_from_ami_catalog.return_value = FakeImageResp()  # type: ignore [attr-defined] # noqa: E501
-    fake_aws_provider.upload_svc_partial.return_value.copy_ami.return_value = {  # type: ignore [attr-defined] # noqa: E501
+    fake_aws_provider.upload_svc_partial.return_value.get_image_from_ami_catalog.return_value = (
+        FakeImageResp()
+    )
+    fake_aws_provider.upload_svc_partial.return_value.copy_ami.return_value = {
         "ImageId": "fake-ami-02"
     }
-    fake_aws_provider.upload_svc_partial.return_value.get_image_by_name.return_value = FakeImageResp  # type: ignore [attr-defined] # noqa: E501
-    fake_aws_provider.upload_svc_partial.return_value.get_image_by_name.return_value.id = "fake-ami-03"  # type: ignore [attr-defined] # noqa: E501
+    fake_aws_provider.upload_svc_partial.return_value.get_image_by_name.return_value = FakeImageResp
+    fake_aws_provider.upload_svc_partial.return_value.get_image_by_name.return_value.id = (
+        "fake-ami-03"
+    )
 
     _, result = fake_aws_provider.upload(aws_rhcos_push_item)
     assert result.id == "fake-ami-03"
-    fake_aws_provider.upload_svc_partial.return_value.get_image_from_ami_catalog.assert_called_once()  # type: ignore [attr-defined] # noqa: E501
-    fake_aws_provider.upload_svc_partial.return_value.get_image_by_name.assert_called_once()  # type: ignore [attr-defined] # noqa: E501
-    fake_aws_provider.upload_svc_partial.return_value.copy_ami.assert_not_called()  # type: ignore [attr-defined] # noqa: E501
+    fake_aws_provider.upload_svc_partial.return_value.get_image_from_ami_catalog.assert_called_once()  # noqa: E501
+    fake_aws_provider.upload_svc_partial.return_value.get_image_by_name.assert_called_once()
+    fake_aws_provider.upload_svc_partial.return_value.copy_ami.assert_not_called()
 
 
 @patch("pubtools._marketplacesvm.cloud_providers.aws.AWSUploadMetadata")
@@ -346,12 +352,12 @@ def test_upload(
     meta_obj = MagicMock(**metadata)
     mock_metadata.return_value = meta_obj
 
-    fake_aws_provider.upload_svc_partial.return_value.publish.return_value = FakeImageResp()  # type: ignore [attr-defined] # noqa: E501
+    fake_aws_provider.upload_svc_partial.return_value.publish.return_value = FakeImageResp()
 
     updated_push_item, _ = fake_aws_provider.upload(aws_push_item)
 
     mock_metadata.assert_called_once_with(**metadata)
-    fake_aws_provider.upload_svc_partial.return_value.publish.assert_called_once_with(meta_obj)  # type: ignore [attr-defined] # noqa: E501
+    fake_aws_provider.upload_svc_partial.return_value.publish.assert_called_once_with(meta_obj)
     fake_aws_provider.publish_svc.publish.assert_not_called()
     assert updated_push_item.name == "base_product-1.1-sample_product-1.0_VIRT_GA-20230130-x86_64-0"
     assert updated_push_item.region == "us-east-1"
@@ -403,14 +409,14 @@ def test_upload_different_region(
     meta_obj = MagicMock(**metadata)
     mock_metadata.return_value = meta_obj
 
-    fake_aws_provider.upload_svc_partial.return_value.publish.return_value = FakeImageResp()  # type: ignore [attr-defined] # noqa: E501
+    fake_aws_provider.upload_svc_partial.return_value.publish.return_value = FakeImageResp()
 
     fake_aws_provider.upload(aws_push_item)
 
     mock_metadata.assert_called_once_with(**metadata)
     # The self.upload_svc_partial should have been called with a different region
-    fake_aws_provider.upload_svc_partial.assert_called_once_with(region=region)  # type: ignore [attr-defined] # noqa: E501
-    fake_aws_provider.upload_svc_partial.return_value.publish.assert_called_once_with(meta_obj)  # type: ignore [attr-defined] # noqa: E501
+    fake_aws_provider.upload_svc_partial.assert_called_once_with(region=region)
+    fake_aws_provider.upload_svc_partial.return_value.publish.assert_called_once_with(meta_obj)
     fake_aws_provider.publish_svc.publish.assert_not_called()
 
 
@@ -456,12 +462,12 @@ def test_upload_boot_mode(
     meta_obj = MagicMock(**metadata)
     mock_metadata.return_value = meta_obj
 
-    fake_aws_provider.upload_svc_partial.return_value.publish.return_value = FakeImageResp()  # type: ignore [attr-defined] # noqa: E501
+    fake_aws_provider.upload_svc_partial.return_value.publish.return_value = FakeImageResp()
 
     fake_aws_provider.upload(aws_push_item)
 
     mock_metadata.assert_called_once_with(**metadata)
-    fake_aws_provider.upload_svc_partial.return_value.publish.assert_called_once_with(meta_obj)  # type: ignore [attr-defined] # noqa: E501
+    fake_aws_provider.upload_svc_partial.return_value.publish.assert_called_once_with(meta_obj)
     fake_aws_provider.publish_svc.publish.assert_not_called()
 
 
@@ -507,12 +513,12 @@ def test_upload_billing_codes(
     meta_obj = MagicMock(**metadata)
     mock_metadata.return_value = meta_obj
 
-    fake_aws_provider.upload_svc_partial.return_value.publish.return_value = FakeImageResp()  # type: ignore [attr-defined] # noqa: E501
+    fake_aws_provider.upload_svc_partial.return_value.publish.return_value = FakeImageResp()
 
     fake_aws_provider.upload(aws_push_item)
 
     mock_metadata.assert_called_once_with(**metadata)
-    fake_aws_provider.upload_svc_partial.return_value.publish.assert_called_once_with(meta_obj)  # type: ignore [attr-defined] # noqa: E501
+    fake_aws_provider.upload_svc_partial.return_value.publish.assert_called_once_with(meta_obj)
     fake_aws_provider.publish_svc.publish.assert_not_called()
 
 
@@ -528,7 +534,7 @@ def test_upload_custom_s3(
     monkeypatch: pytest.MonkeyPatch,
 ):
     bucket_name = "custom_s3_bucket"
-    creds = evolve(fake_credentials, AWS_S3_BUCKET=bucket_name)  # type: ignore
+    creds = evolve(fake_credentials, AWS_S3_BUCKET=bucket_name)
     fake_aws_provider = AWSProvider(creds)
     monkeypatch.setattr(fake_aws_provider, 'upload_svc_partial', MagicMock())
     monkeypatch.setattr(fake_aws_provider, 'publish_svc', MagicMock())
@@ -565,12 +571,12 @@ def test_upload_custom_s3(
     meta_obj = MagicMock(**metadata)
     mock_metadata.return_value = meta_obj
 
-    fake_aws_provider.upload_svc_partial.return_value.publish.return_value = FakeImageResp()  # type: ignore [attr-defined] # noqa: E501
+    fake_aws_provider.upload_svc_partial.return_value.publish.return_value = FakeImageResp()
 
     fake_aws_provider.upload(aws_push_item)
 
     mock_metadata.assert_called_once_with(**metadata)
-    fake_aws_provider.upload_svc_partial.return_value.publish.assert_called_once_with(meta_obj)  # type: ignore [attr-defined] # noqa: E501
+    fake_aws_provider.upload_svc_partial.return_value.publish.assert_called_once_with(meta_obj)
     fake_aws_provider.publish_svc.publish.assert_not_called()
 
 
@@ -619,14 +625,14 @@ def test_upload_custom_tags(
     meta_obj = MagicMock(**metadata)
     mock_metadata.return_value = meta_obj
 
-    fake_aws_provider.upload_svc_partial.return_value.publish.return_value = FakeImageResp()  # type: ignore [attr-defined] # noqa: E501
+    fake_aws_provider.upload_svc_partial.return_value.publish.return_value = FakeImageResp()
 
     fake_aws_provider.upload(
         aws_push_item, custom_tags=custom_tags, ami_tags=ami_tags, snapshot_tags=snapshot_tags
     )
 
     mock_metadata.assert_called_once_with(**metadata)
-    fake_aws_provider.upload_svc_partial.return_value.publish.assert_called_once_with(meta_obj)  # type: ignore [attr-defined] # noqa: E501
+    fake_aws_provider.upload_svc_partial.return_value.publish.assert_called_once_with(meta_obj)
     fake_aws_provider.publish_svc.publish.assert_not_called()
 
 
@@ -703,7 +709,7 @@ def test_publish(
 
     mock_metadata.assert_called_once_with(**metadata)
     fake_aws_provider.publish_svc.publish.assert_called_once_with(meta_obj)
-    fake_aws_provider.upload_svc_partial.upload.assert_not_called()  # type: ignore [attr-defined] # noqa: E501
+    fake_aws_provider.upload_svc_partial.upload.assert_not_called()
     fake_aws_provider.publish_svc.wait_active_changesets.assert_has_calls([call('product-uuid')])
 
 
@@ -795,7 +801,7 @@ def test_publish_version_exists(
     mock_metadata.assert_not_called()
     fake_aws_provider.publish_svc.wait_active_changesets.assert_has_calls([call('product-uuid')])
     fake_aws_provider.publish_svc.publish.assert_not_called()
-    fake_aws_provider.upload_svc_partial.upload.assert_not_called()  # type: ignore [attr-defined] # noqa: E501
+    fake_aws_provider.upload_svc_partial.upload.assert_not_called()
 
 
 @pytest.mark.parametrize("aws_fake_version", ["19.11.111", "19.11", "19.11.3333"])
@@ -808,8 +814,8 @@ def test_post_publish(
 
     fake_aws_provider.image_id = "ami-97969874573"
     fake_image = FakeImageResp()
-    fake_aws_provider.upload_svc_partial.return_value.get_image_by_id.return_value = fake_image  # type: ignore [attr-defined] # noqa: E501
-    fake_aws_provider.upload_svc_partial.return_value.tag_image.return_value = FakeImageTag()  # type: ignore [attr-defined] # noqa: E501
+    fake_aws_provider.upload_svc_partial.return_value.get_image_by_id.return_value = fake_image
+    fake_aws_provider.upload_svc_partial.return_value.tag_image.return_value = FakeImageTag()
 
     fake_aws_provider.publish_svc.restrict_versions.return_value = ["ami-1", "ami-2"]
 
@@ -829,14 +835,14 @@ def test_post_publish(
 
     release_date_tag = {"release_date": datetime.now().strftime("%Y%m%d%H::%M::%S")}
 
-    fake_aws_provider.upload_svc_partial.return_value.get_image_by_id.assert_called_once_with(  # type: ignore [attr-defined] # noqa: E501
+    fake_aws_provider.upload_svc_partial.return_value.get_image_by_id.assert_called_once_with(
         "ami-97969874573"
     )
-    fake_aws_provider.upload_svc_partial.return_value.tag_image.assert_called_once_with(  # type: ignore [attr-defined] # noqa: E501
+    fake_aws_provider.upload_svc_partial.return_value.tag_image.assert_called_once_with(
         fake_image, release_date_tag
     )
 
-    called_args = fake_aws_provider.upload_svc_partial.return_value.delete.call_args_list  # type: ignore [attr-defined] # noqa: E501
+    called_args = fake_aws_provider.upload_svc_partial.return_value.delete.call_args_list
 
     assert called_args[0][0][0].image_id == "ami-1"
     assert called_args[1][0][0].image_id == "ami-2"
@@ -845,8 +851,8 @@ def test_post_publish(
 def test_post_publish_nochannel(aws_push_item: AmiPushItem, fake_aws_provider: AWSProvider):
     fake_aws_provider.image_id = "ami-97969874573"
     fake_image = FakeImageResp()
-    fake_aws_provider.upload_svc_partial.return_value.get_image_by_id.return_value = fake_image  # type: ignore [attr-defined] # noqa: E501
-    fake_aws_provider.upload_svc_partial.return_value.tag_image.return_value = FakeImageTag()  # type: ignore [attr-defined] # noqa: E501
+    fake_aws_provider.upload_svc_partial.return_value.get_image_by_id.return_value = fake_image
+    fake_aws_provider.upload_svc_partial.return_value.tag_image.return_value = FakeImageTag()
 
     fake_aws_provider.publish_svc.restrict_versions.return_value = ["ami-1", "ami-2"]
 
@@ -867,7 +873,7 @@ def test_delete_push_images(
 ):
     fake_aws_provider.image_id = "ami-97969874573"
     fake_image = FakeImageResp()
-    fake_aws_provider.upload_svc_partial.return_value.delete.return_value = fake_image  # type: ignore [attr-defined] # noqa: E501
+    fake_aws_provider.upload_svc_partial.return_value.delete.return_value = fake_image
     delete_meta_kwargs = {
         "image_id": aws_push_item.image_id,
         "skip_snapshot": True,
