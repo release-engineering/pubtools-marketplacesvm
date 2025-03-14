@@ -96,7 +96,18 @@ def fake_rhsm_api(requests_mocker):
     requests_mocker.register_uri("POST", re.compile("amazon/amis"))
 
 
+def _check_collector_update_push_items(
+    mock_collector_update_push_items: mock.MagicMock,
+    expected_ami_pi_count: int,
+) -> None:
+    assert mock_collector_update_push_items.call_count == 1
+    collected_push_items = mock_collector_update_push_items.call_args[0][0]
+    assert len(collected_push_items) == expected_ami_pi_count
+
+
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
 def test_do_community_push(
+    mock_collector_update_push_items: mock.MagicMock,
     fake_source: mock.MagicMock,
     fake_starmap: mock.MagicMock,
     fake_cloud_instance: mock.MagicMock,
@@ -121,17 +132,21 @@ def test_do_community_push(
     fake_source.get.assert_called_once()
     fake_starmap.query_image_by_name.assert_called_once_with(name="test-build", version="7.0")
 
+    _check_collector_update_push_items(mock_collector_update_push_items, expected_ami_pi_count=8)
+
 
 @pytest.mark.parametrize(
     "filename",
     ["tests/data/starmap/sap-community.json"],
     ids=["sap-community.json"],
 )
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
 @mock.patch("pubtools._marketplacesvm.tasks.community_push.command.Source")
 @mock.patch("pubtools._marketplacesvm.tasks.community_push.CommunityVMPush.starmap")
 def test_do_community_push_from_starmap_data(
     mock_starmap: mock.MagicMock,
     mock_source: mock.MagicMock,
+    mock_collector_update_push_items: mock.MagicMock,
     filename: str,
     ami_push_item: AmiPushItem,
     fake_cloud_instance: mock.MagicMock,
@@ -162,10 +177,14 @@ def test_do_community_push_from_starmap_data(
         ],
     )
 
+    _check_collector_update_push_items(mock_collector_update_push_items, expected_ami_pi_count=34)
 
+
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
 @mock.patch("pubtools._marketplacesvm.tasks.community_push.CommunityVMPush.starmap")
 def test_do_community_push_no_mappings(
     mock_starmap: mock.MagicMock,
+    mock_collector_update_push_items: mock.MagicMock,
     fake_source: mock.MagicMock,
     fake_cloud_instance: mock.MagicMock,
     command_tester: CommandTester,
@@ -187,8 +206,12 @@ def test_do_community_push_no_mappings(
         ],
     )
 
+    _check_collector_update_push_items(mock_collector_update_push_items, expected_ami_pi_count=0)
 
+
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
 def test_do_community_push_skip_billing_codes(
+    mock_collector_update_push_items: mock.MagicMock,
     fake_source: mock.MagicMock,
     fake_starmap: mock.MagicMock,
     fake_cloud_instance: mock.MagicMock,
@@ -215,10 +238,14 @@ def test_do_community_push_skip_billing_codes(
     fake_source.get.assert_called_once()
     fake_starmap.query_image_by_name.assert_called_once_with(name="test-build", version="7.0")
 
+    _check_collector_update_push_items(mock_collector_update_push_items, expected_ami_pi_count=8)
 
+
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
 @mock.patch("pubtools._marketplacesvm.tasks.community_push.command.Source")
 def test_do_community_push_overridden_destination(
     mock_source: mock.MagicMock,
+    mock_collector_update_push_items: mock.MagicMock,
     fake_cloud_instance: mock.MagicMock,
     command_tester: CommandTester,
     starmap_ami_billing_config: Dict[str, Any],
@@ -279,10 +306,14 @@ def test_do_community_push_overridden_destination(
         ],
     )
 
+    _check_collector_update_push_items(mock_collector_update_push_items, expected_ami_pi_count=2)
 
+
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
 @mock.patch("pubtools._marketplacesvm.tasks.community_push.command.Source")
 def test_do_community_push_overridden_destination_file(
     mock_source: mock.MagicMock,
+    mock_collector_update_push_items: mock.MagicMock,
     fake_cloud_instance: mock.MagicMock,
     command_tester: CommandTester,
     starmap_ami_billing_config: Dict[str, Any],
@@ -346,10 +377,14 @@ def test_do_community_push_overridden_destination_file(
         ],
     )
 
+    _check_collector_update_push_items(mock_collector_update_push_items, expected_ami_pi_count=2)
 
+
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
 @mock.patch("pubtools._marketplacesvm.tasks.community_push.command.Source")
 def test_do_community_push_offline_starmap(
     mock_source: mock.MagicMock,
+    mock_collector_update_push_items: mock.MagicMock,
     fake_cloud_instance: mock.MagicMock,
     command_tester: CommandTester,
     starmap_ami_billing_config: Dict[str, Any],
@@ -409,10 +444,14 @@ def test_do_community_push_offline_starmap(
         ],
     )
 
+    _check_collector_update_push_items(mock_collector_update_push_items, expected_ami_pi_count=2)
 
+
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
 @mock.patch("pubtools._marketplacesvm.tasks.community_push.command.Source")
 def test_community_push_offline_no_repo(
     mock_source: mock.MagicMock,
+    mock_collector_update_push_items: mock.MagicMock,
     fake_cloud_instance: mock.MagicMock,
     command_tester: CommandTester,
     ami_push_item: AmiPushItem,
@@ -440,12 +479,16 @@ def test_community_push_offline_no_repo(
     _, err = capsys.readouterr()
     assert "Cannot use \"--offline\" without defining \"--repo\" mappings." in err
 
+    assert mock_collector_update_push_items.call_count == 0
+
 
 @pytest.mark.parametrize("product_name", ["RHEL_HA", "SAP"])
 @mock.patch("pubtools._marketplacesvm.tasks.community_push.CommunityVMPush.starmap")
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
 @mock.patch("pubtools._marketplacesvm.tasks.community_push.command.Source")
 def test_do_community_push_skip_houly_sap_ha(
     mock_source: mock.MagicMock,
+    mock_collector_update_push_items: mock.MagicMock,
     mock_starmap: mock.MagicMock,
     product_name: str,
     ami_push_item: AmiPushItem,
@@ -498,10 +541,14 @@ def test_do_community_push_skip_houly_sap_ha(
         ],
     )
 
+    _check_collector_update_push_items(mock_collector_update_push_items, expected_ami_pi_count=0)
 
+
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
 @mock.patch("pubtools._marketplacesvm.tasks.community_push.CommunityVMPush.starmap")
 def test_do_community_push_no_billing_config(
     mock_starmap: mock.MagicMock,
+    mock_collector_update_push_items: mock.MagicMock,
     fake_source: mock.MagicMock,
     ami_push_item: AmiPushItem,
     command_tester: CommandTester,
@@ -551,10 +598,14 @@ def test_do_community_push_no_billing_config(
         in output.getvalue()
     )
 
+    assert mock_collector_update_push_items.call_count == 0
 
+
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
 @mock.patch("pubtools._marketplacesvm.tasks.community_push.CommunityVMPush.starmap")
 def test_do_community_push_major_minor(
     mock_starmap: mock.MagicMock,
+    mock_collector_update_push_items: mock.MagicMock,
     fake_source: mock.MagicMock,
     fake_cloud_instance: mock.MagicMock,
     command_tester: CommandTester,
@@ -602,6 +653,8 @@ def test_do_community_push_major_minor(
             "koji:https://fakekoji.com?vmi_build=ami_build",
         ],
     )
+
+    _check_collector_update_push_items(mock_collector_update_push_items, expected_ami_pi_count=1)
 
 
 @mock.patch("pubtools._marketplacesvm.tasks.community_push.command.Source")
@@ -778,9 +831,11 @@ def test_rhsm_create_image_failure(
 
 
 @mock.patch("pubtools._marketplacesvm.tasks.community_push.CommunityVMPush._push_to_community")
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
 @mock.patch("pubtools._marketplacesvm.tasks.community_push.command.Source")
 def test_empty_value_to_collect(
     mock_source: mock.MagicMock,
+    mock_collector_update_push_items: mock.MagicMock,
     mock_push: mock.MagicMock,
     fake_starmap: mock.MagicMock,
     ami_push_item: AmiPushItem,
@@ -814,8 +869,12 @@ def test_empty_value_to_collect(
         ],
     )
 
+    _check_collector_update_push_items(mock_collector_update_push_items, expected_ami_pi_count=1)
 
+
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
 def test_beta_images_live_push(
+    mock_collector_update_push_items: mock.MagicMock,
     fake_source: mock.MagicMock,
     fake_starmap: mock.MagicMock,
     fake_cloud_instance: mock.MagicMock,
@@ -838,12 +897,16 @@ def test_beta_images_live_push(
         ],
     )
 
+    _check_collector_update_push_items(mock_collector_update_push_items, expected_ami_pi_count=8)
 
+
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
 @mock.patch("pubtools._marketplacesvm.tasks.community_push.command.Source")
 @mock.patch("pubtools._marketplacesvm.tasks.community_push.CommunityVMPush.starmap")
 def test_do_community_push_different_sharing_accounts(
     mock_starmap: mock.MagicMock,
     mock_source: mock.MagicMock,
+    mock_collector_update_push_items: mock.MagicMock,
     ami_push_item: AmiPushItem,
     fake_cloud_instance: mock.MagicMock,
     starmap_ami_billing_config: Dict[str, Any],
@@ -948,10 +1011,14 @@ def test_do_community_push_different_sharing_accounts(
         ],
     )
 
+    _check_collector_update_push_items(mock_collector_update_push_items, expected_ami_pi_count=2)
 
+
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
 @mock.patch("pubtools._marketplacesvm.tasks.community_push.CommunityVMPush.starmap")
 def test_sharing_accounts_community_format(
     mock_starmap: mock.MagicMock,
+    mock_collector_update_push_items: mock.MagicMock,
     fake_source: mock.MagicMock,
     starmap_ami_billing_config: Dict[str, Any],
     fake_cloud_instance: mock.MagicMock,
@@ -1010,10 +1077,14 @@ def test_sharing_accounts_community_format(
         ],
     )
 
+    _check_collector_update_push_items(mock_collector_update_push_items, expected_ami_pi_count=1)
 
+
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
 @mock.patch("pubtools._marketplacesvm.tasks.community_push.CommunityVMPush.starmap")
 def test_sharing_accounts_marketplace_format(
     mock_starmap: mock.MagicMock,
+    mock_collector_update_push_items: mock.MagicMock,
     fake_source: mock.MagicMock,
     starmap_ami_billing_config: Dict[str, Any],
     fake_cloud_instance: mock.MagicMock,
@@ -1070,10 +1141,14 @@ def test_sharing_accounts_marketplace_format(
         ],
     )
 
+    _check_collector_update_push_items(mock_collector_update_push_items, expected_ami_pi_count=1)
 
+
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
 @mock.patch("pubtools._marketplacesvm.tasks.community_push.command.Source")
 def test_billing_config_dont_match(
     mock_source: mock.MagicMock,
+    mock_collector_update_push_items: mock.MagicMock,
     fake_starmap: mock.MagicMock,
     fake_cloud_instance: mock.MagicMock,
     ami_push_item: AmiPushItem,
@@ -1099,3 +1174,5 @@ def test_billing_config_dont_match(
             "koji:https://fakekoji.com?vmi_build=ami_build",
         ],
     )
+
+    assert mock_collector_update_push_items.call_count == 0

@@ -95,11 +95,22 @@ def patch_push_objects(
     monkeypatch.setattr(CommunityVMPush, 'starmap', mock_starmap)
 
 
+def _check_collector_update_push_items(
+    mock_collector_update_push_items: mock.MagicMock,
+    expected_ami_pi_count: int,
+) -> None:
+    assert mock_collector_update_push_items.call_count == 1
+    collected_push_items = mock_collector_update_push_items.call_args[0][0]
+    assert len(collected_push_items) == expected_ami_pi_count
+
+
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
 @mock.patch("pubtools._marketplacesvm.tasks.community_push.command.Source")
 @mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
 def test_do_combined_push(
     marketplace_source: mock.MagicMock,
     community_source: mock.MagicMock,
+    mock_collector_update_push_items: mock.MagicMock,
     ami_push_item: AmiPushItem,
     command_tester: CommandTester,
 ) -> None:
@@ -122,13 +133,17 @@ def test_do_combined_push(
         ],
     )
 
+    _check_collector_update_push_items(mock_collector_update_push_items, expected_ami_pi_count=10)
+
 
 @pytest.mark.parametrize("fails_on", [CommunityVMPush, MarketplacesVMPush])
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
 @mock.patch("pubtools._marketplacesvm.tasks.community_push.command.Source")
 @mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
 def test_do_combined_push_fail_one_workflow(
     marketplace_source: mock.MagicMock,
     community_source: mock.MagicMock,
+    mock_collector_update_push_items: mock.MagicMock,
     fails_on: Union[Type[CommunityVMPush], Type[MarketplacesVMPush]],
     ami_push_item: AmiPushItem,
     monkeypatch: pytest.MonkeyPatch,
@@ -170,12 +185,16 @@ def test_do_combined_push_fail_one_workflow(
         ],
     )
 
+    _check_collector_update_push_items(mock_collector_update_push_items, expected_ami_pi_count=10)
 
+
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
 @mock.patch("pubtools._marketplacesvm.tasks.community_push.command.Source")
 @mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
 def test_do_combined_push_both_skipped(
     marketplace_source: mock.MagicMock,
     community_source: mock.MagicMock,
+    mock_collector_update_push_items: mock.MagicMock,
     command_tester: CommandTester,
 ) -> None:
     """Test a combined push which fails as both workflows are empty."""
@@ -197,12 +216,16 @@ def test_do_combined_push_both_skipped(
         ],
     )
 
+    _check_collector_update_push_items(mock_collector_update_push_items, expected_ami_pi_count=0)
 
+
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
 @mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
 @mock.patch("pubtools._marketplacesvm.tasks.community_push.command.Source")
 def test_do_community_push(
     community_source: mock.MagicMock,
     marketplace_source: mock.MagicMock,
+    mock_collector_update_push_items: mock.MagicMock,
     ami_push_item: AmiPushItem,
     starmap_query_aws_community: QueryResponseContainer,
     monkeypatch: pytest.MonkeyPatch,
@@ -235,12 +258,16 @@ def test_do_community_push(
     )
     marketplace_source.get.assert_not_called()
 
+    _check_collector_update_push_items(mock_collector_update_push_items, expected_ami_pi_count=8)
 
+
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
 @mock.patch("pubtools._marketplacesvm.tasks.community_push.command.Source")
 @mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
 def test_do_marketplace_push(
     marketplace_source: mock.MagicMock,
     community_source: mock.MagicMock,
+    mock_collector_update_push_items: mock.MagicMock,
     ami_push_item: AmiPushItem,
     starmap_query_aws_marketplace: QueryResponseContainer,
     monkeypatch: pytest.MonkeyPatch,
@@ -273,12 +300,16 @@ def test_do_marketplace_push(
     )
     community_source.get.assert_not_called()
 
+    _check_collector_update_push_items(mock_collector_update_push_items, expected_ami_pi_count=2)
 
+
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
 @mock.patch("pubtools._marketplacesvm.tasks.community_push.command.Source")
 @mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
 def test_do_advisory_push(
     marketplace_source: mock.MagicMock,
     community_source: mock.MagicMock,
+    mock_collector_update_push_items: mock.MagicMock,
     ami_push_item: AmiPushItem,
     release_params: Dict[str, Any],
     starmap_query_aws_marketplace: QueryResponseContainer,
@@ -331,12 +362,16 @@ def test_do_advisory_push(
         ],
     )
 
+    _check_collector_update_push_items(mock_collector_update_push_items, expected_ami_pi_count=10)
 
+
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
 @mock.patch("pubtools._marketplacesvm.tasks.community_push.command.Source")
 @mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
 def test_do_allowed_empty_mapping_push(
     marketplace_source: mock.MagicMock,
     community_source: mock.MagicMock,
+    mock_collector_update_push_items: mock.MagicMock,
     ami_push_item: AmiPushItem,
     release_params: Dict[str, Any],
     starmap_query_aws_marketplace: QueryResponseContainer,
@@ -387,12 +422,16 @@ def test_do_allowed_empty_mapping_push(
         ],
     )
 
+    _check_collector_update_push_items(mock_collector_update_push_items, expected_ami_pi_count=10)
 
+
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
 @mock.patch("pubtools._marketplacesvm.tasks.community_push.command.Source")
 @mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
 def test_do_combined_push_overriden_destination(
     marketplace_source: mock.MagicMock,
     community_source: mock.MagicMock,
+    mock_collector_update_push_items: mock.MagicMock,
     ami_push_item: AmiPushItem,
     starmap_query_aws_marketplace: QueryResponseContainer,
     starmap_query_aws_community: QueryResponseContainer,
@@ -445,3 +484,5 @@ def test_do_combined_push_overriden_destination(
     # Ensure the "server" was not called
     mock_starmap_mkt.query_image_by_name.assert_not_called()
     mock_starmap_cmt.query_image_by_name.assert_not_called()
+
+    _check_collector_update_push_items(mock_collector_update_push_items, expected_ami_pi_count=10)

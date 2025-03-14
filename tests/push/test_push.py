@@ -64,7 +64,26 @@ def fake_cloud_instance() -> Generator[mock.MagicMock, None, None]:
         yield m
 
 
+def _check_collector_update_push_items(
+    mock_collector_update_push_items: mock.MagicMock,
+    expected_ami_pi_count: int,
+    expected_vhd_pi_count: int,
+) -> None:
+    assert mock_collector_update_push_items.call_count == 1
+    collected_push_items = mock_collector_update_push_items.call_args[0][0]
+    assert len(collected_push_items) == expected_ami_pi_count + expected_vhd_pi_count
+
+    assert expected_ami_pi_count == len(
+        [i for i in collected_push_items if isinstance(i, AmiPushItem)]
+    )
+    assert expected_vhd_pi_count == len(
+        [i for i in collected_push_items if isinstance(i, VHDPushItem)]
+    )
+
+
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
 def test_do_push(
+    mock_collector_update_push_items: mock.MagicMock,
     fake_source: mock.MagicMock,
     fake_cloud_instance: mock.MagicMock,
     fake_starmap: mock.MagicMock,
@@ -90,13 +109,19 @@ def test_do_push(
     # get_provider, upload, pre_publish and publish calls for "aws-na", "aws-emea", "azure-na"
     assert fake_cloud_instance.call_count == 11
 
+    _check_collector_update_push_items(
+        mock_collector_update_push_items, expected_ami_pi_count=2, expected_vhd_pi_count=1
+    )
+
 
 @mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.cloud_instance")
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
 @mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
 @mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.starmap")
 def test_do_push_ami_correct_id(
     mock_starmap: mock.MagicMock,
     mock_source: mock.MagicMock,
+    mock_collector_update_push_items: mock.MagicMock,
     mock_cloud_instance: mock.MagicMock,
     ami_push_item: AmiPushItem,
     command_tester: CommandTester,
@@ -174,13 +199,19 @@ def test_do_push_ami_correct_id(
     mock_starmap.query_image_by_name.assert_called_once_with(name="test-build", version="7.0")
     assert mock_cloud_instance.call_count == 6
 
+    _check_collector_update_push_items(
+        mock_collector_update_push_items, expected_ami_pi_count=2, expected_vhd_pi_count=0
+    )
+
 
 @mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.cloud_instance")
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
 @mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
 @mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.starmap")
 def test_do_push_azure_correct_sas(
     mock_starmap: mock.MagicMock,
     mock_source: mock.MagicMock,
+    mock_collector_update_push_items: mock.MagicMock,
     mock_cloud_instance: mock.MagicMock,
     vhd_push_item: VHDPushItem,
     command_tester: CommandTester,
@@ -254,8 +285,14 @@ def test_do_push_azure_correct_sas(
     mock_starmap.query_image_by_name.assert_called_once_with(name="test-build", version="7.0")
     assert mock_cloud_instance.call_count == 6
 
+    _check_collector_update_push_items(
+        mock_collector_update_push_items, expected_ami_pi_count=0, expected_vhd_pi_count=2
+    )
 
+
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
 def test_do_push_prepush(
+    mock_collector_update_push_items: mock.MagicMock,
     fake_source: mock.MagicMock,
     fake_cloud_instance: mock.MagicMock,
     fake_starmap: mock.MagicMock,
@@ -281,10 +318,16 @@ def test_do_push_prepush(
     fake_starmap.query_image_by_name.assert_has_calls(starmap_calls)
     fake_cloud_instance.assert_has_calls([mock.call(x) for x in ["aws-na", "aws-emea", "azure-na"]])
 
+    _check_collector_update_push_items(
+        mock_collector_update_push_items, expected_ami_pi_count=2, expected_vhd_pi_count=1
+    )
 
+
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
 @mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
 def test_not_vmi_push_item(
     mock_source: mock.MagicMock,
+    mock_collector_update_push_items: mock.MagicMock,
     fake_cloud_instance: mock.MagicMock,
     fake_starmap: mock.MagicMock,
     ami_push_item: AmiPushItem,
@@ -313,10 +356,16 @@ def test_not_vmi_push_item(
     # get_provider, upload and publish calls for "aws-na", "aws-emea"
     assert fake_cloud_instance.call_count == 6
 
+    _check_collector_update_push_items(
+        mock_collector_update_push_items, expected_ami_pi_count=2, expected_vhd_pi_count=0
+    )
 
+
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
 @mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
 def test_push_item_wrong_arch(
     mock_source: mock.MagicMock,
+    mock_collector_update_push_items: mock.MagicMock,
     fake_cloud_instance: mock.MagicMock,
     fake_starmap: mock.MagicMock,
     ami_push_item: AmiPushItem,
@@ -345,10 +394,16 @@ def test_push_item_wrong_arch(
         ],
     )
 
+    _check_collector_update_push_items(
+        mock_collector_update_push_items, expected_ami_pi_count=0, expected_vhd_pi_count=1
+    )
 
+
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
 @mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.starmap")
 def test_push_item_no_mapped_arch(
     mock_starmap: mock.MagicMock,
+    mock_collector_update_push_items: mock.MagicMock,
     fake_source: mock.MagicMock,
     fake_cloud_instance: mock.MagicMock,
     ami_push_item: AmiPushItem,
@@ -388,10 +443,16 @@ def test_push_item_no_mapped_arch(
         ],
     )
 
+    _check_collector_update_push_items(
+        mock_collector_update_push_items, expected_ami_pi_count=1, expected_vhd_pi_count=0
+    )
 
+
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
 @mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.starmap")
 def test_push_item_no_destinations(
     mock_starmap: mock.MagicMock,
+    mock_collector_update_push_items: mock.MagicMock,
     fake_source: mock.MagicMock,
     fake_cloud_instance: mock.MagicMock,
     ami_push_item: AmiPushItem,
@@ -421,10 +482,16 @@ def test_push_item_no_destinations(
         ],
     )
 
+    _check_collector_update_push_items(
+        mock_collector_update_push_items, expected_ami_pi_count=0, expected_vhd_pi_count=0
+    )
 
+
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
 @mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.cloud_instance")
 def test_push_item_fail_upload(
     mock_cloud_instance: mock.MagicMock,
+    mock_collector_update_push_items: mock.MagicMock,
     fake_source: mock.MagicMock,
     fake_starmap: mock.MagicMock,
     ami_push_item: AmiPushItem,
@@ -451,10 +518,16 @@ def test_push_item_fail_upload(
     # get_provider for AWS and Azure, upload and publish calls for "azure-na" only
     assert mock_cloud_instance.call_count == 3
 
+    _check_collector_update_push_items(
+        mock_collector_update_push_items, expected_ami_pi_count=2, expected_vhd_pi_count=1
+    )
 
+
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
 @mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.cloud_instance")
 def test_push_item_fail_publish(
     mock_cloud_instance: mock.MagicMock,
+    mock_collector_update_push_items: mock.MagicMock,
     fake_source: mock.MagicMock,
     fake_starmap: mock.MagicMock,
     ami_push_item: AmiPushItem,
@@ -487,10 +560,16 @@ def test_push_item_fail_publish(
     # publish calls only for "aws-na" and "azure-na"
     assert mock_cloud_instance.call_count == 11
 
+    _check_collector_update_push_items(
+        mock_collector_update_push_items, expected_ami_pi_count=2, expected_vhd_pi_count=1
+    )
 
+
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
 @mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
 def test_push_overridden_destination(
     mock_source: mock.MagicMock,
+    mock_collector_update_push_items: mock.MagicMock,
     fake_cloud_instance: mock.MagicMock,
     command_tester: CommandTester,
     ami_push_item: AmiPushItem,
@@ -566,10 +645,16 @@ def test_push_overridden_destination(
         ],
     )
 
+    _check_collector_update_push_items(
+        mock_collector_update_push_items, expected_ami_pi_count=2, expected_vhd_pi_count=1
+    )
 
+
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
 @mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
 def test_push_offline_starmap(
     mock_source: mock.MagicMock,
+    mock_collector_update_push_items: mock.MagicMock,
     fake_cloud_instance: mock.MagicMock,
     command_tester: CommandTester,
     ami_push_item: AmiPushItem,
@@ -646,6 +731,10 @@ def test_push_offline_starmap(
         ],
     )
 
+    _check_collector_update_push_items(
+        mock_collector_update_push_items, expected_ami_pi_count=2, expected_vhd_pi_count=1
+    )
+
 
 @mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
 def test_push_offline_no_repo(
@@ -720,9 +809,11 @@ def test_no_source(command_tester: CommandTester, capsys: CaptureFixture) -> Non
 @mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush._push_pre_publish")
 @mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush._push_upload")
 @mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush._push_publish")
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
 @mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
 def test_empty_value_to_collect(
     mock_source: mock.MagicMock,
+    mock_collector_update_push_items: mock.MagicMock,
     mock_push: mock.MagicMock,
     mock_upload: mock.MagicMock,
     mock_prepublish: mock.MagicMock,
@@ -756,13 +847,19 @@ def test_empty_value_to_collect(
         ],
     )
 
+    _check_collector_update_push_items(
+        mock_collector_update_push_items, expected_ami_pi_count=1, expected_vhd_pi_count=0
+    )
+
 
 @mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush._push_pre_publish")
 @mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush._push_upload")
 @mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush._push_publish")
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
 @mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
 def test_empty_items_not_allowed(
     mock_source: mock.MagicMock,
+    mock_collector_update_push_items: mock.MagicMock,
     mock_push: mock.MagicMock,
     mock_upload: mock.MagicMock,
     mock_prepublish: mock.MagicMock,
@@ -786,13 +883,19 @@ def test_empty_items_not_allowed(
         ],
     )
 
+    _check_collector_update_push_items(
+        mock_collector_update_push_items, expected_ami_pi_count=0, expected_vhd_pi_count=0
+    )
+
 
 @mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush._push_pre_publish")
 @mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush._push_upload")
 @mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush._push_publish")
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
 @mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
 def test_empty_items_allowed(
     mock_source: mock.MagicMock,
+    mock_collector_update_push_items: mock.MagicMock,
     mock_push: mock.MagicMock,
     mock_upload: mock.MagicMock,
     mock_prepublish: mock.MagicMock,
@@ -818,10 +921,16 @@ def test_empty_items_allowed(
         ],
     )
 
+    _check_collector_update_push_items(
+        mock_collector_update_push_items, expected_ami_pi_count=0, expected_vhd_pi_count=0
+    )
 
+
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
 @mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
 def test_push_item_rhcos_gov(
     mock_source: mock.MagicMock,
+    mock_collector_update_push_items: mock.MagicMock,
     ami_push_item: AmiPushItem,
     fake_starmap: mock.MagicMock,
     fake_cloud_instance: mock.MagicMock,
@@ -850,4 +959,8 @@ def test_push_item_rhcos_gov(
             "--debug",
             "koji:https://fakekoji.com?vmi_build=unknown_build,ami_build",
         ],
+    )
+
+    _check_collector_update_push_items(
+        mock_collector_update_push_items, expected_ami_pi_count=2, expected_vhd_pi_count=1
     )
