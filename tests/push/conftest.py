@@ -33,7 +33,14 @@ def release_params() -> Dict[str, Any]:
         "version": "7.0",
         "arch": "x86_64",
         "respin": 1,
-        "date": datetime.now(),
+        "date": datetime(
+            2025,
+            4,
+            2,
+            17,
+            56,
+            59,
+        ),
     }
 
 

@@ -1,17 +1,19 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 import json
 import logging
+from datetime import datetime
 from typing import Generator
 from unittest import mock
 
 import pytest
 from _pytest.capture import CaptureFixture
 from attrs import evolve
-from pushsource import AmiPushItem, KojiBuildInfo, PushItem, VHDPushItem
+from pushsource import AmiPushItem, AmiRelease, KojiBuildInfo, PushItem, VHDPushItem
 from starmap_client.models import QueryResponseContainer, QueryResponseEntity
 
 from pubtools._marketplacesvm.cloud_providers.base import CloudProvider
 from pubtools._marketplacesvm.tasks.push import MarketplacesVMPush, entry_point
+from pubtools._marketplacesvm.tasks.push.items import State
 
 from ..command import CommandTester
 
@@ -964,3 +966,124 @@ def test_push_item_rhcos_gov(
     _check_collector_update_push_items(
         mock_collector_update_push_items, expected_ami_pi_count=2, expected_vhd_pi_count=1
     )
+
+
+@mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.cloud_instance")
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
+@mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
+@mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.starmap")
+def test_do_push_collected_push_items(
+    mock_starmap: mock.MagicMock,
+    mock_source: mock.MagicMock,
+    mock_collector_update_push_items: mock.MagicMock,
+    mock_cloud_instance: mock.MagicMock,
+    ami_push_item: AmiPushItem,
+    command_tester: CommandTester,
+) -> None:
+    """Test a successful push for AWS using the correct AMI ID for each marketplace."""
+    ami_na = "fake-ami-id-for-na"
+    ami_emea = "fake-ami-id-for-emea"
+
+    class FakeAWSProvider(FakeCloudProvider):
+        amis = [ami_na, ami_emea]
+        log = logging.getLogger("pubtools.marketplacesvm")
+
+        def _upload(self, push_item, custom_tags=None, **kwargs):
+            push_item = evolve(push_item, image_id=self.amis.pop(0))
+            return push_item, True
+
+        def _pre_publish(self, push_item, **kwargs):
+            return push_item, kwargs
+
+        def _publish(self, push_item, nochannel, overwrite, **kwargs):
+            # This log will allow us to identify whether the image_id is the expected
+            self.log.debug(f"Pushing {push_item.name} with image: {push_item.image_id}")
+            return push_item, nochannel
+
+    mock_cloud_instance.return_value = FakeAWSProvider()
+
+    qre = QueryResponseEntity.from_json(
+        {
+            "name": "fake-policy",
+            "workflow": "stratosphere",
+            "cloud": "aws",
+            "mappings": {
+                "aws-na": {
+                    "destinations": [
+                        {
+                            "destination": "NA-DESTINATION",
+                            "overwrite": False,
+                            "restrict_version": True,
+                            "restrict_major": 3,
+                            "restrict_minor": 1,
+                            "meta": {"description": "NA description"},
+                        },
+                    ]
+                },
+                "aws-emea": {
+                    "destinations": [
+                        {
+                            "destination": "EMEA-DESTINATION",
+                            "overwrite": False,
+                            "restrict_version": True,
+                            "restrict_major": 3,
+                            "restrict_minor": 1,
+                            "meta": {"description": "EMEA description"},
+                        },
+                    ]
+                },
+            },
+        }
+    )
+    mock_starmap.query_image_by_name.return_value = QueryResponseContainer([qre])
+    mock_source.get.return_value.__enter__.return_value = [ami_push_item]
+
+    command_tester.test(
+        lambda: entry_point(MarketplacesVMPush),
+        [
+            "test-push",
+            "--starmap-url",
+            "https://starmap-example.com",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--debug",
+            "koji:https://fakekoji.com?vmi_build=aws_build",
+        ],
+    )
+
+    mock_source.get.assert_called_once()
+    mock_starmap.query_image_by_name.assert_called_once_with(name="test-build", version="7.0")
+    assert mock_cloud_instance.call_count == 6
+
+    exp_ami_release = AmiRelease(
+        product='sample-product',
+        date=datetime(2025, 4, 2, 17, 56, 59),
+        arch='x86_64',
+        respin=1,
+        version='7.0',
+    )
+
+    exp_na_pi = AmiPushItem(
+        **dict(
+            name='ami_pushitem',
+            state=State.PUSHED,
+            build_info=KojiBuildInfo(name='test-build', version='7.0', release='20230101'),
+            release=exp_ami_release,
+            dest=['NA-DESTINATION'],
+            description='NA description',
+            image_id='fake-ami-id-for-na',
+        )
+    )
+    exp_emea_pi = AmiPushItem(
+        **dict(
+            name='ami_pushitem',
+            state=State.PUSHED,
+            build_info=KojiBuildInfo(name='test-build', version='7.0', release='20230101'),
+            release=exp_ami_release,
+            dest=['EMEA-DESTINATION'],
+            description='EMEA description',
+            image_id='fake-ami-id-for-emea',
+        )
+    )
+
+    mock_collector_update_push_items.assert_called_once_with([exp_na_pi, exp_emea_pi])

@@ -58,8 +58,8 @@ def test_mapped_item_properties(
             assert push_item.dest == starmap_response.mappings[mkt].destinations
             assert push_item.release.arch == "x86_64"
 
-            # -- Test wrapped push_item changes
-            assert mapped_item.push_item == mapped_item.get_push_item_for_marketplace(mkt)
+            # -- input push_item is not changed
+            assert mapped_item.push_item != mapped_item.get_push_item_for_marketplace(mkt)
 
         # -- Test invalid marketplace
         with pytest.raises(ValueError, match="No such marketplace foo"):
@@ -91,10 +91,15 @@ def test_mapped_item_fills_missing_attributes(
     starmap_response = QueryResponseEntity.from_json(starmap_response_aws)
     mapped_item = MappedVMIPushItemV2(ami_push_item, starmap_response)
 
-    # Ensure the missing fields were mapped
+    # Ensure the missing fields were mapped for "aws-na"
+    pi = mapped_item.get_push_item_for_marketplace("aws-na")
     for f in fields:
-        for mkt in starmap_response.account_names:
-            assert getattr(mapped_item.get_push_item_for_marketplace(mkt), f) == f
+        assert getattr(pi, f) == f
+
+    # Ensure the missing fields were not mapped for "aws-emea"
+    pi = mapped_item.get_push_item_for_marketplace("aws-emea")
+    for f in fields:
+        assert not getattr(pi, f)
 
 
 def test_get_metadata_for_mapped_item(

@@ -30,6 +30,33 @@
 [ WARNING] Missing information for the attribute ami_pushitem.access_endpoint_url, leaving it unset.
 [    INFO] Uploading the item ami_pushitem to AWS-NA.
 [    INFO] Upload finished for ami_pushitem on AWS-NA
+[ WARNING] Missing information for the attribute ami_pushitem.build, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.opener, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.description, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.boot_mode, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.cloud_info, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.marketplace_title_template, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.marketplace_name, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.type, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.region, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.virtualization, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.volume, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.root_device, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.sriov_net_support, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.ena_support, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.uefi_support, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.billing_codes, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.release_notes, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.usage_instructions, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.recommended_instance_type, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.marketplace_entity_type, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.image_id, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.public_image, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.scanning_port, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.user_name, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.version_title, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.security_groups, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.access_endpoint_url, leaving it unset.
 [    INFO] Uploading the item ami_pushitem to AWS-EMEA.
 [    INFO] Upload finished for ami_pushitem on AWS-EMEA
 [    INFO] Preparing to publish the item ami_pushitem to ffffffff-ffff-ffff-ffff-ffffffffffff on AWS-NA.
