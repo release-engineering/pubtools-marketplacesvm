@@ -111,16 +111,9 @@ class MappedVMIPushItemV2:
 
     def _map_push_item(self, destinations: List[Destination]) -> VMIPushItem:
         """Return the wrapped push item with the missing attributes set."""
-        if (
-            self.push_item.dest and "starmap" not in self.push_item.dest
-        ):  # If it has destinations it means we already mapped its properties
-            # Just update the destinations for the marketplace and return
-            self.push_item = evolve(self.push_item, dest=destinations)
-            return self.push_item
-
         # Update the missing fields for push item and its release
-        self.push_item = self._update_push_item_properties(self.push_item, destinations)
-        return self.push_item
+        pi = self._update_push_item_properties(self.push_item, destinations)
+        return pi
 
     @classmethod
     def register_converter(cls, name: str, func: Callable) -> None:
