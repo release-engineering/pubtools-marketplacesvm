@@ -95,6 +95,10 @@
 [   ERROR] Failed to publish ami_pushitem on AWS-EMEA: Random exception
 [    INFO] Pushing "vhd_pushitem" (pre-push=False) to destination_offer_main/plan1 on AZURE-NA.
 [   ERROR] Failed to publish vhd_pushitem on AZURE-NA: Random exception
+[    INFO] Pushing "vhd_pushitem" (pre-push=False) to destination_offer_main/plan2 on AZURE-NA.
+[   ERROR] Failed to publish vhd_pushitem on AZURE-NA: Random exception
+[    INFO] Pushing "vhd_pushitem" (pre-push=False) to destination_offer_main/plan3 on AZURE-NA.
+[   ERROR] Failed to publish vhd_pushitem on AZURE-NA: Random exception
 [    INFO] Collecting results
 [   ERROR] Marketplace VM push failed
 # Raised: 30
