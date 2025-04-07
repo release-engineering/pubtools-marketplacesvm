@@ -109,10 +109,10 @@ def test_do_push(
     starmap_calls = [mock.call(name="test-build", version="7.0") for _ in range(2)]
     fake_starmap.query_image_by_name.assert_has_calls(starmap_calls)
     # get_provider, upload, pre_publish and publish calls for "aws-na", "aws-emea", "azure-na"
-    assert fake_cloud_instance.call_count == 11
+    assert fake_cloud_instance.call_count == 13
 
     _check_collector_update_push_items(
-        mock_collector_update_push_items, expected_ami_pi_count=2, expected_vhd_pi_count=1
+        mock_collector_update_push_items, expected_ami_pi_count=2, expected_vhd_pi_count=3
     )
 
 
@@ -321,7 +321,7 @@ def test_do_push_prepush(
     fake_cloud_instance.assert_has_calls([mock.call(x) for x in ["aws-na", "aws-emea", "azure-na"]])
 
     _check_collector_update_push_items(
-        mock_collector_update_push_items, expected_ami_pi_count=2, expected_vhd_pi_count=1
+        mock_collector_update_push_items, expected_ami_pi_count=2, expected_vhd_pi_count=3
     )
 
 
@@ -397,7 +397,7 @@ def test_push_item_wrong_arch(
     )
 
     _check_collector_update_push_items(
-        mock_collector_update_push_items, expected_ami_pi_count=0, expected_vhd_pi_count=1
+        mock_collector_update_push_items, expected_ami_pi_count=0, expected_vhd_pi_count=3
     )
 
 
@@ -521,7 +521,7 @@ def test_push_item_fail_upload(
     assert mock_cloud_instance.call_count == 3
 
     _check_collector_update_push_items(
-        mock_collector_update_push_items, expected_ami_pi_count=2, expected_vhd_pi_count=1
+        mock_collector_update_push_items, expected_ami_pi_count=2, expected_vhd_pi_count=3
     )
 
 
@@ -560,10 +560,10 @@ def test_push_item_fail_publish(
     fake_starmap.query_image_by_name.assert_has_calls(starmap_calls)
     # get_provider, upload calls for "aws-na", "aws-emea", "azure-na" with
     # publish calls only for "aws-na" and "azure-na"
-    assert mock_cloud_instance.call_count == 11
+    assert mock_cloud_instance.call_count == 13
 
     _check_collector_update_push_items(
-        mock_collector_update_push_items, expected_ami_pi_count=2, expected_vhd_pi_count=1
+        mock_collector_update_push_items, expected_ami_pi_count=2, expected_vhd_pi_count=3
     )
 
 
@@ -648,7 +648,7 @@ def test_push_overridden_destination(
     )
 
     _check_collector_update_push_items(
-        mock_collector_update_push_items, expected_ami_pi_count=2, expected_vhd_pi_count=1
+        mock_collector_update_push_items, expected_ami_pi_count=2, expected_vhd_pi_count=2
     )
 
 
@@ -734,7 +734,7 @@ def test_push_offline_starmap(
     )
 
     _check_collector_update_push_items(
-        mock_collector_update_push_items, expected_ami_pi_count=2, expected_vhd_pi_count=1
+        mock_collector_update_push_items, expected_ami_pi_count=2, expected_vhd_pi_count=2
     )
 
 
@@ -964,7 +964,7 @@ def test_push_item_rhcos_gov(
     )
 
     _check_collector_update_push_items(
-        mock_collector_update_push_items, expected_ami_pi_count=2, expected_vhd_pi_count=1
+        mock_collector_update_push_items, expected_ami_pi_count=2, expected_vhd_pi_count=3
     )
 
 
