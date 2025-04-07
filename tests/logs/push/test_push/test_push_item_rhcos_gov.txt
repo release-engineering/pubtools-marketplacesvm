@@ -90,7 +90,7 @@
 [    INFO] Pushing "ami_pushitem" (pre-push=False) to ffffffff-ffff-ffff-ffff-ffffffffffff on AWS-NA.
 [    INFO] Pushing "ami_pushitem" (pre-push=False) to 00000000-0000-0000-0000-000000000000 on AWS-EMEA.
 [    INFO] Pushing "vhd_pushitem" (pre-push=False) to destination_offer_main/plan1 on AZURE-NA.
-[    INFO] Push already done for offer destination_offer_main on AZURE-NA.
-[    INFO] Push already done for offer destination_offer_main on AZURE-NA.
+[    INFO] Pushing "vhd_pushitem" (pre-push=False) to destination_offer_main/plan2 on AZURE-NA.
+[    INFO] Pushing "vhd_pushitem" (pre-push=False) to destination_offer_main/plan3 on AZURE-NA.
 [    INFO] Collecting results
 [    INFO] Marketplace VM push completed
