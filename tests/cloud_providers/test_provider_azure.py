@@ -72,6 +72,25 @@ def azure_push_item(vmi_release: VMIRelease) -> VHDPushItem:
     return VHDPushItem(**params)
 
 
+@pytest.fixture
+def fake_core_product() -> Product:
+    params = {
+        "$schema": "https://schema.mp.microsoft.com/schema/resource-tree/2022-03-01-preview2",
+        "root": "product/foobar",
+        "target": {"targetType": "draft"},
+        "resources": [
+            {
+                "$schema": "https://schema.mp.microsoft.com/schema/product/2022-03-01-preview3",
+                "id": "product/foobar",
+                "identity": {"externalId": "FooBar"},
+                "type": "coreVirtualMachine",
+                "alias": "Foo Bar",
+            },
+        ],
+    }
+    return Product.from_json(params)
+
+
 @pytest.mark.parametrize("marketplace_account", ["azure-na", "azure-emea"])
 def test_get_provider(marketplace_account: str, fake_credentials: AzureCredentials) -> None:
     conn_str = (
@@ -226,6 +245,7 @@ def test_publish(
         "destination": azure_push_item.dest[0],
         "keepdraft": False,
         "overwrite": False,
+        "check_base_sas_only": False,
     }
     meta_obj = MagicMock(**metadata)
     mock_metadata.return_value = meta_obj
@@ -240,6 +260,52 @@ def test_publish(
 
     mock_metadata.assert_called_once_with(**expected_metadata)
     fake_azure_provider.publish_svc.publish.assert_called_once_with(meta_obj)
+    fake_azure_provider.upload_svc.publish.assert_not_called()
+    mock_ensure_offer_writable.assert_called_once()
+
+
+@patch("pubtools._marketplacesvm.cloud_providers.ms_azure.AzurePublishMetadata")
+def test_publish_core_vms(
+    mock_metadata: MagicMock,
+    azure_push_item: VHDPushItem,
+    fake_core_product: Product,
+    fake_azure_provider: AzureProvider,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # Generate data for the test
+    azure_push_item = evolve(azure_push_item, disk_version=None)
+    fake_azure_provider.publish_svc.get_product_by_name.return_value = fake_core_product
+    fake_azure_provider.publish_svc.filter_product_resources.return_value = (
+        fake_core_product.resources
+    )
+    mock_metadata.side_effect = lambda **x: x
+    dv = "7.0.202301010000"
+    mock_generate_dv = MagicMock()
+    mock_generate_dv.return_value = dv
+    expected_metadata = {
+        'disk_version': dv,
+        "sku_id": azure_push_item.sku_id,
+        "generation": azure_push_item.generation or "V2",
+        "support_legacy": azure_push_item.support_legacy or False,
+        "recommended_sizes": azure_push_item.recommended_sizes or [],
+        "legacy_sku_id": azure_push_item.legacy_sku_id,
+        "image_path": azure_push_item.sas_uri,
+        "architecture": azure_push_item.release.arch,
+        "destination": azure_push_item.dest[0],
+        'keepdraft': False,
+        'overwrite': False,
+        "check_base_sas_only": True,
+    }
+    mock_ensure_offer_writable = MagicMock()
+
+    monkeypatch.setattr(fake_azure_provider, '_generate_disk_version', mock_generate_dv)
+    monkeypatch.setattr(fake_azure_provider, 'ensure_offer_is_writable', mock_ensure_offer_writable)
+
+    # Run the test
+    fake_azure_provider.publish(
+        azure_push_item, nochannel=False, overwrite=False, check_base_sas_only=True
+    )
+    fake_azure_provider.publish_svc.publish.assert_called_once_with(expected_metadata)
     fake_azure_provider.upload_svc.publish.assert_not_called()
     mock_ensure_offer_writable.assert_called_once()
 

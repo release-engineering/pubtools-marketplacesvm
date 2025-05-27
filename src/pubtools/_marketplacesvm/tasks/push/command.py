@@ -179,6 +179,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                 restrict_version=dest.restrict_version,
                 restrict_major=dest.restrict_major,
                 restrict_minor=dest.restrict_minor,
+                check_base_sas_only=dest.vhd_check_base_sas_only,
             )
 
             # Once we process all destinations we set back the list of destinations

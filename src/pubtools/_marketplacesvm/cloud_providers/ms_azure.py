@@ -306,6 +306,7 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
             "destination": destination,
             "keepdraft": nochannel,
             "overwrite": overwrite,
+            "check_base_sas_only": kwargs.get("check_base_sas_only", False),
         }
         metadata = AzurePublishMetadata(**publish_metadata_kwargs)
         res = self.publish_svc.publish(metadata)
