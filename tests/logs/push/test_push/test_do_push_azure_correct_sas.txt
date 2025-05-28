@@ -3,7 +3,6 @@
 [    INFO] starmap query returned for vhd_pushitem : {"name": "test-build", "version": "7.0", "query_response": {"meta": null, "name": "fake-policy", "billing_code_config": {}, "cloud": "azure", "workflow": "stratosphere", "mappings": {"azure-na": {"meta": {}, "destinations": [{"meta": {}, "id": null, "architecture": null, "destination": "NA-DESTINATION", "overwrite": false, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "ami_version_template": null, "provider": null, "tags": null}], "provider": null}, "azure-emea": {"meta": {}, "destinations": [{"meta": {}, "id": null, "architecture": null, "destination": "EMEA-DESTINATION", "overwrite": false, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "ami_version_template": null, "provider": null, "tags": null}], "provider": null}}}}
 [ WARNING] Missing information for the attribute vhd_pushitem.src, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.build, leaving it unset.
-[ WARNING] Missing information for the attribute vhd_pushitem.opener, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.description, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.boot_mode, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.cloud_info, leaving it unset.
@@ -19,7 +18,6 @@
 [    INFO] Upload finished for vhd_pushitem on AZURE-NA
 [ WARNING] Missing information for the attribute vhd_pushitem.src, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.build, leaving it unset.
-[ WARNING] Missing information for the attribute vhd_pushitem.opener, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.description, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.boot_mode, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.cloud_info, leaving it unset.

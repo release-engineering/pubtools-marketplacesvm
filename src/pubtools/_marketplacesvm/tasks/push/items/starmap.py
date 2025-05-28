@@ -91,7 +91,7 @@ class MappedVMIPushItemV2:
             pi = evolve(pi, release=rel_obj)
 
         # Update the push item attributes for each type using the attrs hidden annotation
-        ignore_unset_attributes = ["md5sum", "sha256sum", "signing_key", "origin"]
+        ignore_unset_attributes = ["md5sum", "sha256sum", "signing_key", "origin", "opener"]
         new_attrs = {}
         for attribute in pi.__attrs_attrs__:
             if not getattr(pi, attribute.name, None):  # If attribute is not set

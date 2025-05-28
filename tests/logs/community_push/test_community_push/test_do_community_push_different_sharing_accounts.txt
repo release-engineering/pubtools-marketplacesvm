@@ -5,7 +5,6 @@
 [    INFO] starmap query returned for ami_pushitem : {"name": "test-build", "version": "7.0", "query_response": {"meta": null, "name": "test-product2", "billing_code_config": {"sample-hourly": {"codes": ["bp-6fa54006"], "image_name": "sample_product", "image_types": ["hourly"], "name": "Hourly2"}, "sample-access": {"codes": ["bp-63a5400a"], "image_name": "sample_product", "image_types": ["access"], "name": "Access2"}}, "cloud": "aws", "workflow": "community", "mappings": {"aws_storage": {"meta": {}, "destinations": [{"meta": {"accounts": ["third_account", "fourth_account"]}, "id": null, "architecture": "x86_64", "destination": "fake-destination2-access", "overwrite": true, "restrict_version": true, "restrict_major": null, "restrict_minor": null, "ami_version_template": null, "provider": "anotherprovider", "tags": null}], "provider": "anotherprovider"}}}}
 [    INFO] Processing the storage account aws_storage
 [ WARNING] Missing information for the attribute ami_pushitem.build, leaving it unset.
-[ WARNING] Missing information for the attribute ami_pushitem.opener, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.description, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.boot_mode, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.cloud_info, leaving it unset.
@@ -41,7 +40,6 @@
 [ WARNING] No snapshot_accounts definition in StArMap, leaving the defaults from credentials.
 [    INFO] Processing the storage account aws_storage
 [ WARNING] Missing information for the attribute ami_pushitem.build, leaving it unset.
-[ WARNING] Missing information for the attribute ami_pushitem.opener, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.description, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.boot_mode, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.cloud_info, leaving it unset.
