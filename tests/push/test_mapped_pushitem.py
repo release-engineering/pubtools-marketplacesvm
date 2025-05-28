@@ -1,6 +1,8 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
+import os
 from datetime import datetime
 from typing import Any, Dict, List, Tuple
+from unittest import mock
 
 import pytest
 from attrs import asdict, evolve
@@ -287,3 +289,21 @@ def test_converter_aws_access_endpoint_url_converter() -> None:
 
     assert isinstance(res, AmiAccessEndpointUrl)
     assert asdict(res) == fake_access_endpoint_url
+
+
+def test_allowed_attrs_to_update_for_upload() -> None:
+    with mock.patch.dict(os.environ, {"ALLOWED_ATTRS_TO_UPDATE_FOR_UPLOAD": "volume,release"}):
+        assert MappedVMIPushItemV2.get_allowed_attrs_to_update_for_upload() == {"volume", "release"}
+
+    assert MappedVMIPushItemV2.get_allowed_attrs_to_update_for_upload() == {
+        "boot_mode",
+        "description",
+        "ena_support",
+        "generation",
+        "region",
+        "release",
+        "root_device",
+        "sriov_net_support",
+        "virtualization",
+        "volume",
+    }

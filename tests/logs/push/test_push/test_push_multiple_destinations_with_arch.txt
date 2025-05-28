@@ -3,6 +3,24 @@
 [    INFO] starmap query returned for ami_pushitem : {"name": "sample-product", "version": "7.0", "query_response": {"meta": null, "name": "sample-product", "billing_code_config": {}, "cloud": "aws", "workflow": "stratosphere", "mappings": {"aws-na": {"meta": {}, "destinations": [{"meta": {}, "id": null, "architecture": "x86_64", "destination": "aws-destination-for-x64", "overwrite": false, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "ami_version_template": null, "provider": null, "tags": null}, {"meta": {}, "id": null, "architecture": "aarch64", "destination": "aws-destination-for-arm", "overwrite": false, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "ami_version_template": null, "provider": null, "tags": null}], "provider": null}}}}
 [    INFO] Retrieving the mappings for vhd_pushitem from https://starmap-example.com
 [    INFO] starmap query returned for vhd_pushitem : {"name": "sample-product", "version": "7.0", "query_response": {"meta": null, "name": "sample-product", "billing_code_config": {}, "cloud": "azure", "workflow": "stratosphere", "mappings": {"azure-na": {"meta": {}, "destinations": [{"meta": {}, "id": null, "architecture": "x86_64", "destination": "azure-destination-for-x64", "overwrite": true, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "ami_version_template": null, "provider": null, "tags": null}, {"meta": {}, "id": null, "architecture": "aarch64", "destination": "azure-destination-for-arm", "overwrite": false, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "ami_version_template": null, "provider": null, "tags": null}], "provider": null}}}}
+[ WARNING] Missing information for the attribute ami_pushitem.description, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.boot_mode, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.region, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.virtualization, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.volume, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.root_device, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.sriov_net_support, leaving it unset.
+[ WARNING] Missing information for the attribute ami_pushitem.ena_support, leaving it unset.
+[    INFO] Uploading the item ami_pushitem to AWS-NA.
+[    INFO] Upload finished for ami_pushitem on AWS-NA
+[ WARNING] Missing information for the attribute vhd_pushitem.description, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.boot_mode, leaving it unset.
+[    INFO] Uploading the item vhd_pushitem to AZURE-NA.
+[    INFO] Upload finished for vhd_pushitem on AZURE-NA
+[    INFO] Preparing to publish the item ami_pushitem to aws-destination-for-x64 on AWS-NA.
+[    INFO] Preparation complete for item ami_pushitem to AWS-NA.
+[    INFO] Preparing to publish the item vhd_pushitem to azure-destination-for-x64 on AZURE-NA.
+[    INFO] Preparation complete for item vhd_pushitem to AZURE-NA.
 [ WARNING] Missing information for the attribute ami_pushitem.src, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.build, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.description, leaving it unset.
@@ -30,8 +48,7 @@
 [ WARNING] Missing information for the attribute ami_pushitem.version_title, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.security_groups, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.access_endpoint_url, leaving it unset.
-[    INFO] Uploading the item ami_pushitem to AWS-NA.
-[    INFO] Upload finished for ami_pushitem on AWS-NA
+[    INFO] Pushing "ami_pushitem" (pre-push=False) to aws-destination-for-x64 on AWS-NA.
 [ WARNING] Missing information for the attribute vhd_pushitem.src, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.build, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.description, leaving it unset.
@@ -45,13 +62,6 @@
 [ WARNING] Missing information for the attribute vhd_pushitem.disk_version, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.recommended_sizes, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.sas_uri, leaving it unset.
-[    INFO] Uploading the item vhd_pushitem to AZURE-NA.
-[    INFO] Upload finished for vhd_pushitem on AZURE-NA
-[    INFO] Preparing to publish the item ami_pushitem to aws-destination-for-x64 on AWS-NA.
-[    INFO] Preparation complete for item ami_pushitem to AWS-NA.
-[    INFO] Preparing to publish the item vhd_pushitem to azure-destination-for-x64 on AZURE-NA.
-[    INFO] Preparation complete for item vhd_pushitem to AZURE-NA.
-[    INFO] Pushing "ami_pushitem" (pre-push=False) to aws-destination-for-x64 on AWS-NA.
 [    INFO] Pushing "vhd_pushitem" (pre-push=False) to azure-destination-for-x64 on AZURE-NA.
 [    INFO] Collecting results
 [    INFO] Marketplace VM push completed

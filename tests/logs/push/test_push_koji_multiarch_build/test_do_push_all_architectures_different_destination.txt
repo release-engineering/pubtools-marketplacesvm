@@ -3,112 +3,40 @@
 [    INFO] starmap query returned for sample-product-7.0-1.x86_64.raw.xz : {"name": "sample-product", "version": "7.0", "query_response": {"meta": null, "name": "fake-policy", "billing_code_config": {}, "cloud": "aws", "workflow": "stratosphere", "mappings": {"aws-na": {"meta": {"description": "NA description"}, "destinations": [{"meta": {"description": "NA description", "recommended_instance_type": "m5.large"}, "id": null, "architecture": "x86_64", "destination": "NA-DESTINATION-X86_64-PRODUCT-ID", "overwrite": false, "restrict_version": true, "restrict_major": 3, "restrict_minor": 1, "ami_version_template": null, "provider": null, "tags": null}, {"meta": {"description": "NA description", "recommended_instance_type": "m6g.large"}, "id": null, "architecture": "aarch64", "destination": "NA-DESTINATION-AARCH64-PRODUCT-ID", "overwrite": false, "restrict_version": true, "restrict_major": 3, "restrict_minor": 1, "ami_version_template": null, "provider": null, "tags": null}], "provider": null}, "aws-emea": {"meta": {"description": "EMEA description"}, "destinations": [{"meta": {"description": "EMEA description", "recommended_instance_type": "m5.large"}, "id": null, "architecture": "x86_64", "destination": "EMEA-DESTINATION-X86_64-PRODUCT-ID", "overwrite": false, "restrict_version": true, "restrict_major": 3, "restrict_minor": 1, "ami_version_template": null, "provider": null, "tags": null}, {"meta": {"description": "EMEA description", "recommended_instance_type": "m6g.large"}, "id": null, "architecture": "aarch64", "destination": "EMEA-DESTINATION-AARCH64-PRODUCT-ID", "overwrite": false, "restrict_version": true, "restrict_major": 3, "restrict_minor": 1, "ami_version_template": null, "provider": null, "tags": null}], "provider": null}}}}
 [    INFO] Retrieving the mappings for sample-product-7.0-1.aarch64.raw.xz from https://starmap-example.com
 [    INFO] starmap query returned for sample-product-7.0-1.aarch64.raw.xz : {"name": "sample-product", "version": "7.0", "query_response": {"meta": null, "name": "fake-policy", "billing_code_config": {}, "cloud": "aws", "workflow": "stratosphere", "mappings": {"aws-na": {"meta": {"description": "NA description"}, "destinations": [{"meta": {"description": "NA description", "recommended_instance_type": "m5.large"}, "id": null, "architecture": "x86_64", "destination": "NA-DESTINATION-X86_64-PRODUCT-ID", "overwrite": false, "restrict_version": true, "restrict_major": 3, "restrict_minor": 1, "ami_version_template": null, "provider": null, "tags": null}, {"meta": {"description": "NA description", "recommended_instance_type": "m6g.large"}, "id": null, "architecture": "aarch64", "destination": "NA-DESTINATION-AARCH64-PRODUCT-ID", "overwrite": false, "restrict_version": true, "restrict_major": 3, "restrict_minor": 1, "ami_version_template": null, "provider": null, "tags": null}], "provider": null}, "aws-emea": {"meta": {"description": "EMEA description"}, "destinations": [{"meta": {"description": "EMEA description", "recommended_instance_type": "m5.large"}, "id": null, "architecture": "x86_64", "destination": "EMEA-DESTINATION-X86_64-PRODUCT-ID", "overwrite": false, "restrict_version": true, "restrict_major": 3, "restrict_minor": 1, "ami_version_template": null, "provider": null, "tags": null}, {"meta": {"description": "EMEA description", "recommended_instance_type": "m6g.large"}, "id": null, "architecture": "aarch64", "destination": "EMEA-DESTINATION-AARCH64-PRODUCT-ID", "overwrite": false, "restrict_version": true, "restrict_major": 3, "restrict_minor": 1, "ami_version_template": null, "provider": null, "tags": null}], "provider": null}}}}
-[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.src, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.build, leaving it unset.
 [ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.boot_mode, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.cloud_info, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.marketplace_title_template, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.marketplace_name, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.type, leaving it unset.
 [ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.region, leaving it unset.
 [ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.virtualization, leaving it unset.
 [ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.volume, leaving it unset.
 [ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.root_device, leaving it unset.
 [ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.sriov_net_support, leaving it unset.
 [ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.ena_support, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.uefi_support, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.billing_codes, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.release_notes, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.usage_instructions, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.marketplace_entity_type, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.image_id, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.public_image, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.scanning_port, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.user_name, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.version_title, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.security_groups, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.access_endpoint_url, leaving it unset.
 [    INFO] Uploading the item sample-product-7.0-1.x86_64.raw.xz to AWS-NA.
 [    INFO] Upload finished for sample-product-7.0-1.x86_64.raw.xz on AWS-NA
-[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.src, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.build, leaving it unset.
 [ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.boot_mode, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.cloud_info, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.marketplace_title_template, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.marketplace_name, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.type, leaving it unset.
 [ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.region, leaving it unset.
 [ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.virtualization, leaving it unset.
 [ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.volume, leaving it unset.
 [ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.root_device, leaving it unset.
 [ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.sriov_net_support, leaving it unset.
 [ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.ena_support, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.uefi_support, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.billing_codes, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.release_notes, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.usage_instructions, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.marketplace_entity_type, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.image_id, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.public_image, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.scanning_port, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.user_name, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.version_title, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.security_groups, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.access_endpoint_url, leaving it unset.
 [    INFO] Uploading the item sample-product-7.0-1.x86_64.raw.xz to AWS-EMEA.
 [    INFO] Upload finished for sample-product-7.0-1.x86_64.raw.xz on AWS-EMEA
-[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.src, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.build, leaving it unset.
 [ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.boot_mode, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.cloud_info, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.marketplace_title_template, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.marketplace_name, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.type, leaving it unset.
 [ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.region, leaving it unset.
 [ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.virtualization, leaving it unset.
 [ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.volume, leaving it unset.
 [ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.root_device, leaving it unset.
 [ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.sriov_net_support, leaving it unset.
 [ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.ena_support, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.uefi_support, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.billing_codes, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.release_notes, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.usage_instructions, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.marketplace_entity_type, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.image_id, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.public_image, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.scanning_port, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.user_name, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.version_title, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.security_groups, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.access_endpoint_url, leaving it unset.
 [    INFO] Uploading the item sample-product-7.0-1.aarch64.raw.xz to AWS-NA.
 [    INFO] Upload finished for sample-product-7.0-1.aarch64.raw.xz on AWS-NA
-[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.src, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.build, leaving it unset.
 [ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.boot_mode, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.cloud_info, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.marketplace_title_template, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.marketplace_name, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.type, leaving it unset.
 [ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.region, leaving it unset.
 [ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.virtualization, leaving it unset.
 [ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.volume, leaving it unset.
 [ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.root_device, leaving it unset.
 [ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.sriov_net_support, leaving it unset.
 [ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.ena_support, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.uefi_support, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.billing_codes, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.release_notes, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.usage_instructions, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.marketplace_entity_type, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.image_id, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.public_image, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.scanning_port, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.user_name, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.version_title, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.security_groups, leaving it unset.
-[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.access_endpoint_url, leaving it unset.
 [    INFO] Uploading the item sample-product-7.0-1.aarch64.raw.xz to AWS-EMEA.
 [    INFO] Upload finished for sample-product-7.0-1.aarch64.raw.xz on AWS-EMEA
 [    INFO] Preparing to publish the item sample-product-7.0-1.x86_64.raw.xz to NA-DESTINATION-X86_64-PRODUCT-ID on AWS-NA.
@@ -119,12 +47,108 @@
 [    INFO] Preparation complete for item sample-product-7.0-1.aarch64.raw.xz to AWS-NA.
 [    INFO] Preparing to publish the item sample-product-7.0-1.aarch64.raw.xz to EMEA-DESTINATION-AARCH64-PRODUCT-ID on AWS-EMEA.
 [    INFO] Preparation complete for item sample-product-7.0-1.aarch64.raw.xz to AWS-EMEA.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.src, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.build, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.boot_mode, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.cloud_info, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.marketplace_title_template, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.marketplace_name, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.type, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.region, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.virtualization, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.volume, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.root_device, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.sriov_net_support, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.ena_support, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.uefi_support, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.billing_codes, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.release_notes, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.usage_instructions, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.marketplace_entity_type, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.public_image, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.scanning_port, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.user_name, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.version_title, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.security_groups, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.access_endpoint_url, leaving it unset.
 [    INFO] Pushing "sample-product-7.0-1.x86_64.raw.xz" (pre-push=False) to NA-DESTINATION-X86_64-PRODUCT-ID on AWS-NA.
 [   DEBUG] Pushing sample-product-7.0-1.x86_64.raw.xz with image: fake-ami-id-for-na-x86-64
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.src, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.build, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.boot_mode, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.cloud_info, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.marketplace_title_template, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.marketplace_name, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.type, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.region, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.virtualization, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.volume, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.root_device, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.sriov_net_support, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.ena_support, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.uefi_support, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.billing_codes, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.release_notes, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.usage_instructions, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.marketplace_entity_type, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.public_image, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.scanning_port, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.user_name, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.version_title, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.security_groups, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.x86_64.raw.xz.access_endpoint_url, leaving it unset.
 [    INFO] Pushing "sample-product-7.0-1.x86_64.raw.xz" (pre-push=False) to EMEA-DESTINATION-X86_64-PRODUCT-ID on AWS-EMEA.
 [   DEBUG] Pushing sample-product-7.0-1.x86_64.raw.xz with image: fake-ami-id-for-emea-x86-64
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.src, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.build, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.boot_mode, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.cloud_info, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.marketplace_title_template, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.marketplace_name, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.type, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.region, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.virtualization, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.volume, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.root_device, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.sriov_net_support, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.ena_support, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.uefi_support, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.billing_codes, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.release_notes, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.usage_instructions, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.marketplace_entity_type, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.public_image, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.scanning_port, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.user_name, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.version_title, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.security_groups, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.access_endpoint_url, leaving it unset.
 [    INFO] Pushing "sample-product-7.0-1.aarch64.raw.xz" (pre-push=False) to NA-DESTINATION-AARCH64-PRODUCT-ID on AWS-NA.
 [   DEBUG] Pushing sample-product-7.0-1.aarch64.raw.xz with image: fake-ami-id-for-na-aarch64
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.src, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.build, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.boot_mode, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.cloud_info, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.marketplace_title_template, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.marketplace_name, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.type, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.region, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.virtualization, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.volume, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.root_device, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.sriov_net_support, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.ena_support, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.uefi_support, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.billing_codes, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.release_notes, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.usage_instructions, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.marketplace_entity_type, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.public_image, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.scanning_port, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.user_name, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.version_title, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.security_groups, leaving it unset.
+[ WARNING] Missing information for the attribute sample-product-7.0-1.aarch64.raw.xz.access_endpoint_url, leaving it unset.
 [    INFO] Pushing "sample-product-7.0-1.aarch64.raw.xz" (pre-push=False) to EMEA-DESTINATION-AARCH64-PRODUCT-ID on AWS-EMEA.
 [   DEBUG] Pushing sample-product-7.0-1.aarch64.raw.xz with image: fake-ami-id-for-emea-aarch64
 [    INFO] Collecting results
