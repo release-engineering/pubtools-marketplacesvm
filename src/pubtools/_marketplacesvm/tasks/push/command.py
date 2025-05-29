@@ -237,8 +237,13 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             for marketplace in mapped_item.marketplaces:
                 pi = mapped_item.get_push_item_for_marketplace(marketplace)
                 if pi.state != State.UPLOADFAILED and not self.args.pre_push:
-                    destination_list = pi.dest
-                    for dest in pi.dest:
+                    # backup pi.dest but also filter out destinations without matching architecture
+                    destination_list = [
+                        d
+                        for d in pi.dest
+                        if not d.architecture or d.architecture == pi.release.arch
+                    ]
+                    for dest in destination_list:
                         log.info(
                             "Preparing to publish the item %s to %s on %s.",
                             pi.name,
@@ -308,7 +313,9 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                 destination = publish_data["destination"]
                 starmap_query = publish_data["starmap_query"]
                 # Get the push item for the current marketplace
-                pi = mapped_item.get_push_item_for_marketplace(marketplace)
+                pi = mapped_item.get_push_item_for_marketplace_and_destination(
+                    marketplace, destination
+                )
 
                 # Associate image with Product/Offer/Plan and publish only if it's not a pre-push
                 if pi.state != State.UPLOADFAILED and not self.args.pre_push:

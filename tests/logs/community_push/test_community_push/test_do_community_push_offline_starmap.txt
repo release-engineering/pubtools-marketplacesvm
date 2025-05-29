@@ -3,7 +3,6 @@
 [    INFO] starmap query returned for ami_pushitem : {"name": "sample-product", "version": "7.0", "query_response": {"meta": null, "name": "sample-product", "billing_code_config": {"sample-hourly": {"codes": ["bp-6fa54006"], "image_name": "sample_product", "image_types": ["hourly"], "name": "Hourly2"}, "sample-access": {"codes": ["bp-63a5400a"], "image_name": "sample_product", "image_types": ["access"], "name": "Access2"}}, "cloud": "aws", "workflow": "community", "mappings": {"aws-na": {"meta": {}, "destinations": [{"meta": {}, "id": null, "architecture": null, "destination": "new_aws-na_destination-access", "overwrite": false, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "ami_version_template": null, "provider": "awstest", "tags": null}], "provider": "awstest"}, "aws-emea": {"meta": {}, "destinations": [{"meta": {}, "id": null, "architecture": null, "destination": "new_aws-emea_destination-hourly", "overwrite": true, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "ami_version_template": null, "provider": "awstest", "tags": null}], "provider": "awstest"}}}}
 [    INFO] Processing the storage account aws-na
 [ WARNING] Missing information for the attribute ami_pushitem.build, leaving it unset.
-[ WARNING] Missing information for the attribute ami_pushitem.opener, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.description, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.boot_mode, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.cloud_info, leaving it unset.
@@ -38,7 +37,6 @@
 [ WARNING] No snapshot_accounts definition in StArMap, leaving the defaults from credentials.
 [    INFO] Processing the storage account aws-emea
 [ WARNING] Missing information for the attribute ami_pushitem.build, leaving it unset.
-[ WARNING] Missing information for the attribute ami_pushitem.opener, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.description, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.boot_mode, leaving it unset.
 [ WARNING] Missing information for the attribute ami_pushitem.cloud_info, leaving it unset.

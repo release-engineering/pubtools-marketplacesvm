@@ -1,5 +1,6 @@
 import logging
-from typing import Any, Callable, ClassVar, Dict, List
+import os
+from typing import Any, Callable, ClassVar, Dict, List, Set
 
 from attrs import Factory, asdict, define, evolve, field
 from attrs.validators import deep_mapping, instance_of
@@ -7,6 +8,19 @@ from pushsource import AmiPushItem, AmiRelease, VMIPushItem, VMIRelease
 from starmap_client.models import Destination, QueryResponseEntity
 
 log = logging.getLogger("pubtools.marketplacesvm")
+
+ALLOWED_ATTRS_TO_UPDATE_FOR_UPLOAD = {
+    "boot_mode",
+    "description",
+    "ena_support",
+    "generation",
+    "region",
+    "release",
+    "root_device",
+    "sriov_net_support",
+    "virtualization",
+    "volume",
+}
 
 
 @define
@@ -51,6 +65,15 @@ class MappedVMIPushItemV2:
             )
         return dest
 
+    @classmethod
+    def get_allowed_attrs_to_update_for_upload(cls) -> Set[str]:
+        """Return a list of attributes which are needed for upload and thus allowed to be set."""
+        attributes = set()
+        if attrs_env := os.environ.get("ALLOWED_ATTRS_TO_UPDATE_FOR_UPLOAD", ""):
+            attributes.update(attrs_env.split(","))
+
+        return attributes or ALLOWED_ATTRS_TO_UPDATE_FOR_UPLOAD
+
     @property
     def tags(self) -> Dict[str, Any]:
         """Return all tags associated with the stored push item."""
@@ -61,7 +84,7 @@ class MappedVMIPushItemV2:
         return res
 
     def _update_push_item_properties(
-        self, push_item: VMIPushItem, destinations: List[Destination]
+        self, push_item: VMIPushItem, destinations: List[Destination], update_attrs: Set[str]
     ) -> VMIPushItem:
         """Return an updated push item with data from destinations."""
         # Update the destinations
@@ -91,10 +114,14 @@ class MappedVMIPushItemV2:
             pi = evolve(pi, release=rel_obj)
 
         # Update the push item attributes for each type using the attrs hidden annotation
-        ignore_unset_attributes = ["md5sum", "sha256sum", "signing_key", "origin"]
+        ignore_unset_attributes = ["md5sum", "sha256sum", "signing_key", "origin", "opener"]
         new_attrs = {}
         for attribute in pi.__attrs_attrs__:
-            if not getattr(pi, attribute.name, None):  # If attribute is not set
+            if (
+                (update_attrs and attribute.name in update_attrs) or not update_attrs
+            ) and not getattr(
+                pi, attribute.name, None
+            ):  # If attribute is not set
                 value = meta.get(attribute.name, None)  # Get the value from "dst.meta"
                 if value:  # If the value is set in the metadata
                     func = self._CONVERTER_HANDLERS.get(attribute.name, lambda x: x)  # Converter
@@ -108,12 +135,6 @@ class MappedVMIPushItemV2:
 
         # Finally return the updated push_item
         return evolve(pi, **new_attrs)
-
-    def _map_push_item(self, destinations: List[Destination]) -> VMIPushItem:
-        """Return the wrapped push item with the missing attributes set."""
-        # Update the missing fields for push item and its release
-        pi = self._update_push_item_properties(self.push_item, destinations)
-        return pi
 
     @classmethod
     def register_converter(cls, name: str, func: Callable) -> None:
@@ -143,18 +164,43 @@ class MappedVMIPushItemV2:
 
         if not self._mapped_push_item.get(account):
             destinations = self.starmap_query_entity.mappings[account].destinations
-            self._mapped_push_item[account] = self._map_push_item(destinations)
+            # We update attributes from meta dictionary only when they were not set previously.
+            # Therefore, we need to allow just attributes which are needed just for upload
+            # to be updated in this method.
+            # Metadata needed for upload are the same for marketplace account.
+            # other metadata needed for publish can be different based on destination.
+            #
+            # Update the missing fields for push item and its release
+            pi = self._update_push_item_properties(
+                self.push_item, destinations, self.get_allowed_attrs_to_update_for_upload()
+            )
+            self._mapped_push_item[account] = pi
 
         return self._mapped_push_item.get(account)
 
-    def get_push_item_for_destination(self, destination: Destination) -> VMIPushItem:
+    def get_push_item_for_marketplace_and_destination(
+        self, account: str, destination: Destination
+    ) -> VMIPushItem:
         """
         Return a VMIPushItem with all properties updated for a single destination.
 
         Args:
             destination (Destination): The destination to update the push item.
         """
-        return self._update_push_item_properties(self.push_item, [destination])
+        pi = self.get_push_item_for_marketplace(account)
+        return self._update_push_item_properties(pi, [destination], set())
+
+    def get_push_item_for_destination(self, destination: Destination) -> VMIPushItem:
+        """
+        Return a VMIPushItem with all properties updated for a single destination.
+
+        It is ok to use it with workflow community. It does not work for workflow stratosphere.
+        Please use get_push_item_for_marketplace_and_destination.
+
+        Args:
+            destination (Destination): The destination to update the push item.
+        """
+        return self._update_push_item_properties(self.push_item, [destination], set())
 
     def update_push_item_for_marketplace(self, account: str, push_item: VMIPushItem) -> None:
         """Update a push item for a given marketplace account.

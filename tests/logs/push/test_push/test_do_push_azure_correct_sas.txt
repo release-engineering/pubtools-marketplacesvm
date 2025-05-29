@@ -1,44 +1,44 @@
 [    INFO] Loading items from koji:https://fakekoji.com?vmi_build=azure_build
 [    INFO] Retrieving the mappings for vhd_pushitem from https://starmap-example.com
 [    INFO] starmap query returned for vhd_pushitem : {"name": "test-build", "version": "7.0", "query_response": {"meta": null, "name": "fake-policy", "billing_code_config": {}, "cloud": "azure", "workflow": "stratosphere", "mappings": {"azure-na": {"meta": {}, "destinations": [{"meta": {}, "id": null, "architecture": null, "destination": "NA-DESTINATION", "overwrite": false, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "ami_version_template": null, "provider": null, "tags": null}], "provider": null}, "azure-emea": {"meta": {}, "destinations": [{"meta": {}, "id": null, "architecture": null, "destination": "EMEA-DESTINATION", "overwrite": false, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "ami_version_template": null, "provider": null, "tags": null}], "provider": null}}}}
-[ WARNING] Missing information for the attribute vhd_pushitem.src, leaving it unset.
-[ WARNING] Missing information for the attribute vhd_pushitem.build, leaving it unset.
-[ WARNING] Missing information for the attribute vhd_pushitem.opener, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.description, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.boot_mode, leaving it unset.
-[ WARNING] Missing information for the attribute vhd_pushitem.cloud_info, leaving it unset.
-[ WARNING] Missing information for the attribute vhd_pushitem.marketplace_title_template, leaving it unset.
-[ WARNING] Missing information for the attribute vhd_pushitem.marketplace_name, leaving it unset.
-[ WARNING] Missing information for the attribute vhd_pushitem.sku_id, leaving it unset.
-[ WARNING] Missing information for the attribute vhd_pushitem.support_legacy, leaving it unset.
-[ WARNING] Missing information for the attribute vhd_pushitem.legacy_sku_id, leaving it unset.
-[ WARNING] Missing information for the attribute vhd_pushitem.disk_version, leaving it unset.
-[ WARNING] Missing information for the attribute vhd_pushitem.recommended_sizes, leaving it unset.
-[ WARNING] Missing information for the attribute vhd_pushitem.sas_uri, leaving it unset.
 [    INFO] Uploading the item vhd_pushitem to AZURE-NA.
 [    INFO] Upload finished for vhd_pushitem on AZURE-NA
-[ WARNING] Missing information for the attribute vhd_pushitem.src, leaving it unset.
-[ WARNING] Missing information for the attribute vhd_pushitem.build, leaving it unset.
-[ WARNING] Missing information for the attribute vhd_pushitem.opener, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.description, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.boot_mode, leaving it unset.
-[ WARNING] Missing information for the attribute vhd_pushitem.cloud_info, leaving it unset.
-[ WARNING] Missing information for the attribute vhd_pushitem.marketplace_title_template, leaving it unset.
-[ WARNING] Missing information for the attribute vhd_pushitem.marketplace_name, leaving it unset.
-[ WARNING] Missing information for the attribute vhd_pushitem.sku_id, leaving it unset.
-[ WARNING] Missing information for the attribute vhd_pushitem.support_legacy, leaving it unset.
-[ WARNING] Missing information for the attribute vhd_pushitem.legacy_sku_id, leaving it unset.
-[ WARNING] Missing information for the attribute vhd_pushitem.disk_version, leaving it unset.
-[ WARNING] Missing information for the attribute vhd_pushitem.recommended_sizes, leaving it unset.
-[ WARNING] Missing information for the attribute vhd_pushitem.sas_uri, leaving it unset.
 [    INFO] Uploading the item vhd_pushitem to AZURE-EMEA.
 [    INFO] Upload finished for vhd_pushitem on AZURE-EMEA
 [    INFO] Preparing to publish the item vhd_pushitem to NA-DESTINATION on AZURE-NA.
 [    INFO] Preparation complete for item vhd_pushitem to AZURE-NA.
 [    INFO] Preparing to publish the item vhd_pushitem to EMEA-DESTINATION on AZURE-EMEA.
 [    INFO] Preparation complete for item vhd_pushitem to AZURE-EMEA.
+[ WARNING] Missing information for the attribute vhd_pushitem.src, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.build, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.description, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.boot_mode, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.cloud_info, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.marketplace_title_template, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.marketplace_name, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.sku_id, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.support_legacy, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.legacy_sku_id, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.disk_version, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.recommended_sizes, leaving it unset.
 [    INFO] Pushing "vhd_pushitem" (pre-push=False) to NA-DESTINATION on AZURE-NA.
 [   DEBUG] Pushing vhd_pushitem with image: fake-azure-sas-for-na
+[ WARNING] Missing information for the attribute vhd_pushitem.src, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.build, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.description, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.boot_mode, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.cloud_info, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.marketplace_title_template, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.marketplace_name, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.sku_id, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.support_legacy, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.legacy_sku_id, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.disk_version, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.recommended_sizes, leaving it unset.
 [    INFO] Pushing "vhd_pushitem" (pre-push=False) to EMEA-DESTINATION on AZURE-EMEA.
 [   DEBUG] Pushing vhd_pushitem with image: fake-azure-sas-for-emea
 [    INFO] Collecting results

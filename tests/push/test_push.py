@@ -452,7 +452,7 @@ def test_push_item_no_mapped_arch(
 
 @mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
 @mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
-def test_push_multiple_arches(
+def test_push_multiple_destinations_with_arch(
     mock_source: mock.MagicMock,
     mock_collector_update_push_items: mock.MagicMock,
     fake_cloud_instance: mock.MagicMock,
@@ -460,7 +460,7 @@ def test_push_multiple_arches(
     ami_push_item: AmiPushItem,
     vhd_push_item: VHDPushItem,
 ) -> None:
-    """Ensure that a push with multiple arches will not merge the destinations with each other."""
+    """Ensure that a push with will ignore destinations without matching arch."""
     binfo = KojiBuildInfo(name="sample-product", version="7.0", release="20230101")
     ami_push_item = evolve(ami_push_item, build_info=binfo)
     vhd_push_item = evolve(vhd_push_item, build_info=binfo)
@@ -536,9 +536,7 @@ def test_push_multiple_arches(
     collected_push_items = mock_collector_update_push_items.call_args[0][0]
     expected_destinations = [
         "aws-destination-for-x64",
-        "aws-destination-for-arm",
         "azure-destination-for-x64",
-        "azure-destination-for-arm",
     ]
     collected_destinations = []
     for pi in collected_push_items:
