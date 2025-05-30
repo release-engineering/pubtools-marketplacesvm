@@ -1,6 +1,6 @@
 [    INFO] Loading items from koji:https://fakekoji.com?vmi_build=azure_build
 [    INFO] Retrieving the mappings for vhd_pushitem from https://starmap-example.com
-[    INFO] starmap query returned for vhd_pushitem : {"name": "test-build", "version": "7.0", "query_response": {"meta": null, "name": "fake-policy", "billing_code_config": {}, "cloud": "azure", "workflow": "stratosphere", "mappings": {"azure-na": {"meta": {}, "destinations": [{"meta": {}, "id": null, "architecture": null, "destination": "NA-DESTINATION", "overwrite": false, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "ami_version_template": null, "provider": null, "tags": null, "vhd_check_base_sas_only": null}], "provider": null}, "azure-emea": {"meta": {}, "destinations": [{"meta": {}, "id": null, "architecture": null, "destination": "EMEA-DESTINATION", "overwrite": false, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "ami_version_template": null, "provider": null, "tags": null, "vhd_check_base_sas_only": null}], "provider": null}}}}
+[    INFO] starmap query returned for vhd_pushitem : {"name": "test-build", "version": "7.0", "query_response": {"meta": null, "name": "fake-policy", "billing_code_config": {}, "cloud": "azure", "workflow": "stratosphere", "mappings": {"azure-na": {"meta": {}, "destinations": [{"meta": {}, "id": null, "architecture": null, "destination": "NA-DESTINATION", "overwrite": false, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "ami_version_template": null, "provider": null, "tags": null, "vhd_check_base_sas_only": true}], "provider": null}, "azure-emea": {"meta": {}, "destinations": [{"meta": {}, "id": null, "architecture": null, "destination": "EMEA-DESTINATION", "overwrite": false, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "ami_version_template": null, "provider": null, "tags": null, "vhd_check_base_sas_only": true}], "provider": null}}}}
 [ WARNING] Missing information for the attribute vhd_pushitem.description, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.boot_mode, leaving it unset.
 [    INFO] Uploading the item vhd_pushitem to AZURE-NA.
@@ -27,6 +27,7 @@
 [ WARNING] Missing information for the attribute vhd_pushitem.recommended_sizes, leaving it unset.
 [    INFO] Pushing "vhd_pushitem" (pre-push=False) to NA-DESTINATION on AZURE-NA.
 [   DEBUG] Pushing vhd_pushitem with image: fake-azure-sas-for-na
+[   DEBUG] Pushing vhd_pushitem with args: {'restrict_version': False, 'restrict_major': None, 'restrict_minor': None, 'check_base_sas_only': True}
 [ WARNING] Missing information for the attribute vhd_pushitem.src, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.build, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.description, leaving it unset.
@@ -41,5 +42,6 @@
 [ WARNING] Missing information for the attribute vhd_pushitem.recommended_sizes, leaving it unset.
 [    INFO] Pushing "vhd_pushitem" (pre-push=False) to EMEA-DESTINATION on AZURE-EMEA.
 [   DEBUG] Pushing vhd_pushitem with image: fake-azure-sas-for-emea
+[   DEBUG] Pushing vhd_pushitem with args: {'restrict_version': False, 'restrict_major': None, 'restrict_minor': None, 'check_base_sas_only': True}
 [    INFO] Collecting results
 [    INFO] Marketplace VM push completed

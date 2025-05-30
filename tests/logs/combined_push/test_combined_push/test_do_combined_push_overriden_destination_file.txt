@@ -1,2 +1,0 @@
-# Raised: could not determine a constructor for the tag 'tag:yaml.org,2002:python/object/apply:starmap_client.models.Workflow'
-  in "/tmp/pytest-of-jreidy/pytest-123/test_do_combined_push_override1/data/test.yaml", line 328, column 13

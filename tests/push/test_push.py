@@ -292,6 +292,92 @@ def test_do_push_azure_correct_sas(
     )
 
 
+@mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.cloud_instance")
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
+@mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
+@mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.starmap")
+def test_do_push_azure_compare_base_sas(
+    mock_starmap: mock.MagicMock,
+    mock_source: mock.MagicMock,
+    mock_collector_update_push_items: mock.MagicMock,
+    mock_cloud_instance: mock.MagicMock,
+    vhd_push_item: VHDPushItem,
+    command_tester: CommandTester,
+) -> None:
+    """Test a successful push for Azure which has the base SAS URI comparison only."""
+    azure_na = "fake-azure-sas-for-na"
+    azure_emea = "fake-azure-sas-for-emea"
+
+    class FakeAzureProvider(FakeCloudProvider):
+        vhds = [azure_na, azure_emea]
+        log = logging.getLogger("pubtools.marketplacesvm")
+
+        def _upload(self, push_item, custom_tags=None, **kwargs):
+            push_item = evolve(push_item, sas_uri=self.vhds.pop(0))
+            return push_item, True
+
+        def _pre_publish(self, push_item, **kwargs):
+            return push_item, kwargs
+
+        def _publish(self, push_item, nochannel, overwrite, **kwargs):
+            # This log will allow us to identify whether the sas_uri is the expected
+            self.log.debug(f"Pushing {push_item.name} with image: {push_item.sas_uri}")
+            # This one will allos us to identify whether the arguments are expected,
+            # mainly to ensure `{'check_base_sas_only': True}`
+            self.log.debug(f"Pushing {push_item.name} with args: {kwargs}")
+            return push_item, nochannel
+
+    mock_cloud_instance.return_value = FakeAzureProvider()
+
+    qre = QueryResponseEntity.from_json(
+        {
+            "name": "fake-policy",
+            "workflow": "stratosphere",
+            "cloud": "azure",
+            "mappings": {
+                "azure-na": {
+                    "destinations": [
+                        {
+                            "destination": "NA-DESTINATION",
+                            "overwrite": False,
+                            "restrict_version": False,
+                            "vhd_check_base_sas_only": True,
+                        },
+                    ]
+                },
+                "azure-emea": {
+                    "destinations": [
+                        {
+                            "destination": "EMEA-DESTINATION",
+                            "overwrite": False,
+                            "restrict_version": False,
+                            "vhd_check_base_sas_only": True,
+                        },
+                    ]
+                },
+            },
+        }
+    )
+    mock_starmap.query_image_by_name.return_value = QueryResponseContainer([qre])
+    mock_source.get.return_value.__enter__.return_value = [vhd_push_item]
+
+    command_tester.test(
+        lambda: entry_point(MarketplacesVMPush),
+        [
+            "test-push",
+            "--starmap-url",
+            "https://starmap-example.com",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--debug",
+            "koji:https://fakekoji.com?vmi_build=azure_build",
+        ],
+    )
+    mock_source.get.assert_called_once()
+    mock_starmap.query_image_by_name.assert_called_once_with(name="test-build", version="7.0")
+    assert mock_cloud_instance.call_count == 6
+
+
 @mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
 def test_do_push_prepush(
     mock_collector_update_push_items: mock.MagicMock,
