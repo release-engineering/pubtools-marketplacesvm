@@ -21,7 +21,7 @@ def get_requirements():
 
 
 setup(
-    name="pubtools-marketplacesvm",
+    name="pubtools_marketplacesvm",
     version="1.8.1",
     packages=find_namespace_packages(where="src"),
     package_dir={"": "src"},
