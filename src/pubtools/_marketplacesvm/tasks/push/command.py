@@ -252,7 +252,9 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                             marketplace.upper(),
                         )
                         pi = evolve(pi, dest=[dest.destination])
-                        pi, _ = self.cloud_instance(marketplace).pre_publish(pi)
+                        pi, _ = self.cloud_instance(marketplace).pre_publish(
+                            pi, check_base_sas_only=dest.vhd_check_base_sas_only
+                        )
                         log.info(
                             "Preparation complete for item %s to %s.",
                             pi.name,
