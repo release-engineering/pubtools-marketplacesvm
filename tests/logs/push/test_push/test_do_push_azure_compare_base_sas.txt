@@ -10,8 +10,10 @@
 [    INFO] Uploading the item vhd_pushitem to AZURE-EMEA.
 [    INFO] Upload finished for vhd_pushitem on AZURE-EMEA
 [    INFO] Preparing to publish the item vhd_pushitem to NA-DESTINATION on AZURE-NA.
+[   DEBUG] Associating vhd_pushitem with image fake-azure-sas-for-na and args: {'check_base_sas_only': True}
 [    INFO] Preparation complete for item vhd_pushitem to AZURE-NA.
 [    INFO] Preparing to publish the item vhd_pushitem to EMEA-DESTINATION on AZURE-EMEA.
+[   DEBUG] Associating vhd_pushitem with image fake-azure-sas-for-emea and args: {'check_base_sas_only': True}
 [    INFO] Preparation complete for item vhd_pushitem to AZURE-EMEA.
 [ WARNING] Missing information for the attribute vhd_pushitem.src, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.build, leaving it unset.

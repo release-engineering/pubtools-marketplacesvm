@@ -317,6 +317,9 @@ def test_do_push_azure_compare_base_sas(
             return push_item, True
 
         def _pre_publish(self, push_item, **kwargs):
+            self.log.debug(
+                f"Associating {push_item.name} with image {push_item.sas_uri} and args: {kwargs}"
+            )
             return push_item, kwargs
 
         def _publish(self, push_item, nochannel, overwrite, **kwargs):
