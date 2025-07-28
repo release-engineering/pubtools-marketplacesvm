@@ -505,9 +505,20 @@ def test_post_publish_nochannel(
     mock_blob.set_blob_tags.assert_not_called()
 
 
+@patch("pubtools._marketplacesvm.cloud_providers.ms_azure.AzureDeleteMetadata")
 def test_delete_push_images(
+    mock_delete_metadata: MagicMock,
     azure_push_item: VHDPushItem,
     fake_azure_provider: AzureProvider,
 ) -> None:
+    img_name = fake_azure_provider._name_from_push_item(azure_push_item)
+    expected_metadata_args = {
+        "image_name": img_name,
+        "image_id": img_name,
+        "container": UPLOAD_CONTAINER_NAME,
+    }
     pi = fake_azure_provider._delete_push_images(azure_push_item)
     assert pi
+    mock_delete_metadata.assert_called_once_with(**expected_metadata_args)
+    metadata_obj = mock_delete_metadata.return_value
+    fake_azure_provider.upload_svc.delete.assert_called_once_with(metadata_obj)

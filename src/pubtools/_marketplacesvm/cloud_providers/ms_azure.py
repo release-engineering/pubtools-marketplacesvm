@@ -6,6 +6,7 @@ from typing import Any, Dict, Optional, Set, Tuple
 
 from attrs import asdict, evolve, field, frozen
 from attrs.validators import instance_of
+from cloudimg.ms_azure import AzureDeleteMetadata
 from cloudimg.ms_azure import AzurePublishingMetadata as AzureUploadMetadata
 from cloudimg.ms_azure import AzureService as AzureUploadService
 from cloudpub.ms_azure import AzurePublishingMetadata as AzurePublishMetadata
@@ -355,8 +356,13 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
             A tuple of VHDPushItem and None at the moment.
         """
         name = self._name_from_push_item(push_item)
-        delete_meta_kwargs = {"image_name": name, "container": UPLOAD_CONTAINER_NAME}
-        self.upload_svc.delete(**delete_meta_kwargs)
+        delete_meta_kwargs = {
+            "image_name": name,
+            "image_id": name,
+            "container": UPLOAD_CONTAINER_NAME,
+        }
+        metadata = AzureDeleteMetadata(**delete_meta_kwargs)
+        self.upload_svc.delete(metadata)
         return push_item
 
     def ensure_offer_is_writable(self, destination: str, nochannel: bool) -> None:
