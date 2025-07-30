@@ -43,7 +43,7 @@
                                       <span class="p">[</span><span class="o">--</span><span class="n">credentials</span> <span class="n">CREDENTIALS</span><span class="p">]</span>
                                       <span class="p">[</span><span class="o">--</span><span class="n">azure</span><span class="o">-</span><span class="n">allow</span><span class="o">-</span><span class="n">draft</span><span class="o">-</span><span class="n">push</span><span class="p">]</span>
                                       <span class="p">[</span><span class="o">--</span><span class="n">builds</span> <span class="n">BUILDS</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dry</span><span class="o">-</span><span class="n">run</span><span class="p">]</span>
-                                      <span class="p">[</span><span class="o">--</span><span class="n">keep</span><span class="o">-</span><span class="n">snapshot</span><span class="p">]</span>
+                                      <span class="p">[</span><span class="o">--</span><span class="n">keep</span><span class="o">-</span><span class="n">snapshot</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">limit</span> <span class="n">LIMIT</span><span class="p">]</span>
                                       <span class="n">source</span> <span class="p">[</span><span class="n">source</span> <span class="o">...</span><span class="p">]</span>
 </pre></div>
 </div>
@@ -72,6 +72,9 @@
 <dt><kbd>--keep-snapshot</kbd></dt>
 <dd><p>Do not delete snapshot from AWS</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+</dd>
+<dt><kbd>--limit</kbd></dt>
+<dd><p>Only remove the specified VMIs by their ID (AMI) or name (VHD)</p>
 </dd>
 </dl>
 </section>
