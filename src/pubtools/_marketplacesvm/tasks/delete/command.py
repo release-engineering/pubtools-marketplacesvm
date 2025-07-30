@@ -197,7 +197,7 @@ class VMDelete(MarketplacesVMTask, CloudService, CollectorService, AwsRHSMClient
                     image_reference,
                     marketplace,
                 )
-                pi, _ = self.cloud_instance(marketplace).delete_push_images(
+                pi, res = self.cloud_instance(marketplace).delete_push_images(
                     push_item, keep_snapshot=self.args.keep_snapshot, **kwargs
                 )
                 log.info(
@@ -205,8 +205,9 @@ class VMDelete(MarketplacesVMTask, CloudService, CollectorService, AwsRHSMClient
                     image_reference,
                     marketplace,
                 )
-                pi = evolve(pi, state=State.DELETED)
-                return pi
+                if res and isinstance(res, tuple) and res[0] is not None:
+                    pi = evolve(pi, state=State.DELETED)
+                    return pi
         log.info("Skipped: %s in build %s", image_reference, push_item.build)
         self._SKIPPED = True
         pi = evolve(push_item, state=State.SKIPPED)
