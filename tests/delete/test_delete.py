@@ -162,8 +162,7 @@ def test_delete_vhd(
 
     fake_azure_source.get.assert_called_once()
     assert fake_cloud_instance.call_count == 1
-    for call in fake_cloud_instance.call_args_list:
-        assert call.args == ('azure-na',)
+    assert fake_cloud_instance.call_args_list[0].args == ('azure-na',)
 
 
 @mock.patch("pubtools._marketplacesvm.tasks.delete.command.Source")
