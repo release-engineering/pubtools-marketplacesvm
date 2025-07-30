@@ -496,3 +496,45 @@ def test_delete_bad_rhsm(
     )
 
     fake_ami_source.get.assert_called_once()
+
+
+@mock.patch("pubtools._marketplacesvm.tasks.delete.command.Source")
+def test_delete_limit_items(
+    mock_source: mock.MagicMock,
+    aws_push_item: AmiPushItem,
+    aws_push_item_2: AmiPushItem,
+    vhd_push_item: VHDPushItem,
+    fake_cloud_instance: mock.MagicMock,
+    command_tester: CommandTester,
+) -> None:
+    """Test a deletion with limited image IDs."""
+    mock_source.get.return_value.__enter__.return_value = [
+        aws_push_item,
+        aws_push_item_2,
+        vhd_push_item,
+    ]
+
+    command_tester.test(
+        lambda: entry_point(VMDelete),
+        [
+            "test-delete",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--rhsm-url",
+            "https://rhsm.com/test/api/",
+            "--debug",
+            "--builds",
+            "sample_product-1.0.1-1-x86_64,azure-testing",
+            "--limit",
+            f"{aws_push_item.image_id},{vhd_push_item.name}",
+            "pub:https://fakepub.com?task-id=12345",
+        ],
+    )
+
+    mock_source.get.assert_called_once()
+    assert fake_cloud_instance.call_count == 2
+    assert fake_cloud_instance.call_args_list[0].args == ('aws-na',)
+    assert fake_cloud_instance.call_args_list[1].args == ('azure-na',)
+    assert aws_push_item.image_id in command_tester._caplog.text
+    assert aws_push_item_2.image_id not in command_tester._caplog.text
+    assert vhd_push_item.name in command_tester._caplog.text

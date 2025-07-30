@@ -49,6 +49,23 @@ class VMDelete(MarketplacesVMTask, CloudService, CollectorService, AwsRHSMClient
                     self.builds_borg.received_builds.add(item.build_info.id)
                     yield item
 
+    @property
+    def deletion_items(self) -> List[VMIPushItem]:
+        """Load and filter out all push items which are going to be deleted.
+
+        Returns:
+            List[VMIPushItem]: List with all push items to be deleted.
+        """
+        if not self.args.limit:
+            return list(self.raw_items)
+
+        filtered_push_items = []
+        for item in self.raw_items:
+            item_name = getattr(item, "image_id", None) or item.name
+            if item_name in self.args.limit:
+                filtered_push_items.append(item)
+        return filtered_push_items
+
     def set_ami_invisible_rhsm(self, push_item: AmiPushItem, provider: str) -> None:
         """
         Update image in RHSM to 'invisible'.
@@ -238,6 +255,13 @@ class VMDelete(MarketplacesVMTask, CloudService, CollectorService, AwsRHSMClient
         )
 
         self.parser.add_argument(
+            "--limit",
+            help="Only remove the specified VMIs by their ID (AMI) or name (VHD)",
+            action=SplitAndExtend,
+            split_on=",",
+        )
+
+        self.parser.add_argument(
             "source",
             nargs="+",
             help="Source(s) of content to be pushed",
@@ -247,10 +271,9 @@ class VMDelete(MarketplacesVMTask, CloudService, CollectorService, AwsRHSMClient
 
     def run(self, collect_results: bool = True, allow_empty_targets: bool = False) -> RUN_RESULT:
         """Execute the delete command workflow."""
-        mapped_items = [x for x in self.raw_items]
         result = []
-        for mapped_item in mapped_items:
-            result.append(self._delete(mapped_item))
+        for item in self.deletion_items:
+            result.append(self._delete(item))
 
         # process result for failures
         failed = False
