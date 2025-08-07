@@ -25,6 +25,7 @@
 [   ERROR] Failed to upload ami_pushitem: 
 [ WARNING] Missing information for the attribute vhd_pushitem.description, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.boot_mode, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.support_legacy, leaving it unset.
 [    INFO] Uploading the item vhd_pushitem to AZURE-NA.
 [   ERROR] Failed to upload vhd_pushitem: 
 [ WARNING] Missing information for the attribute ami_pushitem.src, leaving it unset.

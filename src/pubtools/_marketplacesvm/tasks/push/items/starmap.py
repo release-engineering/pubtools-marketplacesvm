@@ -18,6 +18,7 @@ ALLOWED_ATTRS_TO_UPDATE_FOR_UPLOAD = {
     "release",
     "root_device",
     "sriov_net_support",
+    "support_legacy",
     "virtualization",
     "volume",
 }

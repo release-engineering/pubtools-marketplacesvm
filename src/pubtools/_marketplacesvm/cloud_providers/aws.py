@@ -442,7 +442,7 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
         if snapshot_tags:
             upload_metadata_kwargs.update({"snapshot_tags": snapshot_tags})
 
-        LOG.debug("%s", upload_metadata_kwargs)
+        self._log_output_metadata("Uploading", "AWS", upload_metadata_kwargs)
         metadata = AWSUploadMetadata(**upload_metadata_kwargs)
 
         res = self.upload_svc_partial(region=push_item.region).publish(metadata)
@@ -566,8 +566,7 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
             "keepdraft": nochannel,
             "overwrite": overwrite,
         }
-
-        LOG.debug("%s", publish_metadata_kwargs)
+        self._log_output_metadata("Publishing", "AWS", publish_metadata_kwargs)
         metadata = AWSPublishMetadata(**publish_metadata_kwargs)
         res = self.publish_svc.publish(metadata)
         return push_item, res
