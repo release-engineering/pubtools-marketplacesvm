@@ -15,6 +15,7 @@
 [    INFO] Upload finished for ami_pushitem on AWS-NA
 [ WARNING] Missing information for the attribute vhd_pushitem.description, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.boot_mode, leaving it unset.
+[ WARNING] Missing information for the attribute vhd_pushitem.support_legacy, leaving it unset.
 [    INFO] Uploading the item vhd_pushitem to AZURE-NA.
 [    INFO] Upload finished for vhd_pushitem on AZURE-NA
 [    INFO] Preparing to publish the item ami_pushitem to aws-destination-for-x64 on AWS-NA.

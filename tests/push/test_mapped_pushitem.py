@@ -304,6 +304,7 @@ def test_allowed_attrs_to_update_for_upload() -> None:
         "release",
         "root_device",
         "sriov_net_support",
+        "support_legacy",
         "virtualization",
         "volume",
     }

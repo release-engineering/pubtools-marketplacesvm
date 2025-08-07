@@ -43,7 +43,7 @@
   'overwrite': False,
   'recommended_sizes': [],
   'sku_id': None,
-  'support_legacy': False}
+  'support_legacy': True}
 [    INFO] Preparation complete for item vhd_pushitem to AZURE-NA.
 [    INFO] Preparing to publish the item vhd_pushitem to EMEA-DESTINATION on AZURE-EMEA.
 [   DEBUG] Publishing to Azure with the following metadata: { 'architecture': 'x86_64',
@@ -57,7 +57,7 @@
   'overwrite': False,
   'recommended_sizes': [],
   'sku_id': None,
-  'support_legacy': False}
+  'support_legacy': True}
 [    INFO] Preparation complete for item vhd_pushitem to AZURE-EMEA.
 [ WARNING] Missing information for the attribute vhd_pushitem.build, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.description, leaving it unset.
