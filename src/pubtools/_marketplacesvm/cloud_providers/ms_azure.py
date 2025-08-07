@@ -231,6 +231,7 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
             "arch": push_item.release.arch,
             "tags": tags,
         }
+        self._log_output_metadata("Uploading", "Azure", upload_metadata_kwargs)
         metadata = AzureUploadMetadata(**upload_metadata_kwargs)
         res = self.upload_svc.publish(metadata)
         return push_item, res
@@ -309,6 +310,7 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
             "overwrite": overwrite,
             "check_base_sas_only": kwargs.get("check_base_sas_only", False),
         }
+        self._log_output_metadata("Publishing", "Azure", publish_metadata_kwargs)
         metadata = AzurePublishMetadata(**publish_metadata_kwargs)
         res = self.publish_svc.publish(metadata)
         return push_item, res
