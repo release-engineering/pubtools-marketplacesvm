@@ -30,7 +30,7 @@ class FakeCloudProvider(CloudProvider):
         return push_item, nochannel
 
     def _delete_push_images(self, push_item, **kwargs):
-        return push_item, kwargs
+        return push_item, (mock.MagicMock(), mock.MagicMock())
 
 
 @pytest.fixture()
@@ -46,6 +46,15 @@ def fake_azure_source(
 ) -> Generator[mock.MagicMock, None, None]:
     with mock.patch("pubtools._marketplacesvm.tasks.delete.command.Source") as m:
         m.get.return_value.__enter__.return_value = pub_response_azure
+        yield m
+
+
+@pytest.fixture()
+def fake_multiple_source(
+    pub_response_ami: List[AmiPushItem], pub_response_azure: List[VHDPushItem]
+) -> Generator[mock.MagicMock, None, None]:
+    with mock.patch("pubtools._marketplacesvm.tasks.delete.command.Source") as m:
+        m.get.return_value.__enter__.return_value = pub_response_ami + pub_response_azure
         yield m
 
 
@@ -162,8 +171,37 @@ def test_delete_vhd(
 
     fake_azure_source.get.assert_called_once()
     assert fake_cloud_instance.call_count == 1
-    for call in fake_cloud_instance.call_args_list:
-        assert call.args == ('azure-na',)
+    assert fake_cloud_instance.call_args_list[0].args == ('azure-na',)
+
+
+def test_delete_multiple_marketplaces(
+    fake_multiple_source: mock.MagicMock,
+    fake_cloud_instance: mock.MagicMock,
+    command_tester: CommandTester,
+):
+    """Test a successfull delete with multiple marketplaces."""
+    command_tester.test(
+        lambda: entry_point(VMDelete),
+        [
+            "test-delete",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--rhsm-url",
+            "https://rhsm.com/test/api/",
+            "--debug",
+            "--builds",
+            "rhcos-x86_64-414.92.202405201754-0,sample_product-1.0.1-1-x86_64,azure-testing",
+            "pub:https://fakepub.com?task-id=12345",
+        ],
+    )
+
+    fake_multiple_source.get.assert_called_once()
+
+    # Assert both marketplaces are handled
+    assert fake_cloud_instance.call_count == 3
+    assert fake_cloud_instance.call_args_list[0].args == ('aws-china-storage',)
+    assert fake_cloud_instance.call_args_list[1].args == ('aws-na',)
+    assert fake_cloud_instance.call_args_list[2].args == ('azure-na',)
 
 
 @mock.patch("pubtools._marketplacesvm.tasks.delete.command.Source")
