@@ -223,7 +223,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             mapped_item.update_push_item_for_marketplace(marketplace, pi)
         return mapped_item, starmap_query
 
-    def _push_pre_publish(self, upload_result: List[UPLOAD_RESULT]) -> List[UPLOAD_RESULT]:
+    def _push_pre_publish(self, upload_result: List[UPLOAD_RESULT]) -> Dict[str, List[PublishDict]]:
         """Perform the pre-publish routine call.
 
         Args:
@@ -233,38 +233,37 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
         Returns:
             The processed items.
         """
-        res = []
-        for mapped_item, starmap_query in upload_result:
-            for marketplace in mapped_item.marketplaces:
-                pi = mapped_item.get_push_item_for_marketplace(marketplace)
+        release_groups = self._group_items(upload_result)
+        for release_group in release_groups.values():
+            for release_data in release_group:
+                mapped_item = release_data["mapped_item"]
+                marketplace = release_data["marketplace"]
+                destination = release_data["destination"]
+
+                # Get the push item for the current marketplace
+                pi = mapped_item.get_push_item_for_marketplace_and_destination(
+                    marketplace, destination
+                )
+
+                # Associate image with Product/Offer/Plan and publish only if it's not a pre-push
                 if pi.state != State.UPLOADFAILED and not self.args.pre_push:
-                    # backup pi.dest but also filter out destinations without matching architecture
-                    destination_list = [
-                        d
-                        for d in pi.dest
-                        if not d.architecture or d.architecture == pi.release.arch
-                    ]
-                    for dest in destination_list:
-                        log.info(
-                            "Preparing to publish the item %s to %s on %s.",
-                            pi.name,
-                            dest.destination,
-                            marketplace.upper(),
-                        )
-                        pi = evolve(pi, dest=[dest.destination])
-                        pi, _ = self.cloud_instance(marketplace).pre_publish(
-                            pi, check_base_sas_only=dest.vhd_check_base_sas_only
-                        )
-                        log.info(
-                            "Preparation complete for item %s to %s.",
-                            pi.name,
-                            marketplace.upper(),
-                        )
-                    # Set back the original destinations after processing
-                    pi = evolve(pi, dest=destination_list)
+                    log.info(
+                        "Preparing to publish the item %s to %s on %s.",
+                        pi.name,
+                        destination.destination,
+                        marketplace.upper(),
+                    )
+                    pi = evolve(pi, dest=[destination.destination])
+                    pi, _ = self.cloud_instance(marketplace).pre_publish(
+                        pi, check_base_sas_only=destination.vhd_check_base_sas_only
+                    )
+                    log.info(
+                        "Preparation complete for item %s to %s.",
+                        pi.name,
+                        marketplace.upper(),
+                    )
                     mapped_item.update_push_item_for_marketplace(marketplace, pi)
-            res.append((mapped_item, starmap_query))
-        return res
+        return release_groups
 
     def _group_items(self, upload_result: List[UPLOAD_RESULT]) -> Dict[str, List[PublishDict]]:
         # Go through destinations and mappings to ensure that we are pushing
@@ -274,28 +273,29 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             for marketplace in mapped_item.marketplaces:
                 pi = mapped_item.get_push_item_for_marketplace(marketplace)
                 for dest in pi.dest:
-                    destination = cast(Destination, dest)
-                    if isinstance(pi, AmiPushItem):
-                        # Product ID are unique enough in the AWS marketplace
-                        group_name = f"aws-{destination.destination}"
-                    elif isinstance(pi, VHDPushItem):
-                        # Offer names can be the same among different accounts,
-                        # but they do not conflict with each other
-                        # PushItems to the same offer need to be released sequentially
-                        offer_name = destination.destination.split("/")[0]
-                        group_name = f"azure-{marketplace}-{offer_name}"
+                    if not dest.architecture or dest.architecture == pi.release.arch:
+                        destination = cast(Destination, dest)
+                        if isinstance(pi, AmiPushItem):
+                            # Product ID are unique enough in the AWS marketplace
+                            group_name = f"aws-{destination.destination}"
+                        elif isinstance(pi, VHDPushItem):
+                            # Offer names can be the same among different accounts,
+                            # but they do not conflict with each other
+                            # PushItems to the same offer need to be released sequentially
+                            offer_name = destination.destination.split("/")[0]
+                            group_name = f"azure-{marketplace}-{offer_name}"
 
-                    publish_dict: PublishDict = {
-                        "mapped_item": mapped_item,
-                        "marketplace": marketplace,
-                        "destination": destination,
-                        "starmap_query": starmap_query,
-                    }
-                    publish_map.setdefault(group_name, []).append(publish_dict)
+                        publish_dict: PublishDict = {
+                            "mapped_item": mapped_item,
+                            "marketplace": marketplace,
+                            "destination": destination,
+                            "starmap_query": starmap_query,
+                        }
+                        publish_map.setdefault(group_name, []).append(publish_dict)
 
         return publish_map
 
-    def _push_publish(self, upload_result: List[UPLOAD_RESULT]) -> List[Dict[str, Any]]:
+    def _push_publish(self, release_groups: Dict[str, List[PublishDict]]) -> List[Dict[str, Any]]:
         """
         Perform the publishing for the the VM images .
 
@@ -353,8 +353,6 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                     }
                 )
             return results
-
-        release_groups = self._group_items(upload_result)
 
         res_output = []
         to_await = []
@@ -461,10 +459,10 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             upload_result.append(f_out.result())
 
         # 3 - Execute any pre-publishing routine
-        upload_result = self._push_pre_publish(upload_result)
+        grouped_data = self._push_pre_publish(upload_result)
 
         # 4 - Publish the uploaded images letting the external function to control the threads
-        result = self._push_publish(upload_result)
+        result = self._push_publish(grouped_data)
 
         # process result for failures
         failed = False
