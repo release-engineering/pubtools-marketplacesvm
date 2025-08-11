@@ -3,6 +3,7 @@ import logging
 import os
 import sys
 from abc import ABC, abstractmethod
+from pprint import pformat
 from typing import Any, Dict, Generic, NoReturn, Optional, Tuple, Type, TypeVar
 
 if sys.version_info >= (3, 8):
@@ -165,6 +166,9 @@ class CloudProvider(ABC, Generic[T, C]):
     #
     # Subclasses can implement
     #
+
+    def _log_output_metadata(self, action: str, cloud: str, metadata: Dict[str, Any]) -> None:
+        log.debug(f"{action} to {cloud} with the following metadata: {pformat(metadata, indent=2)}")
 
     def _post_upload(self, push_item: T, upload_result: Any, **kwargs) -> Tuple[T, Any]:
         """

@@ -1,8 +1,9 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 import json
 import logging
+from copy import copy
 from datetime import datetime
-from typing import Generator
+from typing import Any, Dict, Generator
 from unittest import mock
 
 import pytest
@@ -12,6 +13,7 @@ from pushsource import AmiPushItem, AmiRelease, KojiBuildInfo, PushItem, VHDPush
 from starmap_client.models import QueryResponseContainer, QueryResponseEntity
 
 from pubtools._marketplacesvm.cloud_providers.base import CloudProvider
+from pubtools._marketplacesvm.cloud_providers.ms_azure import AzureProvider
 from pubtools._marketplacesvm.tasks.push import MarketplacesVMPush, entry_point
 from pubtools._marketplacesvm.tasks.push.items import State
 
@@ -379,6 +381,148 @@ def test_do_push_azure_compare_base_sas(
     mock_source.get.assert_called_once()
     mock_starmap.query_image_by_name.assert_called_once_with(name="test-build", version="7.0")
     assert mock_cloud_instance.call_count == 6
+
+
+@mock.patch("pubtools._marketplacesvm.cloud_providers.ms_azure.AzurePublishMetadata")
+@mock.patch("pubtools._marketplacesvm.cloud_providers.ms_azure.AzurePublishService")
+@mock.patch("pubtools._marketplacesvm.cloud_providers.ms_azure.AzureUploadMetadata")
+@mock.patch("pubtools._marketplacesvm.cloud_providers.ms_azure.AzureUploadService")
+@mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.cloud_instance")
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
+@mock.patch("pubtools._marketplacesvm.tasks.push.command.Source")
+@mock.patch("pubtools._marketplacesvm.tasks.push.MarketplacesVMPush.starmap")
+def test_do_push_azure_expected_publishing_metadata_applied(
+    mock_starmap: mock.MagicMock,
+    mock_source: mock.MagicMock,
+    mock_collector_update_push_items: mock.MagicMock,
+    mock_cloud_instance: mock.MagicMock,
+    mock_upload_svc: mock.MagicMock,
+    mock_upload_meta: mock.MagicMock,
+    mock_publish_svc: mock.MagicMock,
+    mock_publish_meta: mock.MagicMock,
+    vhd_push_item: VHDPushItem,
+    command_tester: CommandTester,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test a successful push for Azure which has the proper publishing metadata included."""
+    # Prepare mocks
+    mock_disk_version = mock.MagicMock()
+    upload_svc_obj = mock.MagicMock()
+    publish_svc_obj = mock.MagicMock()
+    mock_upload_svc.return_value = upload_svc_obj
+    mock_upload_svc.from_connection_string.return_value = upload_svc_obj
+    mock_publish_svc.return_value = publish_svc_obj
+    patched_azure = AzureProvider(credentials=mock.MagicMock())
+    mock_cloud_instance.return_value = patched_azure
+
+    # Fill missing values
+    mock_disk_version.return_value = "7.0.2025080716"
+    monkeypatch.setattr(patched_azure, "_generate_disk_version", mock_disk_version)
+    upload_svc_obj.get_blob_sas_uri.return_value = "https://fake-sas-uri.blob.windows.net"
+    vhd_push_item = evolve(vhd_push_item, src="source_azure_push_item")
+
+    # Include StArMap query
+    qre = QueryResponseEntity.from_json(
+        {
+            "name": "fake-policy",
+            "workflow": "stratosphere",
+            "cloud": "azure",
+            "mappings": {
+                "azure-na": {
+                    "destinations": [
+                        {
+                            "destination": "NA-DESTINATION",
+                            "overwrite": False,
+                            "restrict_version": False,
+                            "vhd_check_base_sas_only": True,
+                            "meta": {
+                                "generation": "V2",
+                                "support_legacy": True,
+                            },
+                        },
+                    ]
+                },
+                "azure-emea": {
+                    "destinations": [
+                        {
+                            "destination": "EMEA-DESTINATION",
+                            "overwrite": False,
+                            "restrict_version": False,
+                            "vhd_check_base_sas_only": True,
+                            "meta": {
+                                "generation": "V2",
+                                "support_legacy": True,
+                            },
+                        },
+                    ]
+                },
+            },
+        }
+    )
+    mock_starmap.query_image_by_name.return_value = QueryResponseContainer([qre])
+    mock_source.get.return_value.__enter__.return_value = [vhd_push_item]
+
+    # Expected results:
+    expected_upload_metadata = {
+        'image_path': 'source_azure_push_item',
+        'image_name': 'sample-product-7.0_V2-20250402-x86_64-1',
+        'container': 'pubupload',
+        'description': '',
+        'arch': 'x86_64',
+        'tags': {
+            'arch': 'x86_64',
+            'buildid': 'None',
+            'name': 'test-build',
+            'nvra': 'test-build-7.0-20230101.x86_64',
+            'release': '20230101',
+            'version': '7.0',
+        },
+    }
+    expected_publish_metadata_na: Dict[str, Any] = {
+        'disk_version': '7.0.2025080716',
+        'sku_id': None,
+        'generation': 'V2',
+        'support_legacy': True,
+        'recommended_sizes': [],
+        'legacy_sku_id': None,
+        'image_path': 'https://fake-sas-uri.blob.windows.net',
+        'architecture': 'x86_64',
+        'destination': 'NA-DESTINATION',
+        'keepdraft': True,
+        'overwrite': False,
+        'check_base_sas_only': True,
+    }
+    expected_publish_metadata_na_push = copy(expected_publish_metadata_na)
+    expected_publish_metadata_na_push["keepdraft"] = False
+    expected_publish_metadata_emea = copy(expected_publish_metadata_na)
+    expected_publish_metadata_emea["destination"] = "EMEA-DESTINATION"
+    expected_publish_metadata_emea_push = copy(expected_publish_metadata_emea)
+    expected_publish_metadata_emea_push["keepdraft"] = False
+
+    # Test
+    command_tester.test(
+        lambda: entry_point(MarketplacesVMPush),
+        [
+            "test-push",
+            "--starmap-url",
+            "https://starmap-example.com",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--debug",
+            "koji:https://fakekoji.com?vmi_build=azure_build",
+        ],
+    )
+    mock_source.get.assert_called_once()
+    mock_starmap.query_image_by_name.assert_called_once_with(name="test-build", version="7.0")
+    mock_upload_meta.assert_has_calls([mock.call(**expected_upload_metadata) for _ in range(2)])
+    mock_publish_meta.assert_has_calls(
+        [
+            mock.call(**expected_publish_metadata_na),
+            mock.call(**expected_publish_metadata_emea),
+            mock.call(**expected_publish_metadata_na_push),
+            mock.call(**expected_publish_metadata_emea_push),
+        ]
+    )
 
 
 @mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
