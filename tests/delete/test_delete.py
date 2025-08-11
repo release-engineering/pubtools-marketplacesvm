@@ -204,6 +204,54 @@ def test_delete_multiple_marketplaces(
     assert fake_cloud_instance.call_args_list[2].args == ('azure-na',)
 
 
+@mock.patch("pubtools._marketplacesvm.tasks.delete.VMDelete.cloud_instance")
+def test_delete_images_already_deleted(
+    mock_cloud_instance: mock.MagicMock,
+    fake_azure_source: mock.MagicMock,
+    command_tester: CommandTester,
+):
+    """Test a successfull delete with images already deleted."""
+
+    class FakeMissingDeleteProvider(FakeCloudProvider):
+        @classmethod
+        def from_credentials(cls, _):
+            return cls()
+
+        def _upload(self, push_item, custom_tags=None, **kwargs):
+            return push_item, True
+
+        def _pre_publish(self, push_item, **kwargs):
+            return push_item, kwargs
+
+        def _publish(self, push_item, nochannel, overwrite, **kwargs):
+            return push_item, nochannel
+
+        def _delete_push_images(self, push_item, **kwargs):
+            return push_item, (None, None)
+
+    mock_cloud_instance.return_value = FakeMissingDeleteProvider()
+
+    command_tester.test(
+        lambda: entry_point(VMDelete),
+        [
+            "test-delete",
+            "--credentials",
+            "eyJtYXJrZXRwbGFjZV9hY2NvdW50IjogInRlc3QtbmEiLCAiYXV0aCI6eyJmb28iOiJiYXIifQo=",
+            "--rhsm-url",
+            "https://rhsm.com/test/api/",
+            "--debug",
+            "--builds",
+            "azure-testing",
+            "pub:https://fakepub.com?task-id=12345",
+        ],
+    )
+
+    fake_azure_source.get.assert_called_once()
+
+    # Assert both marketplaces are handled
+    assert "marking as MISSING" in command_tester._caplog.text
+
+
 @mock.patch("pubtools._marketplacesvm.tasks.delete.command.Source")
 def test_delete_using_cloud_info(
     mock_source: mock.MagicMock,

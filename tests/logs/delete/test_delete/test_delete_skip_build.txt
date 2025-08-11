@@ -8,6 +8,5 @@
 [    INFO] Existing image ami-rhcos1 succesfully updated in rhsm
 [    INFO] Deleting ami-rhcos1 in account aws-china-storage
 [    INFO] Delete finished for ami-rhcos1 in account aws-china-storage
-[    INFO] Skipped: ami-aws1 in build sample_product-1.0.1-1-x86_64
 [    INFO] Collecting results
 [    INFO] Delete completed
