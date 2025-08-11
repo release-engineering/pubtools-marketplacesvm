@@ -223,6 +223,36 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             mapped_item.update_push_item_for_marketplace(marketplace, pi)
         return mapped_item, starmap_query
 
+    def _group_items(self, upload_result: List[UPLOAD_RESULT]) -> Dict[str, List[PublishDict]]:
+        # Go through destinations and mappings to ensure that we are pushing
+        # to only a single marketplace + dest at a time.
+        publish_map: Dict[str, List[PublishDict]] = {}
+        for mapped_item, starmap_query in upload_result:
+            for marketplace in mapped_item.marketplaces:
+                pi = mapped_item.get_push_item_for_marketplace(marketplace)
+                for dest in pi.dest:
+                    if not dest.architecture or dest.architecture == pi.release.arch:
+                        destination = cast(Destination, dest)
+                        if isinstance(pi, AmiPushItem):
+                            # Product ID are unique enough in the AWS marketplace
+                            group_name = f"aws-{destination.destination}"
+                        elif isinstance(pi, VHDPushItem):
+                            # Offer names can be the same among different accounts,
+                            # but they do not conflict with each other
+                            # PushItems to the same offer need to be released sequentially
+                            offer_name = destination.destination.split("/")[0]
+                            group_name = f"azure-{marketplace}-{offer_name}"
+
+                        publish_dict: PublishDict = {
+                            "mapped_item": mapped_item,
+                            "marketplace": marketplace,
+                            "destination": destination,
+                            "starmap_query": starmap_query,
+                        }
+                        publish_map.setdefault(group_name, []).append(publish_dict)
+
+        return publish_map
+
     def _push_pre_publish(self, upload_result: List[UPLOAD_RESULT]) -> Dict[str, List[PublishDict]]:
         """Perform the pre-publish routine call.
 
@@ -264,36 +294,6 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                     )
                     mapped_item.update_push_item_for_marketplace(marketplace, pi)
         return release_groups
-
-    def _group_items(self, upload_result: List[UPLOAD_RESULT]) -> Dict[str, List[PublishDict]]:
-        # Go through destinations and mappings to ensure that we are pushing
-        # to only a single marketplace + dest at a time.
-        publish_map: Dict[str, List[PublishDict]] = {}
-        for mapped_item, starmap_query in upload_result:
-            for marketplace in mapped_item.marketplaces:
-                pi = mapped_item.get_push_item_for_marketplace(marketplace)
-                for dest in pi.dest:
-                    if not dest.architecture or dest.architecture == pi.release.arch:
-                        destination = cast(Destination, dest)
-                        if isinstance(pi, AmiPushItem):
-                            # Product ID are unique enough in the AWS marketplace
-                            group_name = f"aws-{destination.destination}"
-                        elif isinstance(pi, VHDPushItem):
-                            # Offer names can be the same among different accounts,
-                            # but they do not conflict with each other
-                            # PushItems to the same offer need to be released sequentially
-                            offer_name = destination.destination.split("/")[0]
-                            group_name = f"azure-{marketplace}-{offer_name}"
-
-                        publish_dict: PublishDict = {
-                            "mapped_item": mapped_item,
-                            "marketplace": marketplace,
-                            "destination": destination,
-                            "starmap_query": starmap_query,
-                        }
-                        publish_map.setdefault(group_name, []).append(publish_dict)
-
-        return publish_map
 
     def _push_publish(self, release_groups: Dict[str, List[PublishDict]]) -> List[Dict[str, Any]]:
         """
