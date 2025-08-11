@@ -1,0 +1,9 @@
+[    INFO] Loading items from pub:https://fakepub.com?task-id=12345
+[    INFO] Deleting azure-testing.vhd.xz in account azure-na
+[    INFO] Delete finished for azure-testing.vhd.xz in account azure-na
+[ WARNING] No deletion response for azure-testing.vhd.xz on azure-na, marking as MISSING.
+[    INFO] Deleting azure-testing.vhd.xz in account azure-emea
+[    INFO] Delete finished for azure-testing.vhd.xz in account azure-emea
+[ WARNING] No deletion response for azure-testing.vhd.xz on azure-emea, marking as MISSING.
+[    INFO] Collecting results
+[    INFO] Delete completed

@@ -8,5 +8,12 @@
 [    INFO] Existing image ami-rhcos1 succesfully updated in rhsm
 [    INFO] Deleting ami-rhcos1 in account aws-china-storage
 [    INFO] Delete finished for ami-rhcos1 in account aws-china-storage
+[   DEBUG] Marking AMI ami-aws1 as invisible on RHSM for the provider AmiProduct.
+[   DEBUG] Searching for product sample_product for provider AmiProduct in rhsm
+[    INFO] sample_product not found in RHSM
+[    INFO] Deleting ami-aws1 in account aws-na
+[    INFO] Delete finished for ami-aws1 in account aws-na
+[    INFO] Deleting azure-testing.vhd.xz in account azure-na
+[    INFO] Delete finished for azure-testing.vhd.xz in account azure-na
 [    INFO] Collecting results
 [    INFO] Delete completed

@@ -30,5 +30,8 @@ class State(StrEnum):
     DELETED = "DELETED"
     """Image successfully deleted."""
 
+    MISSING = "MISSING"
+    """Image not found while trying to delete."""
+
     SKIPPED = "SKIPPED"
     """Image deletion skipped."""
