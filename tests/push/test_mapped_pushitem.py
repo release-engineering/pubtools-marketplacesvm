@@ -11,6 +11,7 @@ from pushsource import (
     AmiPushItem,
     AmiRelease,
     AmiSecurityGroup,
+    BootMode,
     VHDPushItem,
     VMIRelease,
 )
@@ -19,6 +20,7 @@ from starmap_client.models import Destination, QueryResponseEntity
 from pubtools._marketplacesvm.tasks.push.items import MappedVMIPushItemV2
 from pubtools._marketplacesvm.tasks.push.items.ami import (
     aws_access_endpoint_url_converter,
+    aws_boot_mode_converter,
     aws_security_groups_converter,
 )
 
@@ -289,6 +291,67 @@ def test_converter_aws_access_endpoint_url_converter() -> None:
 
     assert isinstance(res, AmiAccessEndpointUrl)
     assert asdict(res) == fake_access_endpoint_url
+
+
+@pytest.mark.parametrize("boot_mode", ["legacy", "hybrid", "uefi"])
+def test_converter_aws_boot_mode_str_to_enum(boot_mode) -> None:
+    res = aws_boot_mode_converter(boot_mode)
+    assert isinstance(res, BootMode)
+    assert res.value == boot_mode
+
+
+@pytest.mark.parametrize(
+    "meta_name, meta_value, expected",
+    [
+        (
+            "security_groups",
+            [
+                {
+                    "from_port": 1234,
+                    "ip_protocol": "tcp",
+                    "ip_ranges": ["0.0.0.0"],
+                    "to_port": 4321,
+                }
+            ],
+            [
+                AmiSecurityGroup._from_data(
+                    {
+                        "from_port": 1234,
+                        "ip_protocol": "tcp",
+                        "ip_ranges": ["0.0.0.0"],
+                        "to_port": 4321,
+                    }
+                )
+            ],
+        ),
+        (
+            "access_endpoint_url",
+            {'port': 9990, 'protocol': 'http'},
+            AmiAccessEndpointUrl._from_data({'port': 9990, 'protocol': 'http'}),
+        ),
+        ("boot_mode", "legacy", BootMode("legacy")),
+    ],
+)
+def test_aws_overriden_metadata(
+    meta_name: str,
+    meta_value: Any,
+    expected: Any,
+    starmap_response_aws: Dict[str, Any],
+    ami_push_item: AmiPushItem,
+) -> None:
+    """Ensure converters properly work for the desired metadata to be overriden from StArMap."""
+    meta = {meta_name: meta_value}
+    starmap_response_aws["meta"] = meta
+    qr = QueryResponseEntity.from_json(starmap_response_aws)
+    mapped_item = MappedVMIPushItemV2(ami_push_item, qr)
+
+    for dest_data in qr.mappings.values():
+        for dest in dest_data.destinations:
+            pi = mapped_item.get_push_item_for_destination(dest)
+            assert hasattr(pi, meta_name), f"Expected metadata \"{meta_name}\" not found."
+            assert (
+                getattr(pi, meta_name) == expected
+            ), f"Expected object for \"{meta_name}\": {expected}, got: {getattr(pi, meta_name)}."
 
 
 def test_allowed_attrs_to_update_for_upload() -> None:

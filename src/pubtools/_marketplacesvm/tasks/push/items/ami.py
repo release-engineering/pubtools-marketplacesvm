@@ -1,7 +1,7 @@
 import logging
 from typing import Any, Dict, List
 
-from pushsource import AmiAccessEndpointUrl, AmiSecurityGroup
+from pushsource import AmiAccessEndpointUrl, AmiSecurityGroup, BootMode
 
 from .starmap import MappedVMIPushItemV2
 
@@ -36,5 +36,19 @@ def aws_access_endpoint_url_converter(value: Dict[str, Any]) -> AmiAccessEndpoin
     return AmiAccessEndpointUrl._from_data(value)
 
 
+def aws_boot_mode_converter(value: str) -> BootMode:
+    """
+    Convert boot_mode string value to BootMode enum.
+
+    Args:
+        value (str): boot_mode as string
+
+    Returns:
+        BootMode: The corresponding Enum for the received value
+    """
+    return BootMode(value)
+
+
 MappedVMIPushItemV2.register_converter("security_groups", aws_security_groups_converter)
 MappedVMIPushItemV2.register_converter("access_endpoint_url", aws_access_endpoint_url_converter)
+MappedVMIPushItemV2.register_converter("boot_mode", aws_boot_mode_converter)
