@@ -1,4 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
+import json
 from datetime import datetime
 from typing import Any, Dict, List
 
@@ -184,6 +185,12 @@ def vhd_push_item(release_params: Dict[str, Any], push_item_params: Dict[str, An
         }
     )
     return VHDPushItem(**push_item_params)
+
+
+@pytest.fixture
+def vhd_clouds_json() -> List[Dict[str, Any]]:
+    with open("tests/delete/data/vhd_clouds.json", "r") as f:
+        return json.load(f)
 
 
 @pytest.fixture

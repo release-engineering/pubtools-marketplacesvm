@@ -364,8 +364,8 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
             "container": UPLOAD_CONTAINER_NAME,
         }
         metadata = AzureDeleteMetadata(**delete_meta_kwargs)
-        self.upload_svc.delete(metadata)
-        return push_item
+        res = self.upload_svc.delete(metadata)
+        return push_item, res
 
     def ensure_offer_is_writable(self, destination: str, nochannel: bool) -> None:
         """

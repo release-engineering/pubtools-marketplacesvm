@@ -1,14 +1,18 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
+import base64
+import json
 import re
-from typing import Dict, Generator, List
+from datetime import date, datetime
+from typing import Any, Dict, Generator, List
 from unittest import mock
 
 import pytest
 from attrs import evolve
-from pushsource import AmiPushItem, VHDPushItem, VMICloudInfo
+from pushsource import AmiPushItem, KojiBuildInfo, VHDPushItem, VMICloudInfo, VMIRelease
 
 from pubtools._marketplacesvm.cloud_providers.base import CloudProvider
 from pubtools._marketplacesvm.tasks.delete import VMDelete, entry_point
+from pubtools._marketplacesvm.tasks.push.items import State
 
 from ..command import CommandTester
 
@@ -307,10 +311,92 @@ def test_delete_vhd_cloud_info(
         ],
     )
 
-    """ fake_azure_source.get.assert_called_once()
+    fake_azure_source.get.assert_called_once()
     assert fake_cloud_instance.call_count == 1
     for call in fake_cloud_instance.call_args_list:
-        assert call.args == ('azure-emea',) """
+        assert call.args == ('azure-emea',)
+
+
+@mock.patch("pushcollector._impl.proxy.CollectorProxy.update_push_items")
+def test_delete_vhd_end_to_end(
+    mock_collector_update_push_items: mock.MagicMock,
+    requests_mocker,
+    vhd_clouds_json: List[Dict[str, Any]],
+    command_tester: CommandTester,
+) -> None:
+
+    fake_creds = {
+        "marketplace_account": "azure-na",
+        "auth": {
+            "AZURE_TENANT_ID": "test",
+            "AZURE_API_SECRET": "test",
+            "AZURE_CLIENT_ID": "test",
+            "AZURE_STORAGE_CONNECTION_STRING": "DefaultEndpointsProtocol=https;AccountName=test;AccountKey=test;EndpointSuffix=core.windows.net",  # noqa: E501
+        },
+    }
+    fake_creds_str = json.dumps(fake_creds)
+    encoded_fake_creds = base64.b64encode(fake_creds_str.encode('utf-8'))
+
+    # Mocks for PubSource
+    requests_mocker.register_uri(
+        "GET", "https://fakepub.com/pub/task/938836/log/images.json", status_code=404
+    )
+    requests_mocker.register_uri(
+        "GET", "https://fakepub.com/pub/task/938836/log/clouds.json?", json=vhd_clouds_json
+    )
+
+    # Mocks for Azure
+    requests_mocker.register_uri("GET", "https://test.blob.core.windows.net/pubupload")
+    requests_mocker.register_uri(
+        "HEAD", "https://test.blob.core.windows.net/pubupload/TEST-PR-9.6_V2-20250910-x86_64-0"
+    )
+    requests_mocker.register_uri(
+        "DELETE",
+        "https://test.blob.core.windows.net/pubupload/TEST-PR-9.6_V2-20250910-x86_64-0",
+        status_code=202,
+    )
+
+    command_tester.test(
+        lambda: entry_point(VMDelete),
+        [
+            "test-delete",
+            "--credentials",
+            encoded_fake_creds.decode('ascii'),
+            "--rhsm-url",
+            "https://rhsm.com/test/api/",
+            "--debug",
+            "--builds",
+            "test-pr-azure-9.6-20250909.4",
+            "pub:https://fakepub.com?task_id=938836",
+        ],
+    )
+
+    expected_dt = datetime.strptime("20250910", r"%Y%m%d")
+    expected_date = date(expected_dt.year, expected_dt.month, expected_dt.day)
+
+    expected_pi = VHDPushItem(
+        name='test-pr-azure-9.6-20250909.4.x86_64.vhd.xz',
+        state=State.DELETED,
+        src='/mnt/koji/packages/test-pr-azure/9.6/20250909.4/images/test-pr-azure-9.6-20250909.4.x86_64.vhd.xz',  # noqa: E501
+        dest=['test/test-pr9'],
+        origin='RHBA-0000:123456',
+        build='test-pr-azure-9.6-20250909.4',
+        build_info=KojiBuildInfo(name='test-pr-azure', version='9.6', release='20250909.4'),
+        release=VMIRelease(
+            product='TEST-PR',
+            date=expected_date,
+            arch='x86_64',
+            respin=0,
+            version='9.6',
+        ),
+        description='',
+        generation='V2',
+        support_legacy=True,
+        recommended_sizes=[],
+        sas_uri='https://test.blob.core.windows.net/pubupload/test-pr-azure-9.6-20250909.4.x86_64.vhd?se=2028-09-10T09%3A25%3A03Z&sp=r&sv=2023-08-03&sr=b&sig=test',  # noqa: E501
+    )
+    mock_collector_update_push_items.assert_called_once()
+    assert mock_collector_update_push_items.call_args[0][0] == [expected_pi]
 
 
 def test_delete_skip_build(
