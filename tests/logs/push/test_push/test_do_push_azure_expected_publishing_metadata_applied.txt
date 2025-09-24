@@ -1,6 +1,6 @@
 [    INFO] Loading items from koji:https://fakekoji.com?vmi_build=azure_build
 [    INFO] Retrieving the mappings for vhd_pushitem from https://starmap-example.com
-[    INFO] starmap query returned for vhd_pushitem : {"name": "test-build", "version": "7.0", "query_response": {"meta": null, "name": "fake-policy", "billing_code_config": {}, "cloud": "azure", "workflow": "stratosphere", "mappings": {"azure-na": {"meta": {}, "destinations": [{"meta": {"generation": "V2", "support_legacy": true}, "id": null, "architecture": null, "destination": "NA-DESTINATION", "overwrite": false, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "ami_version_template": null, "provider": null, "tags": null, "vhd_check_base_sas_only": true}], "provider": null}, "azure-emea": {"meta": {}, "destinations": [{"meta": {"generation": "V2", "support_legacy": true}, "id": null, "architecture": null, "destination": "EMEA-DESTINATION", "overwrite": false, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "ami_version_template": null, "provider": null, "tags": null, "vhd_check_base_sas_only": true}], "provider": null}}}}
+[    INFO] starmap query returned for vhd_pushitem : {"name": "test-build", "version": "7.0", "query_response": {"meta": null, "name": "fake-policy", "billing_code_config": {}, "cloud": "azure", "workflow": "stratosphere", "mappings": {"azure-na": {"meta": {}, "destinations": [{"meta": {"generation": "V2", "support_legacy": true, "modular_push": true}, "id": null, "architecture": null, "destination": "NA-DESTINATION", "overwrite": false, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "ami_version_template": null, "provider": null, "tags": null, "vhd_check_base_sas_only": true}], "provider": null}, "azure-emea": {"meta": {}, "destinations": [{"meta": {"generation": "V2", "support_legacy": true, "modular_push": false}, "id": null, "architecture": null, "destination": "EMEA-DESTINATION", "overwrite": false, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "ami_version_template": null, "provider": null, "tags": null, "vhd_check_base_sas_only": true}], "provider": null}}}}
 [ WARNING] Missing information for the attribute vhd_pushitem.description, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.boot_mode, leaving it unset.
 [    INFO] Uploading the item vhd_pushitem to AZURE-NA.
@@ -50,6 +50,7 @@
   'image_path': 'https://fake-sas-uri.blob.windows.net',
   'keepdraft': True,
   'legacy_sku_id': None,
+  'modular_push': True,
   'overwrite': False,
   'recommended_sizes': [],
   'sku_id': None,
@@ -74,6 +75,7 @@
   'image_path': 'https://fake-sas-uri.blob.windows.net',
   'keepdraft': True,
   'legacy_sku_id': None,
+  'modular_push': False,
   'overwrite': False,
   'recommended_sizes': [],
   'sku_id': None,
@@ -97,6 +99,7 @@
   'image_path': 'https://fake-sas-uri.blob.windows.net',
   'keepdraft': False,
   'legacy_sku_id': None,
+  'modular_push': True,
   'overwrite': False,
   'recommended_sizes': [],
   'sku_id': None,
@@ -119,6 +122,7 @@
   'image_path': 'https://fake-sas-uri.blob.windows.net',
   'keepdraft': False,
   'legacy_sku_id': None,
+  'modular_push': False,
   'overwrite': False,
   'recommended_sizes': [],
   'sku_id': None,

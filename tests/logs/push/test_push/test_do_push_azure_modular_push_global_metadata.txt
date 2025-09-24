@@ -1,15 +1,36 @@
 [    INFO] Loading items from koji:https://fakekoji.com?vmi_build=azure_build
 [    INFO] Retrieving the mappings for vhd_pushitem from https://starmap-example.com
-[    INFO] starmap query returned for vhd_pushitem : {"name": "test-build", "version": "7.0", "query_response": {"meta": null, "name": "fake-policy", "billing_code_config": {}, "cloud": "azure", "workflow": "stratosphere", "mappings": {"azure-na": {"meta": {}, "destinations": [{"meta": {}, "id": null, "architecture": null, "destination": "NA-DESTINATION", "overwrite": false, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "ami_version_template": null, "provider": null, "tags": null, "vhd_check_base_sas_only": true}], "provider": null}, "azure-emea": {"meta": {}, "destinations": [{"meta": {}, "id": null, "architecture": null, "destination": "EMEA-DESTINATION", "overwrite": false, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "ami_version_template": null, "provider": null, "tags": null, "vhd_check_base_sas_only": true}], "provider": null}}}}
+[    INFO] starmap query returned for vhd_pushitem : {"name": "test-build", "version": "7.0", "query_response": {"meta": {"modular_push": true}, "name": "fake-policy", "billing_code_config": {}, "cloud": "azure", "workflow": "stratosphere", "mappings": {"azure-na": {"meta": {"modular_push": true}, "destinations": [{"meta": {"modular_push": true, "generation": "V2", "support_legacy": true}, "id": null, "architecture": null, "destination": "NA-DESTINATION", "overwrite": false, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "ami_version_template": null, "provider": null, "tags": null, "vhd_check_base_sas_only": true}], "provider": null}, "azure-emea": {"meta": {"modular_push": true}, "destinations": [{"meta": {"modular_push": true, "generation": "V2", "support_legacy": true}, "id": null, "architecture": null, "destination": "EMEA-DESTINATION", "overwrite": false, "restrict_version": false, "restrict_major": null, "restrict_minor": null, "ami_version_template": null, "provider": null, "tags": null, "vhd_check_base_sas_only": true}], "provider": null}}}}
 [ WARNING] Missing information for the attribute vhd_pushitem.description, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.boot_mode, leaving it unset.
 [    INFO] Uploading the item vhd_pushitem to AZURE-NA.
+[   DEBUG] Uploading to Azure with the following metadata: { 'arch': 'x86_64',
+  'container': 'pubupload',
+  'description': '',
+  'image_name': 'sample-product-7.0_V2-20250402-x86_64-1',
+  'image_path': 'source_azure_push_item',
+  'tags': { 'arch': 'x86_64',
+            'buildid': 'None',
+            'name': 'test-build',
+            'nvra': 'test-build-7.0-20230101.x86_64',
+            'release': '20230101',
+            'version': '7.0'}}
 [    INFO] Upload finished for vhd_pushitem on AZURE-NA
 [ WARNING] Missing information for the attribute vhd_pushitem.description, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.boot_mode, leaving it unset.
 [    INFO] Uploading the item vhd_pushitem to AZURE-EMEA.
+[   DEBUG] Uploading to Azure with the following metadata: { 'arch': 'x86_64',
+  'container': 'pubupload',
+  'description': '',
+  'image_name': 'sample-product-7.0_V2-20250402-x86_64-1',
+  'image_path': 'source_azure_push_item',
+  'tags': { 'arch': 'x86_64',
+            'buildid': 'None',
+            'name': 'test-build',
+            'nvra': 'test-build-7.0-20230101.x86_64',
+            'release': '20230101',
+            'version': '7.0'}}
 [    INFO] Upload finished for vhd_pushitem on AZURE-EMEA
-[ WARNING] Missing information for the attribute vhd_pushitem.src, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.build, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.description, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.boot_mode, leaving it unset.
@@ -17,14 +38,24 @@
 [ WARNING] Missing information for the attribute vhd_pushitem.marketplace_title_template, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.marketplace_name, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.sku_id, leaving it unset.
-[ WARNING] Missing information for the attribute vhd_pushitem.support_legacy, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.legacy_sku_id, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.disk_version, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.recommended_sizes, leaving it unset.
 [    INFO] Preparing to publish the item vhd_pushitem to NA-DESTINATION on AZURE-NA.
-[   DEBUG] Associating vhd_pushitem with image fake-azure-sas-for-na and args: {'check_base_sas_only': True, 'modular_push': False}
+[   DEBUG] Publishing to Azure with the following metadata: { 'architecture': 'x86_64',
+  'check_base_sas_only': True,
+  'destination': 'NA-DESTINATION',
+  'disk_version': '7.0.2025080716',
+  'generation': 'V2',
+  'image_path': 'https://fake-sas-uri.blob.windows.net',
+  'keepdraft': True,
+  'legacy_sku_id': None,
+  'modular_push': True,
+  'overwrite': False,
+  'recommended_sizes': [],
+  'sku_id': None,
+  'support_legacy': True}
 [    INFO] Preparation complete for item vhd_pushitem to AZURE-NA.
-[ WARNING] Missing information for the attribute vhd_pushitem.src, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.build, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.description, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.boot_mode, leaving it unset.
@@ -32,14 +63,24 @@
 [ WARNING] Missing information for the attribute vhd_pushitem.marketplace_title_template, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.marketplace_name, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.sku_id, leaving it unset.
-[ WARNING] Missing information for the attribute vhd_pushitem.support_legacy, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.legacy_sku_id, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.disk_version, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.recommended_sizes, leaving it unset.
 [    INFO] Preparing to publish the item vhd_pushitem to EMEA-DESTINATION on AZURE-EMEA.
-[   DEBUG] Associating vhd_pushitem with image fake-azure-sas-for-emea and args: {'check_base_sas_only': True, 'modular_push': False}
+[   DEBUG] Publishing to Azure with the following metadata: { 'architecture': 'x86_64',
+  'check_base_sas_only': True,
+  'destination': 'EMEA-DESTINATION',
+  'disk_version': '7.0.2025080716',
+  'generation': 'V2',
+  'image_path': 'https://fake-sas-uri.blob.windows.net',
+  'keepdraft': True,
+  'legacy_sku_id': None,
+  'modular_push': True,
+  'overwrite': False,
+  'recommended_sizes': [],
+  'sku_id': None,
+  'support_legacy': True}
 [    INFO] Preparation complete for item vhd_pushitem to AZURE-EMEA.
-[ WARNING] Missing information for the attribute vhd_pushitem.src, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.build, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.description, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.boot_mode, leaving it unset.
@@ -47,14 +88,22 @@
 [ WARNING] Missing information for the attribute vhd_pushitem.marketplace_title_template, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.marketplace_name, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.sku_id, leaving it unset.
-[ WARNING] Missing information for the attribute vhd_pushitem.support_legacy, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.legacy_sku_id, leaving it unset.
-[ WARNING] Missing information for the attribute vhd_pushitem.disk_version, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.recommended_sizes, leaving it unset.
 [    INFO] Pushing "vhd_pushitem" (pre-push=False) to NA-DESTINATION on AZURE-NA.
-[   DEBUG] Pushing vhd_pushitem with image: fake-azure-sas-for-na
-[   DEBUG] Pushing vhd_pushitem with args: {'restrict_version': False, 'restrict_major': None, 'restrict_minor': None, 'check_base_sas_only': True, 'modular_push': False}
-[ WARNING] Missing information for the attribute vhd_pushitem.src, leaving it unset.
+[   DEBUG] Publishing to Azure with the following metadata: { 'architecture': 'x86_64',
+  'check_base_sas_only': True,
+  'destination': 'NA-DESTINATION',
+  'disk_version': '7.0.2025080716',
+  'generation': 'V2',
+  'image_path': 'https://fake-sas-uri.blob.windows.net',
+  'keepdraft': False,
+  'legacy_sku_id': None,
+  'modular_push': True,
+  'overwrite': False,
+  'recommended_sizes': [],
+  'sku_id': None,
+  'support_legacy': True}
 [ WARNING] Missing information for the attribute vhd_pushitem.build, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.description, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.boot_mode, leaving it unset.
@@ -62,12 +111,21 @@
 [ WARNING] Missing information for the attribute vhd_pushitem.marketplace_title_template, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.marketplace_name, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.sku_id, leaving it unset.
-[ WARNING] Missing information for the attribute vhd_pushitem.support_legacy, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.legacy_sku_id, leaving it unset.
-[ WARNING] Missing information for the attribute vhd_pushitem.disk_version, leaving it unset.
 [ WARNING] Missing information for the attribute vhd_pushitem.recommended_sizes, leaving it unset.
 [    INFO] Pushing "vhd_pushitem" (pre-push=False) to EMEA-DESTINATION on AZURE-EMEA.
-[   DEBUG] Pushing vhd_pushitem with image: fake-azure-sas-for-emea
-[   DEBUG] Pushing vhd_pushitem with args: {'restrict_version': False, 'restrict_major': None, 'restrict_minor': None, 'check_base_sas_only': True, 'modular_push': False}
+[   DEBUG] Publishing to Azure with the following metadata: { 'architecture': 'x86_64',
+  'check_base_sas_only': True,
+  'destination': 'EMEA-DESTINATION',
+  'disk_version': '7.0.2025080716',
+  'generation': 'V2',
+  'image_path': 'https://fake-sas-uri.blob.windows.net',
+  'keepdraft': False,
+  'legacy_sku_id': None,
+  'modular_push': True,
+  'overwrite': False,
+  'recommended_sizes': [],
+  'sku_id': None,
+  'support_legacy': True}
 [    INFO] Collecting results
 [    INFO] Marketplace VM push completed

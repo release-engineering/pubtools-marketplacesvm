@@ -246,6 +246,7 @@ def test_publish(
         "keepdraft": False,
         "overwrite": False,
         "check_base_sas_only": False,
+        "modular_push": False,
     }
     meta_obj = MagicMock(**metadata)
     mock_metadata.return_value = meta_obj
@@ -257,6 +258,49 @@ def test_publish(
     monkeypatch.setattr(fake_azure_provider, 'ensure_offer_is_writable', mock_ensure_offer_writable)
 
     fake_azure_provider.publish(azure_push_item, nochannel=False, overwrite=False)
+
+    mock_metadata.assert_called_once_with(**expected_metadata)
+    fake_azure_provider.publish_svc.publish.assert_called_once_with(meta_obj)
+    fake_azure_provider.upload_svc.publish.assert_not_called()
+    mock_ensure_offer_writable.assert_called_once()
+
+
+@patch("pubtools._marketplacesvm.cloud_providers.ms_azure.AzurePublishMetadata")
+def test_publish_modular_push(
+    mock_metadata: MagicMock,
+    azure_push_item: VHDPushItem,
+    fake_azure_provider: AzureProvider,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    azure_push_item = evolve(azure_push_item, disk_version=None)
+    mock_generate_dv = MagicMock()
+    mock_generate_dv.return_value = "7.0.202301010000"
+    metadata = {
+        "sku_id": azure_push_item.sku_id,
+        "generation": azure_push_item.generation or "V2",
+        "support_legacy": azure_push_item.support_legacy or False,
+        "recommended_sizes": azure_push_item.recommended_sizes or [],
+        "legacy_sku_id": azure_push_item.legacy_sku_id,
+        "image_path": azure_push_item.sas_uri,
+        "architecture": azure_push_item.release.arch,
+        "destination": azure_push_item.dest[0],
+        "keepdraft": False,
+        "overwrite": False,
+        "check_base_sas_only": False,
+        "modular_push": True,
+    }
+    meta_obj = MagicMock(**metadata)
+    mock_metadata.return_value = meta_obj
+    expected_metadata = copy(metadata)
+    expected_metadata["disk_version"] = "7.0.202301010000"
+    mock_ensure_offer_writable = MagicMock()
+
+    monkeypatch.setattr(fake_azure_provider, '_generate_disk_version', mock_generate_dv)
+    monkeypatch.setattr(fake_azure_provider, 'ensure_offer_is_writable', mock_ensure_offer_writable)
+
+    fake_azure_provider.publish(
+        azure_push_item, nochannel=False, overwrite=False, modular_push=True
+    )
 
     mock_metadata.assert_called_once_with(**expected_metadata)
     fake_azure_provider.publish_svc.publish.assert_called_once_with(meta_obj)
@@ -295,6 +339,7 @@ def test_publish_core_vms(
         'keepdraft': False,
         'overwrite': False,
         "check_base_sas_only": True,
+        "modular_push": False,
     }
     mock_ensure_offer_writable = MagicMock()
 

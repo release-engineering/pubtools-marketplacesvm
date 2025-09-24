@@ -144,7 +144,12 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
         return pi
 
     def _publish(
-        self, marketplace: str, dest: Destination, push_item: VMIPushItem, pre_push: bool = True
+        self,
+        marketplace: str,
+        dest: Destination,
+        push_item: VMIPushItem,
+        pre_push: bool = True,
+        modular_push: bool = False,
     ) -> VMIPushItem:
         """
         Publish the VM image to all required marketplace listings.
@@ -159,6 +164,10 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             pre_push
                 If True it will only associate the images without publishing, if possible.
                 This defaults to True
+            modular_push
+                If True it will only perform a submission for a particular plan instead of for the
+                whole offer (False).
+                This defaults to False
         Returns:
             The push item after publishing.
         """
@@ -180,6 +189,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                 restrict_major=dest.restrict_major,
                 restrict_minor=dest.restrict_minor,
                 check_base_sas_only=dest.vhd_check_base_sas_only,
+                modular_push=modular_push,
             )
 
             # Once we process all destinations we set back the list of destinations
@@ -269,6 +279,8 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                 mapped_item = release_data["mapped_item"]
                 marketplace = release_data["marketplace"]
                 destination = release_data["destination"]
+                starmap_meta = destination.meta
+                modular_push = bool(starmap_meta.get("modular_push", False))
 
                 # Get the push item for the current marketplace
                 pi = mapped_item.get_push_item_for_marketplace_and_destination(
@@ -285,7 +297,9 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                     )
                     pi = evolve(pi, dest=[destination.destination])
                     pi, _ = self.cloud_instance(marketplace).pre_publish(
-                        pi, check_base_sas_only=destination.vhd_check_base_sas_only
+                        pi,
+                        check_base_sas_only=destination.vhd_check_base_sas_only,
+                        modular_push=modular_push,
                     )
                     log.info(
                         "Preparation complete for item %s to %s.",
@@ -315,6 +329,9 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                 marketplace = publish_data["marketplace"]
                 destination = publish_data["destination"]
                 starmap_query = publish_data["starmap_query"]
+                starmap_meta = destination.meta
+                modular_push = starmap_meta.get("modular_push", False)
+
                 # Get the push item for the current marketplace
                 pi = mapped_item.get_push_item_for_marketplace_and_destination(
                     marketplace, destination
@@ -327,6 +344,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                         destination,
                         pi,
                         pre_push=False,
+                        modular_push=modular_push,
                     )
                 elif pi.state != State.UPLOADFAILED and self.args.pre_push:
                     # Set the state as PUSHED when the operation is nochannel
