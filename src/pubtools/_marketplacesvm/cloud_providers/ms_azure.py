@@ -9,9 +9,11 @@ from attrs.validators import instance_of
 from cloudimg.ms_azure import AzureDeleteMetadata
 from cloudimg.ms_azure import AzurePublishingMetadata as AzureUploadMetadata
 from cloudimg.ms_azure import AzureService as AzureUploadService
+from cloudpub.error import ConflictError
 from cloudpub.ms_azure import AzurePublishingMetadata as AzurePublishMetadata
 from cloudpub.ms_azure import AzureService as AzurePublishService
 from pushsource import VHDPushItem
+from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
 
 from .base import UPLOAD_CONTAINER_NAME, CloudCredentials, CloudProvider, register_provider
 
@@ -270,6 +272,12 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
         """
         return self._publish(push_item=push_item, nochannel=True, **kwargs)
 
+    @retry(
+        retry=retry_if_exception_type(ConflictError),
+        wait=wait_exponential(multiplier=1, min=60, max=60 * 60 * 24 * 7),
+        stop=stop_after_attempt(3),
+        reraise=True,
+    )
     def _publish(
         self,
         push_item: VHDPushItem,
