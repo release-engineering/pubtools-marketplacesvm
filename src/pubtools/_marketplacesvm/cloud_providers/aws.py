@@ -670,5 +670,11 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
 
 
 register_provider(
-    AWSProvider, "aws-na", "aws-emea", "aws-us-storage", "aws-us-gov-storage", "aws-china-storage"
+    AWSProvider,
+    "aws-na",
+    "aws-emea",
+    "aws-us-storage",
+    "aws-us-gov-storage",
+    "aws-china-storage",
+    "aws-esc-storage",
 )
