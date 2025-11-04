@@ -409,6 +409,7 @@ def test_do_push_azure_expected_publishing_metadata_applied(
     mock_disk_version = mock.MagicMock()
     upload_svc_obj = mock.MagicMock()
     publish_svc_obj = mock.MagicMock()
+    publish_svc_obj.diff_two_offers.return_value = {}
     mock_upload_svc.return_value = upload_svc_obj
     mock_upload_svc.from_connection_string.return_value = upload_svc_obj
     mock_publish_svc.return_value = publish_svc_obj
@@ -555,6 +556,7 @@ def test_do_push_azure_modular_push_global_metadata(
     mock_disk_version = mock.MagicMock()
     upload_svc_obj = mock.MagicMock()
     publish_svc_obj = mock.MagicMock()
+    publish_svc_obj.diff_two_offers.return_value = {}
     mock_upload_svc.return_value = upload_svc_obj
     mock_upload_svc.from_connection_string.return_value = upload_svc_obj
     mock_publish_svc.return_value = publish_svc_obj

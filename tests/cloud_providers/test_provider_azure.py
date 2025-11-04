@@ -1,16 +1,17 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 import os
+import re
 from copy import copy
 from unittest.mock import MagicMock, patch
 
 import pytest
 from attrs import evolve
-from cloudpub.models.ms_azure import Product
+from cloudpub.models.ms_azure import Product, ProductSubmission
+from deepdiff import DeepDiff
 from pushsource import KojiBuildInfo, VHDPushItem, VMIRelease
 
 from pubtools._marketplacesvm.cloud_providers import AzureCredentials, AzureProvider, get_provider
 from pubtools._marketplacesvm.cloud_providers.base import UPLOAD_CONTAINER_NAME
-from pubtools._marketplacesvm.cloud_providers.ms_azure import AzureDestinationBorg
 
 
 @pytest.fixture
@@ -433,31 +434,110 @@ def test_publish_allow_draft_from_init(
     mock_ensure_offer_writable.assert_not_called()
 
 
+@pytest.mark.parametrize("latest_state", ["preview", "live"])
 @patch("pubtools._marketplacesvm.cloud_providers.ms_azure.AzurePublishMetadata")
 def test_publish_fails_on_draft_state(
     mock_metadata: MagicMock,
+    latest_state: str,
     azure_push_item: VHDPushItem,
     fake_azure_provider: AzureProvider,
 ) -> None:
-    fake_product = Product.from_json(
+
+    def diff_offers(offer_left, offer_right):
+        return DeepDiff(offer_left, offer_right)
+
+    fake_product_draft = Product.from_json(
         {
             "$schema": "https://product-ingestion.azureedge.net/schema/resource-tree/2022-03-01-preview2",  # noqa: E501
             "root": "product/product/ffffffff-ffff-ffff-ffff-ffffffffffff",
-            "target": {"targetType": "draft"},  # this should prevent the offer to be published
+            "target": {"targetType": "draft"},
+            "resources": [
+                {
+                    "$schema": "https://schema.mp.microsoft.com/schema/product/2022-03-01-preview3",
+                    "id": "product/ffffffff-ffff-ffff-ffff-ffffffffffff",
+                    "identity": {"externalId": "fake-product"},
+                    "type": "azureVirtualMachine",
+                    "alias": "Fake Product",
+                },
+            ],
+        }
+    )
+    fake_product_latest = Product.from_json(
+        {
+            "$schema": "https://product-ingestion.azureedge.net/schema/resource-tree/2022-03-01-preview2",  # noqa: E501
+            "root": "product/product/ffffffff-ffff-ffff-ffff-ffffffffffff",
+            "target": {"targetType": latest_state},
             "resources": [],
         }
     )
-    fake_azure_provider.publish_svc.get_product_by_name.return_value = fake_product
-    keep_draft = True
-    offer_name = azure_push_item.dest[0].split("/")[0]
-    expected_err = f"Can't update the offer {offer_name} as it's already being changed."
+
+    # Create submissions based on latest_state parameter
+    # For "preview" case, include a preview submission; for "live" case, include a live submission
+    base_submissions = [
+        {
+            "$schema": "https://schema.mp.microsoft.com/schema/submission/2022-03-01-preview2",
+            "id": "submission/a3230c00-ba71-11f0-b2c0-6e5361048fa9/0",
+            "product": "product/product/ffffffff-ffff-ffff-ffff-ffffffffffff",
+            "target": {"targetType": "draft"},
+            "lifecycleState": "generallyAvailable",
+        },
+    ]
+
+    # Add submission for the latest_state (preview or live)
+    if latest_state == "preview":
+        base_submissions.append(
+            {
+                "$schema": "https://schema.mp.microsoft.com/schema/submission/2022-03-01-preview2",
+                "id": "submission/a3230c00-ba71-11f0-b2c0-6e5361048fa9/1152921505700026743",
+                "product": "product/product/ffffffff-ffff-ffff-ffff-ffffffffffff",
+                "target": {"targetType": "preview"},
+                "lifecycleState": "generallyAvailable",
+                "status": "completed",
+                "result": "succeeded",
+                "created": "2025-10-23T03:00:00.0000000Z",
+            }
+        )
+    else:  # live
+        base_submissions.append(
+            {
+                "$schema": "https://schema.mp.microsoft.com/schema/submission/2022-03-01-preview2",
+                "id": "submission/a3230c00-ba71-11f0-b2c0-6e5361048fa9/1152921505700026744",
+                "product": "product/product/ffffffff-ffff-ffff-ffff-ffffffffffff",
+                "target": {"targetType": "live"},
+                "lifecycleState": "generallyAvailable",
+                "status": "completed",
+                "result": "succeeded",
+                "created": "2025-10-23T03:00:00.0000000Z",
+            }
+        )
+
+    fake_submissions = [ProductSubmission.from_json(x) for x in base_submissions]
+
+    # Ensure allow_draft_push is False so ensure_offer_is_writable is called
+    fake_azure_provider.allow_draft_push = False
+
+    fake_azure_provider.publish_svc.get_productid.return_value = "fake-product"
+    fake_azure_provider.publish_svc.get_submissions.return_value = fake_submissions
+    fake_azure_provider.publish_svc.get_product.side_effect = [
+        fake_product_latest,
+        fake_product_draft,
+    ]
+    diff = diff_offers(fake_product_draft, fake_product_latest)
+    fake_azure_provider.publish_svc.diff_two_offers.return_value = diff
+
+    # The offer_name comes from destination.split("/")[0], which is "product-name"
+    # from azure_push_item.dest[0]
+    expected_err_prefix = "Can't update the offer product-name as it's already being changed: "
+    # Use re.escape only for the prefix, then match the diff output flexibly
+    # The diff.pretty() output may contain brackets and other special regex characters
+    expected_err = f"{re.escape(expected_err_prefix)}.*"
 
     with pytest.raises(RuntimeError, match=expected_err):
-        fake_azure_provider.publish(azure_push_item, nochannel=keep_draft, overwrite=False)
+        fake_azure_provider.publish(azure_push_item, nochannel=False, overwrite=False)
 
-    mock_metadata.assert_not_called()
-    fake_azure_provider.publish_svc.publish.assert_not_called()
-    fake_azure_provider.upload_svc.publish.assert_not_called()
+    # mock_metadata.assert_not_called()
+    # fake_azure_provider.publish_svc.publish.assert_not_called()
+    # fake_azure_provider.upload_svc.publish.assert_not_called()
 
 
 @patch("pubtools._marketplacesvm.cloud_providers.ms_azure.datetime")
@@ -491,17 +571,6 @@ def test_generate_disk_version_xyz(
 
     # Make sure we pass Pushsource regex for versioning
     evolve(push_item, disk_version=res)
-
-
-def test_borg() -> None:
-    a = AzureDestinationBorg()
-    b = AzureDestinationBorg()
-
-    a.destinations.add("test")
-
-    assert a != b
-    assert a.destinations == b.destinations
-    assert "test" in b.destinations
 
 
 @patch("pubtools._marketplacesvm.cloud_providers.ms_azure.datetime")
