@@ -535,9 +535,9 @@ def test_publish_fails_on_draft_state(
     with pytest.raises(RuntimeError, match=expected_err):
         fake_azure_provider.publish(azure_push_item, nochannel=False, overwrite=False)
 
-    # mock_metadata.assert_not_called()
-    # fake_azure_provider.publish_svc.publish.assert_not_called()
-    # fake_azure_provider.upload_svc.publish.assert_not_called()
+    mock_metadata.assert_not_called()
+    fake_azure_provider.publish_svc.publish.assert_not_called()
+    fake_azure_provider.upload_svc.publish.assert_not_called()
 
 
 @patch("pubtools._marketplacesvm.cloud_providers.ms_azure.datetime")
