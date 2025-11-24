@@ -2,13 +2,14 @@
 import logging
 import os
 from datetime import datetime
-from typing import Any, Dict, Optional, Set, Tuple
+from typing import Any, Dict, Optional, Tuple
 
 from attrs import asdict, evolve, field, frozen
 from attrs.validators import instance_of
 from cloudimg.ms_azure import AzureDeleteMetadata
 from cloudimg.ms_azure import AzurePublishingMetadata as AzureUploadMetadata
 from cloudimg.ms_azure import AzureService as AzureUploadService
+from cloudpub.models.ms_azure import CoreVMIPlanTechConfig, VMIPlanTechConfig
 from cloudpub.ms_azure import AzurePublishingMetadata as AzurePublishMetadata
 from cloudpub.ms_azure import AzureService as AzurePublishService
 from pushsource import VHDPushItem
@@ -49,41 +50,6 @@ class AzureCredentials(CloudCredentials):
         return {k.upper(): v for k, v in asdict(self).items() if k != "cloud_name"}
 
 
-class AzureDestinationBorg:
-    """
-    Borg to keep track of the Azure destinations which were changed.
-
-    Since we don't want to touch an offer which its original state is "draft" we need to keep
-    track of the visited offers to mark them as "safe".
-
-    This is required because whenever we touch a single plan to assign the VM image we're also
-    changing the offer status to "draft". Supposing the existence of "Offer-A", which has 2 or more
-    plans, whenever we change the first plan the offer state would be "draft" thus leaving it
-    impossible for the program to know, when adjusting the second offer, whether the "draft" state
-    comes from a change in the offer before we touch the first plan or not.
-
-    In order to solve this issue we check the offer before changing anything and mark it in the
-    Borg as "visited" to have a clear state of what "draft" may represent.
-
-    See also: https://baites.github.io/computer-science/patterns/singleton-series/2018/06/11/python-borg-and-the-new-metaborg.html
-    """  # noqa: E501
-
-    _shared_state: Dict[str, Any] = {}
-
-    def __new__(cls):
-        """Instantiate a new borg object with the shared state."""
-        inst = super().__new__(cls)
-        inst.__dict__ = cls._shared_state
-        return inst
-
-    @property
-    def destinations(self) -> Set[Any]:
-        """Provide a shared set of destinations."""
-        if not hasattr(self, "_destinations"):
-            self._destinations: Set[Any] = set()
-        return self._destinations
-
-
 class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
     """The Azure marketplace provider."""
 
@@ -101,7 +67,6 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
             credentials.azure_storage_connection_string
         )
         self.publish_svc = AzurePublishService(credentials.credentials)
-        self._borg = AzureDestinationBorg()
 
     def _name_from_push_item(self, push_item: VHDPushItem) -> str:
         """
@@ -381,23 +346,51 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
         will have a "draft" state that is caused by the tooling, hence the Borg to keep track of
         what it touched to disconsider this "draft" as a signal of manual changes.
         """
+
+        def filter_out_technical_resources(resources):
+            """Remove (Core) VM technical resources from list."""
+            return [
+                r
+                for r in resources
+                if not (isinstance(r, (VMIPlanTechConfig, CoreVMIPlanTechConfig)))
+            ]
+
+        # Gather initial data
         offer_name = destination.split("/")[0]
-        product = self.publish_svc.get_product_by_name(offer_name)
+        product_id = self.publish_svc.get_productid(offer_name)
+        submissions = self.publish_svc.get_submissions(product_id)
 
-        # Here we could have the state as: "draft", "preview" or "live"
-        state = product.target.targetType
+        # Get all submission targets available for the exising offer
+        states = []
+        for sub in submissions:
+            target = sub.target
+            if target.targetType == "draft" or sub.result == "succeeded":
+                states.append(target.targetType)
 
-        # During pre-push mode we need to ensure the "draft" state is not the initial offer state.
-        # If the offer name is inside Borg's destination it means that the "draft" state was caused
-        # by this tool instead of manual changes.
-        # The only "draft" state that we should raise an error is when the offer name is not in
-        # the borg and the nochannel is True, meaning this state comes from a manual change.
-        if nochannel is True and offer_name not in self._borg.destinations:
-            self._borg.destinations.add(offer_name)
-            if state == "draft":
-                raise RuntimeError(
-                    f"Can't update the offer {offer_name} as it's already being changed."
+        # The offer might be either on "draft" from initial state or published with new changes.
+        # We just want to prevent unwanted changes from a published offer, so we should not
+        # fail on an offer with "draft" from initial state.
+        if states and states != ["draft"]:
+
+            # Now we should get either the "preview" or "live" content in order to compare with
+            # the draft
+            last_state = "preview" if "preview" in states else "live"
+            offer_latest = self.publish_svc.get_product(product_id, last_state)
+
+            # as well as retrieve the draft content
+            offer_draft = self.publish_svc.get_product(product_id, "draft")
+
+            # We don't want to compute any diff on "technical-configuration"
+            offer_latest.resources = filter_out_technical_resources(offer_latest.resources)
+            offer_draft.resources = filter_out_technical_resources(offer_draft.resources)
+
+            # Diff the resources to see if there are any unpublished changes
+            if diff := self.publish_svc.diff_two_offers(offer_latest, offer_draft):
+                error_msg = (
+                    f"Can't update the offer {offer_name} as it's already being changed: "
+                    f"{diff.pretty()}"
                 )
+                raise RuntimeError(error_msg)
 
 
 register_provider(AzureProvider, "azure-na", "azure-emea")
