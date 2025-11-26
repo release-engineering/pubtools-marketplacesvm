@@ -338,13 +338,7 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
         Ensure the offer can be modified and published by this tool.
 
         If the offer's initial state is "draft" it means someone made manual changes in the webui
-        and we cannot proceed. However, this is just true if the offer hasn't being changed by this
-        tool, thus we use the Borg to inform us whether we're safe to proceed or not.
-
-        Since during the `publish` phase we need to call it two time (one with keep_draft as True to
-        associate the images to possible multiple plans of the same offer, the other to submit) we
-        will have a "draft" state that is caused by the tooling, hence the Borg to keep track of
-        what it touched to disconsider this "draft" as a signal of manual changes.
+        and we cannot proceed.
         """
 
         def filter_out_technical_resources(resources):
