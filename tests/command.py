@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 """Helpers for testing commands."""
+
 from __future__ import print_function
 
 import difflib
