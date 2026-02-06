@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 """Tests ensuring all task modules have a consistent interface."""
+
 import argparse
 import contextlib
 import io
