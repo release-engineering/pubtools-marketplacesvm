@@ -301,7 +301,9 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
         if nochannel:
             return push_item, publish_result
         container = UPLOAD_CONTAINER_NAME
-        name = os.path.basename(push_item.src).rstrip(".xz")
+        name = os.path.basename(push_item.src)
+        name_no_ext, ext = os.path.splitext(name)
+        name = name_no_ext if ext == ".xz" else name
 
         blob = self.upload_svc.get_object_by_name(container, name)
         blob_tags = blob.get_blob_tags()
@@ -323,7 +325,9 @@ class AzureProvider(CloudProvider[VHDPushItem, AzureCredentials]):
         Returns:
             A tuple of VHDPushItem and None at the moment.
         """
-        name = self._name_from_push_item(push_item)
+        name = os.path.basename(push_item.src)
+        name_no_ext, ext = os.path.splitext(name)
+        name = name_no_ext if ext == ".xz" else name
         delete_meta_kwargs = {
             "image_name": name,
             "image_id": name,

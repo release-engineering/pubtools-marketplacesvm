@@ -348,11 +348,12 @@ def test_delete_vhd_end_to_end(
     # Mocks for Azure
     requests_mocker.register_uri("GET", "https://test.blob.core.windows.net/pubupload")
     requests_mocker.register_uri(
-        "HEAD", "https://test.blob.core.windows.net/pubupload/TEST-PR-9.6_V2-20250910-x86_64-0"
+        "HEAD",
+        "https://test.blob.core.windows.net/pubupload/test-pr-azure-9.6-20250909.4.x86_64.vhd",
     )
     requests_mocker.register_uri(
         "DELETE",
-        "https://test.blob.core.windows.net/pubupload/TEST-PR-9.6_V2-20250910-x86_64-0",
+        "https://test.blob.core.windows.net/pubupload/test-pr-azure-9.6-20250909.4.x86_64.vhd",
         status_code=202,
     )
 
