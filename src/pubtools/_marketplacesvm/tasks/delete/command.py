@@ -153,14 +153,25 @@ class VMDelete(MarketplacesVMTask, CloudService, CollectorService, AwsRHSMClient
         return accounts[provider_name]
 
     def _get_provider_details(self, push_item: VMIPushItem) -> Tuple[str, List[str]]:
+        log.debug("Retrieving the provider details for %s", push_item.name)
+
         if push_item.cloud_info:
+            log.debug(
+                "Provider for %s: %s (%s)",
+                push_item.name,
+                push_item.cloud_info.provider,
+                push_item.cloud_info.account,
+            )
             return push_item.cloud_info.provider, [push_item.cloud_info.account]
+
         provider = push_item.marketplace_entity_type
         account = self._convert_provider_name(provider)
+        log.debug("Provider for %s: %s (%s)", push_item.name, provider, account)
         return provider, account
 
     def _set_ami_invisible(self, push_item: AmiPushItem, provider: Optional[str] = None) -> None:
         if not provider:
+            log.warning("No provider found for %s", push_item.name)
             return
         img_id = push_item.image_id
         log.debug("Marking AMI %s as invisible on RHSM for the provider %s.", img_id, provider)
@@ -184,7 +195,9 @@ class VMDelete(MarketplacesVMTask, CloudService, CollectorService, AwsRHSMClient
         **kwargs,
     ) -> VMIPushItem:
         pi = push_item
+        log.debug("Checking whether %s is present in the builds args.", push_item.name)
         if push_item.build in self.args.builds:
+            log.debug("Matched the push_item %s (build %s) with the build args", pi.name, pi.build)
             if self.args.dry_run:
                 self._set_ami_invisible(push_item, provider)
                 log.info("Would have deleted: %s in build %s", image_reference, push_item.build)
@@ -214,6 +227,12 @@ class VMDelete(MarketplacesVMTask, CloudService, CollectorService, AwsRHSMClient
                         f"No deletion response for {pi.name} on {marketplace}, marking as MISSING."
                     )
                     pi = evolve(pi, state=State.MISSING)
+        else:
+            log.warning(
+                "The push_item %s doesn't match its build (%s) with the provided args",
+                push_item.name,
+                push_item.build,
+            )
         return pi
 
     def _delete(
@@ -222,9 +241,11 @@ class VMDelete(MarketplacesVMTask, CloudService, CollectorService, AwsRHSMClient
         **kwargs,
     ) -> VMIPushItem:
         if isinstance(push_item, AmiPushItem):
+            log.debug("Preparing to delete AMI %s", push_item.image_id)
             image_ref = push_item.image_id
             provider, marketplaces = self._get_provider_details(push_item)
         elif isinstance(push_item, VHDPushItem):
+            log.debug("Preparing to delete VHD %s", push_item.name)
             image_ref = push_item.name
             provider = None
             if push_item.cloud_info:
@@ -277,6 +298,7 @@ class VMDelete(MarketplacesVMTask, CloudService, CollectorService, AwsRHSMClient
         """Execute the delete command workflow."""
         result = []
         for item in self.deletion_items:
+            log.debug("Starting the deletion of %s", item.name)
             result.append(self._delete(item))
 
         # process result for failures

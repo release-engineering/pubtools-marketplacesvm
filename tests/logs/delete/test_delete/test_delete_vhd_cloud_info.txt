@@ -1,4 +1,9 @@
 [    INFO] Loading items from pub:https://fakepub.com?task-id=12345
+[   DEBUG] Starting the deletion of azure-testing.vhd.xz
+[   DEBUG] Preparing to delete VHD azure-testing.vhd.xz
+[   DEBUG] Checking whether azure-testing.vhd.xz is present in the builds args.
+[   DEBUG] Matched the push_item azure-testing.vhd.xz (build azure-testing) with the build args
+[ WARNING] No provider found for azure-testing.vhd.xz
 [    INFO] Deleting azure-testing.vhd.xz in account azure-emea
 [    INFO] Delete finished for azure-testing.vhd.xz in account azure-emea
 [    INFO] Collecting results

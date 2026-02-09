@@ -1,3 +1,7 @@
 [    INFO] Loading items from pub:https://fakepub.com?task-id=12345
+[   DEBUG] Starting the deletion of azure-testing.vhd.xz
+[   DEBUG] Preparing to delete VHD azure-testing.vhd.xz
+[   DEBUG] Checking whether azure-testing.vhd.xz is present in the builds args.
+[ WARNING] The push_item azure-testing.vhd.xz doesn't match its build (azure-testing) with the provided args
 [    INFO] Collecting results
 [    INFO] Delete completed

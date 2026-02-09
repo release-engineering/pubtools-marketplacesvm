@@ -1,4 +1,10 @@
 [    INFO] Loading items from pub:https://fakepub.com?task-id=12345
+[   DEBUG] Starting the deletion of sample_product-1.0.1-1-x86_64.raw
+[   DEBUG] Preparing to delete AMI ami-aws1
+[   DEBUG] Retrieving the provider details for sample_product-1.0.1-1-x86_64.raw
+[   DEBUG] Provider for sample_product-1.0.1-1-x86_64.raw: AmiProduct (['aws-na', 'aws-emea'])
+[   DEBUG] Checking whether sample_product-1.0.1-1-x86_64.raw is present in the builds args.
+[   DEBUG] Matched the push_item sample_product-1.0.1-1-x86_64.raw (build sample_product-1.0.1-1-x86_64) with the build args
 [   DEBUG] Marking AMI ami-aws1 as invisible on RHSM for the provider AmiProduct.
 [   DEBUG] Listing all images from rhsm, https://rhsm.com/v1/internal/cloud_access_providers/amazon/amis
 [   DEBUG] Searching for product sample_product for provider AmiProduct in rhsm

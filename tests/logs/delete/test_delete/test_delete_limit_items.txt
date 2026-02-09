@@ -1,4 +1,10 @@
 [    INFO] Loading items from pub:https://fakepub.com?task-id=12345
+[   DEBUG] Starting the deletion of sample_product-1.0.1-1-x86_64.raw
+[   DEBUG] Preparing to delete AMI ami-aws1
+[   DEBUG] Retrieving the provider details for sample_product-1.0.1-1-x86_64.raw
+[   DEBUG] Provider for sample_product-1.0.1-1-x86_64.raw: AmiProduct (['aws-na', 'aws-emea'])
+[   DEBUG] Checking whether sample_product-1.0.1-1-x86_64.raw is present in the builds args.
+[   DEBUG] Matched the push_item sample_product-1.0.1-1-x86_64.raw (build sample_product-1.0.1-1-x86_64) with the build args
 [   DEBUG] Marking AMI ami-aws1 as invisible on RHSM for the provider AmiProduct.
 [   DEBUG] Listing all images from rhsm, https://rhsm.com/v1/internal/cloud_access_providers/amazon/amis
 [   DEBUG] Searching for product sample_product for provider AmiProduct in rhsm
@@ -7,6 +13,11 @@
 [    INFO] sample_product not found in RHSM
 [    INFO] Deleting ami-aws1 in account aws-na
 [    INFO] Delete finished for ami-aws1 in account aws-na
+[   DEBUG] Starting the deletion of azure-testing.vhd.xz
+[   DEBUG] Preparing to delete VHD azure-testing.vhd.xz
+[   DEBUG] Checking whether azure-testing.vhd.xz is present in the builds args.
+[   DEBUG] Matched the push_item azure-testing.vhd.xz (build azure-testing) with the build args
+[ WARNING] No provider found for azure-testing.vhd.xz
 [    INFO] Deleting azure-testing.vhd.xz in account azure-na
 [    INFO] Delete finished for azure-testing.vhd.xz in account azure-na
 [    INFO] Collecting results
