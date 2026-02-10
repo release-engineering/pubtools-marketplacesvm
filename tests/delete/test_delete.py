@@ -348,11 +348,12 @@ def test_delete_vhd_end_to_end(
     # Mocks for Azure
     requests_mocker.register_uri("GET", "https://test.blob.core.windows.net/pubupload")
     requests_mocker.register_uri(
-        "HEAD", "https://test.blob.core.windows.net/pubupload/TEST-PR-9.6_V2-20250910-x86_64-0"
+        "HEAD",
+        "https://test.blob.core.windows.net/pubupload/test-pr-azure-9.6-20250909.4.x86_64.vhd",
     )
     requests_mocker.register_uri(
         "DELETE",
-        "https://test.blob.core.windows.net/pubupload/TEST-PR-9.6_V2-20250910-x86_64-0",
+        "https://test.blob.core.windows.net/pubupload/test-pr-azure-9.6-20250909.4.x86_64.vhd",
         status_code=202,
     )
 
@@ -370,6 +371,21 @@ def test_delete_vhd_end_to_end(
             "pub:https://fakepub.com?task_id=938836",
         ],
     )
+
+    # Assert Azure HEAD and DELETE were actually called with the expected VHD blob
+    azure_head_requests = [
+        r
+        for r in requests_mocker.request_history
+        if r.method == "HEAD" and "test-pr-azure-9.6-20250909.4.x86_64.vhd" in r.url
+    ]
+    azure_delete_requests = [
+        r
+        for r in requests_mocker.request_history
+        if r.method == "DELETE" and "test-pr-azure-9.6-20250909.4.x86_64.vhd" in r.url
+    ]
+
+    assert azure_head_requests, "Expected at least one Azure HEAD request for the VHD blob"
+    assert azure_delete_requests, "Expected at least one Azure DELETE request for the VHD blob"
 
     expected_dt = datetime.strptime("20250910", r"%Y%m%d")
     expected_date = date(expected_dt.year, expected_dt.month, expected_dt.day)

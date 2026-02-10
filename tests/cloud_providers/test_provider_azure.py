@@ -625,7 +625,7 @@ def test_delete_push_images(
     azure_push_item: VHDPushItem,
     fake_azure_provider: AzureProvider,
 ) -> None:
-    img_name = fake_azure_provider._name_from_push_item(azure_push_item)
+    img_name = "image.vhd"
     expected_metadata_args = {
         "image_name": img_name,
         "image_id": img_name,
