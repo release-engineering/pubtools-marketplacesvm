@@ -1,5 +1,4 @@
 -r requirements.txt
-setuptools<82
 alabaster
 coverage
 mypy
