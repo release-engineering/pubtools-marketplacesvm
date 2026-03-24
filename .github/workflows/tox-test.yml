@@ -57,7 +57,9 @@ jobs:
       - name: Install Tox
         run: pip install tox
       - name: Test on ${{ matrix.python-version }}
-        run: tox -e "py${{ matrix.python-version }}"
+        run: |
+          PY_VER=${{ matrix.python-version }}
+          tox -e "py${PY_VER//./}"
   coverage:
     runs-on: ubuntu-latest
     steps:
