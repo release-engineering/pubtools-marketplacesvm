@@ -755,12 +755,13 @@ def test_no_rhsm_url(
 def test_not_in_rhsm(
     fake_starmap: mock.MagicMock,
     fake_source: mock.MagicMock,
-    starmap_query_aws: QueryResponseEntity,
+    starmap_query_aws: QueryResponseContainer,
     command_tester: CommandTester,
 ) -> None:
     """Ensure there's an error when the product is not in RHSM."""
     for mrojb in starmap_query_aws.responses[0].mappings.values():
         for dest in mrojb.destinations:
+            assert dest.meta is not None
             dest.meta["release"]["product"] = "not_in_rhsm_product"
 
     command_tester.test(

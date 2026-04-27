@@ -176,7 +176,7 @@ class MappedVMIPushItemV2:
             )
             self._mapped_push_item[account] = pi
 
-        return self._mapped_push_item.get(account)
+        return self._mapped_push_item[account]
 
     def get_push_item_for_marketplace_and_destination(
         self, account: str, destination: Destination
@@ -223,7 +223,7 @@ class MappedVMIPushItemV2:
         """
         for dst in self.destinations:
             if dst == destination:
-                return dst.meta
+                return dst.meta or {}
         return {}
 
     def get_tags_for_mapped_item(self, destination: Destination) -> Dict[str, str]:
@@ -237,7 +237,7 @@ class MappedVMIPushItemV2:
         """
         for dst in self.destinations:
             if dst == destination:
-                return dst.tags
+                return dst.tags or {}
         return {}
 
     def get_ami_version_template_for_mapped_item(self, destination: Destination) -> str:
@@ -251,7 +251,7 @@ class MappedVMIPushItemV2:
         """
         for dst in self.destinations:
             if dst == destination:
-                return dst.ami_version_template
+                return dst.ami_version_template or ""
         return ""
 
     def get_tags_for_marketplace(self, account: str) -> Dict[str, str]:

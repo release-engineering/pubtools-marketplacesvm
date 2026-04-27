@@ -153,6 +153,5 @@ def mapped_ami_push_item(
 ) -> AmiPushItem:
     destinations = []
     for mrobj in starmap_query_aws.responses[0].mappings.values():
-        for dest in mrobj:
-            destinations.append(dest)
+        destinations.extend(mrobj.destinations)
     return evolve(ami_push_item, dest=destinations)
