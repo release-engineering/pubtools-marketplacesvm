@@ -72,7 +72,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
         Returns
             The wrapped push item with the additional information from StArMap.
         """
-        mapped_items = []
+        mapped_items: List[Dict[str, Union[MappedVMIPushItemV2, QueryResponseEntity]]] = []
         for item in self.raw_items:
             log.info("Retrieving the mappings for %s from %s", item.name, self.args.starmap_url)
             binfo = item.build_info
@@ -221,14 +221,15 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
             meta = {}
             for d in pi.dest:
                 meta.update(mapped_item.get_metadata_for_mapped_item(d) or {})
+            ami_version_template = (
+                mapped_item.get_ami_version_template_for_mapped_item(pi.dest[0]) if pi.dest else ""
+            )
             pi = self._upload(
                 marketplace,
                 pi,
                 custom_tags=mapped_item.get_tags_for_marketplace(marketplace),
                 accounts=meta.get("sharing_accounts", []),
-                ami_version_template=mapped_item.get_ami_version_template_for_mapped_item(
-                    marketplace
-                ),
+                ami_version_template=ami_version_template,
             )
             mapped_item.update_push_item_for_marketplace(marketplace, pi)
         return mapped_item, starmap_query
@@ -279,7 +280,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                 mapped_item = release_data["mapped_item"]
                 marketplace = release_data["marketplace"]
                 destination = release_data["destination"]
-                starmap_meta = destination.meta
+                starmap_meta = destination.meta or {}
                 modular_push = bool(starmap_meta.get("modular_push", False))
 
                 # Get the push item for the current marketplace
@@ -329,7 +330,7 @@ class MarketplacesVMPush(MarketplacesVMTask, CloudService, CollectorService, Sta
                 marketplace = publish_data["marketplace"]
                 destination = publish_data["destination"]
                 starmap_query = publish_data["starmap_query"]
-                starmap_meta = destination.meta
+                starmap_meta = destination.meta or {}
                 modular_push = starmap_meta.get("modular_push", False)
 
                 # Get the push item for the current marketplace

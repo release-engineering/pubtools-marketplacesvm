@@ -45,6 +45,17 @@ def test_starmap_service() -> None:
 
 
 @patch("pubtools._marketplacesvm.services.starmap.StarmapClient")
+def test_starmap_service_failed_initialize(mock_client: MagicMock) -> None:
+    instance = MarketplacesVMPush()
+    arg = ["", "-d", "fakesource"]
+    mock_client.return_value = None
+
+    with patch.object(sys, "argv", arg):
+        with pytest.raises(RuntimeError, match="StArMap client instance failed to initialize"):
+            _ = instance.starmap
+
+
+@patch("pubtools._marketplacesvm.services.starmap.StarmapClient")
 def test_starmap_query(mock_client: MagicMock) -> None:
     """Ensure the `StarmapService.query_image_by_name` is properly working."""
     data = load_json("tests/data/starmap/container.json")

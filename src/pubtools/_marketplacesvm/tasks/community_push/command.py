@@ -257,7 +257,8 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
         # The `sharing_accounts` in a similar way of the marketplace workflow, while maintaining the
         # previous `accounts` format for retrocompatibility.
         def set_accounts(acct_name: str, acct_dict: Dict[str, List[str]]) -> None:
-            accts = destination.meta.get(acct_name)
+            meta = destination.meta or {}
+            accts = meta.get(acct_name)
             if not accts:
                 log.warning(
                     "No %s definition in StArMap, leaving the defaults from credentials.", acct_name
@@ -308,7 +309,7 @@ class CommunityVMPush(MarketplacesVMPush, AwsRHSMClientService):
                 for dest in mrobj.destinations:
                     pi = mapped_item.get_push_item_for_destination(dest)
                     log.debug("Mapped push item for %s: %s", storage_account, pi)
-                    r = dest.meta.get("release") or {}
+                    r = (dest.meta or {}).get("release") or {}
                     r_type_str = str(r.get("type", "")).lower()
                     r_type_str = "beta" if self.args.beta else r_type_str
                     if r_type_str:
