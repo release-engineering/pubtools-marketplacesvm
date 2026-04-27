@@ -23,8 +23,8 @@ class StarmapService(Service):
 
     def __init__(self, *args, **kwargs) -> None:
         """Instantiate a StarmapService object."""
-        self._instance = None
-        self._container = None
+        self._instance: Optional[StarmapClient] = None
+        self._container: Optional[QueryResponseContainer] = None
         self._lock = threading.Lock()
         super(StarmapService, self).__init__(*args, **kwargs)
 
@@ -96,12 +96,15 @@ class StarmapService(Service):
                 session_klass = StarmapSession if not offline else StarmapMockSession
                 session = session_klass(self._service_args.starmap_url, api_version="v2")
                 self._instance = StarmapClient(session=session, **kwargs)
+        if self._instance is None:
+            raise RuntimeError("StArMap client instance failed to initialize")
+
         return self._instance
 
     def _store_container_responses(self, qrc: QueryResponseContainer) -> None:
         for qre in qrc.responses:
-            if qre not in self._container.responses:  # type: ignore [attr-defined]
-                self._container.responses.append(qre)  # type: ignore [attr-defined]
+            if self._container and qre not in self._container.responses:
+                self._container.responses.append(qre)
 
     def _query_server(self, name: str, version: Optional[str]) -> List[QueryResponseEntity]:
         qrc = self.starmap.query_image_by_name(name=name, version=version)

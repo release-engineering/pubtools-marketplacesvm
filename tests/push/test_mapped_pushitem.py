@@ -148,6 +148,7 @@ def test_release_info_on_metadata_for_mapped_ami(
     # We simulate having the "release" dict on each Destination for StArMap response.
     for mapping in starmap_query_aws.all_mappings:
         for dest in mapping.destinations:
+            assert dest.meta is not None
             dest.meta["release"] = release_info
 
     # Test whether the MappedVMIPushItemV2 can return the inner push item with the proper release
@@ -188,6 +189,7 @@ def test_release_info_on_metadata_for_mapped_vhd(
     # We simulate having the "release" dict on each Destination for StArMap response.
     for mapping in starmap_query_aws.all_mappings:
         for dest in mapping.destinations:
+            assert dest.meta is not None
             dest.meta["release"] = release_info
 
     # Test whether the MappedVMIPushItemV2 can return the inner push item with the proper release
@@ -212,7 +214,7 @@ def test_get_tags_for_mapped_item(
 
     # Test existing destinations
     for dest in starmap_query_azure.mappings["azure-na"].destinations:
-        assert mapped_item.get_tags_for_mapped_item(dest) == dest.tags or {}
+        assert mapped_item.get_tags_for_mapped_item(dest) == (dest.tags or {})
 
     # Test unknown destination
     dest = Destination.from_json(
@@ -243,7 +245,7 @@ def test_get_ami_template_for_marketplace(
     # Test existing destinations
     for dest in starmap_query_aws.mappings["aws-na"].destinations:
         avt = mapped_item.get_ami_version_template_for_mapped_item(dest)
-        assert avt == dest.ami_version_template or ""
+        assert avt == (dest.ami_version_template or "")
 
     # Test unknown destination
     dest = Destination.from_json(
