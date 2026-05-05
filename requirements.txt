@@ -4,5 +4,5 @@ more_executors>=2.11.4
 pushcollector>=1.3.0
 pushsource>=2.52.2
 strenum>=0.4.15
-starmap-client>=2.4.0
-cloudpub>=1.7.0
+starmap-client>=2.4.1
+cloudpub>=1.7.2
