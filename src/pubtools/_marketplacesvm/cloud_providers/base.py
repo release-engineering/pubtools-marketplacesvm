@@ -21,7 +21,7 @@ T = TypeVar("T", bound=VMIPushItem)
 
 UPLOAD_CONTAINER_NAME = os.getenv("UPLOAD_CONTAINER_NAME", "pubupload")
 
-__CLOUD_PROVIDERS = {}
+__CLOUD_PROVIDERS: Dict[str, Type["CloudProvider"]] = {}
 
 
 class MarketplaceAuth(TypedDict):
