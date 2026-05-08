@@ -77,6 +77,6 @@ The `@step` decorator (`step.py`) wraps workflow methods with logging, timing, a
 
 - 100% code coverage is enforced (`.coveragerc` `fail_under = 100`)
 - Tests use `requests-mock` for HTTP mocking, not live services
-- `tests/conftest.py` has session-scoped auto-use fixtures that set `PYTHONHASHSEED`, mock HOME, reset pushsource, and inject a `FakeCollector`
+- `tests/conftest.py` has session-scoped autouse fixtures that set `PYTHONHASHSEED`, mock HOME, reset pushsource, and inject a `FakeCollector`
 - `CommandTester` (in `tests/command.py`) simulates CLI invocations by calling `entry_point()` directly
 - Test data fixtures live in `tests/data/`
