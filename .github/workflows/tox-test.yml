@@ -10,14 +10,13 @@ jobs:
       - name: Install OS packages
         run: |
           sudo apt-get -y update
-          sudo apt-get install -y rpm
-          sudo apt-get install -y libkrb5-dev
+          sudo apt-get install -y rpm libkrb5-dev
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
           python-version: "3.10"
       - name: Install Tox
-        run: pip install tox 'virtualenv<20.21.1'
+        run: pip install tox
       - name: Run Linting
         run: tox -e lint
   mypy:
@@ -27,14 +26,13 @@ jobs:
       - name: Install OS packages
         run: |
           sudo apt-get -y update
-          sudo apt-get install -y rpm
-          sudo apt-get install -y libkrb5-dev
+          sudo apt-get install -y rpm libkrb5-dev
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
           python-version: "3.10"
       - name: Install Tox
-        run: pip install tox 'virtualenv<20.21.1'
+        run: pip install tox
       - name: Run MyPy
         run: tox -e mypy
   unit-tests:
@@ -52,8 +50,7 @@ jobs:
       - name: Install OS packages
         run: |
           sudo apt-get -y update
-          sudo apt-get install -y rpm
-          sudo apt-get install -y libkrb5-dev
+          sudo apt-get install -y rpm libkrb5-dev
       - name: Install Tox
         run: pip install tox
       - name: Test on ${{ matrix.python-version }}
@@ -67,16 +64,13 @@ jobs:
       - name: Install OS packages
         run: |
           sudo apt-get -y update
-          sudo apt-get install -y rpm
-          sudo apt-get install -y libkrb5-dev
+          sudo apt-get install -y rpm libkrb5-dev
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
           python-version: "3.10"
       - name: Install Tox
-        run: pip install tox 'virtualenv<20.21.1'
-      - name: Install pytest cov
-        run: pip install pytest-cov
+        run: pip install tox
       - name: Run Tox
         run: tox -e coverage
   security:
@@ -86,14 +80,13 @@ jobs:
       - name: Install OS packages
         run: |
           sudo apt-get -y update
-          sudo apt-get install -y rpm
-          sudo apt-get install -y libkrb5-dev
+          sudo apt-get install -y rpm libkrb5-dev
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
           python-version: "3.10"
       - name: Install Tox
-        run: pip install tox 'virtualenv<20.21.1'
+        run: pip install tox
       - name: Run Tox
         run: tox -e security
       - name: Install project
@@ -109,14 +102,13 @@ jobs:
       - name: Install OS packages
         run: |
           sudo apt-get -y update
-          sudo apt-get install -y rpm
-          sudo apt-get install -y libkrb5-dev
+          sudo apt-get install -y rpm libkrb5-dev
       - name: Setup Python
         uses: actions/setup-python@v6
         with:
           python-version: "3.10"
       - name: Install Tox
-        run: pip install tox 'virtualenv<20.21.1'
+        run: pip install tox
       - name: Run Tox
         run: tox -e docs
 
