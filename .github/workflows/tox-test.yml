@@ -17,7 +17,7 @@ jobs:
         with:
           python-version: "3.10"
       - name: Install Tox
-        run: pip install tox 'virtualenv<20.21.1'
+        run: pip install tox
       - name: Run Linting
         run: tox -e lint
   mypy:
@@ -34,7 +34,7 @@ jobs:
         with:
           python-version: "3.10"
       - name: Install Tox
-        run: pip install tox 'virtualenv<20.21.1'
+        run: pip install tox
       - name: Run MyPy
         run: tox -e mypy
   unit-tests:
@@ -74,7 +74,7 @@ jobs:
         with:
           python-version: "3.10"
       - name: Install Tox
-        run: pip install tox 'virtualenv<20.21.1'
+        run: pip install tox
       - name: Install pytest cov
         run: pip install pytest-cov
       - name: Run Tox
@@ -93,7 +93,7 @@ jobs:
         with:
           python-version: "3.10"
       - name: Install Tox
-        run: pip install tox 'virtualenv<20.21.1'
+        run: pip install tox
       - name: Run Tox
         run: tox -e security
       - name: Install project
@@ -116,7 +116,7 @@ jobs:
         with:
           python-version: "3.10"
       - name: Install Tox
-        run: pip install tox 'virtualenv<20.21.1'
+        run: pip install tox
       - name: Run Tox
         run: tox -e docs
 
