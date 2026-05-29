@@ -71,8 +71,6 @@ jobs:
           python-version: "3.10"
       - name: Install Tox
         run: pip install tox
-      - name: Install pytest cov
-        run: pip install pytest-cov
       - name: Run Tox
         run: tox -e coverage
   security:
