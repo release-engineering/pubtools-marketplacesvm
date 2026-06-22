@@ -282,6 +282,38 @@ def test_upload_of_rhcos_image(
     )
 
 
+def test_upload_of_rhcos_image_without_build(
+    aws_rhcos_push_item: AmiPushItem,
+    fake_aws_provider: AWSProvider,
+):
+    push_item = evolve(aws_rhcos_push_item, build=None)
+    binfo = push_item.build_info
+
+    tags = {
+        "arch": push_item.release.arch,
+        "buildid": str(push_item.build_info.id),
+        "name": push_item.build_info.name,
+        "nvra": f"{binfo.name}-{binfo.version}-{binfo.release}.{push_item.release.arch}",
+        "release": push_item.build_info.release,
+        "version": binfo.version,
+    }
+
+    fake_aws_provider.upload_svc_partial.return_value.get_image_from_ami_catalog.return_value = (
+        FakeImageResp()
+    )
+    fake_aws_provider.upload_svc_partial.return_value.copy_ami.return_value = {
+        "ImageId": "fake-ami-02"
+    }
+    fake_aws_provider.upload_svc_partial.return_value.get_image_by_name.return_value = None
+    fake_aws_provider.upload_svc_partial.return_value.get_image_by_id.return_value = "test_image"
+
+    _, result = fake_aws_provider.upload(push_item)
+    assert result.id == "fake-ami-02"
+    fake_aws_provider.upload_svc_partial.return_value.tag_image.assert_called_once_with(
+        "test_image", tags
+    )
+
+
 def test_upload_of_rhcos_image_not_found(
     aws_rhcos_push_item: AmiPushItem,
     fake_aws_provider: AWSProvider,
