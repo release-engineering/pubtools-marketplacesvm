@@ -38,7 +38,7 @@
 <p>Executes the <code class="docutils literal notranslate"><span class="pre">marketplace-push</span></code> and <code class="docutils literal notranslate"><span class="pre">community-push</span></code> in parallel using a single entrypoint.</p>
 <p><p>Combine the Marketplace and Community pushes into a single entity.</p>
 </p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">pubtools</span><span class="o">-</span><span class="n">marketplacesvm</span><span class="o">-</span><span class="n">push</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">debug</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">rhsm</span><span class="o">-</span><span class="n">url</span> <span class="n">RHSM_URL</span><span class="p">]</span>
+<div class="highlight-default notranslate" id="pubtools-marketplacesvm-push"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">pubtools</span><span class="o">-</span><span class="n">marketplacesvm</span><span class="o">-</span><span class="n">push</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">debug</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">rhsm</span><span class="o">-</span><span class="n">url</span> <span class="n">RHSM_URL</span><span class="p">]</span>
                                     <span class="p">[</span><span class="o">--</span><span class="n">rhsm</span><span class="o">-</span><span class="n">cert</span> <span class="n">RHSM_CERT</span><span class="p">]</span>
                                     <span class="p">[</span><span class="o">--</span><span class="n">rhsm</span><span class="o">-</span><span class="n">key</span> <span class="n">RHSM_KEY</span><span class="p">]</span>
                                     <span class="p">[</span><span class="o">--</span><span class="n">starmap</span><span class="o">-</span><span class="n">url</span> <span class="n">STARMAP_URL</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">repo</span> <span class="n">REPO</span><span class="p">]</span>
@@ -51,8 +51,8 @@
                                     <span class="n">source</span> <span class="p">[</span><span class="n">source</span> <span class="o">...</span><span class="p">]</span>
 </pre></div>
 </div>
-<section id="pubtools._marketplacesvm.tasks.combined_push-doc_parser-named-arguments">
-<h2>Named Arguments<a class="headerlink" href="#pubtools._marketplacesvm.tasks.combined_push-doc_parser-named-arguments" title="Link to this heading">¶</a></h2>
+<section id="pubtools-marketplacesvm-push-named-arguments">
+<span id="pubtools._marketplacesvm.tasks.combined_push-doc_parser-named-arguments"></span><h2>Named Arguments<a class="headerlink" href="#pubtools-marketplacesvm-push-named-arguments" title="Link to this heading">¶</a></h2>
 <dl class="option-list">
 <dt><kbd>--debug, -d</kbd></dt>
 <dd><p>Show debug logs; can be provided up to three times to enable more logs</p>
@@ -60,8 +60,8 @@
 </dd>
 </dl>
 </section>
-<section id="pubtools._marketplacesvm.tasks.combined_push-doc_parser-rhsm-service">
-<h2>RHSM service<a class="headerlink" href="#pubtools._marketplacesvm.tasks.combined_push-doc_parser-rhsm-service" title="Link to this heading">¶</a></h2>
+<section id="pubtools-marketplacesvm-push-rhsm-service">
+<span id="pubtools._marketplacesvm.tasks.combined_push-doc_parser-rhsm-service"></span><h2>RHSM service<a class="headerlink" href="#pubtools-marketplacesvm-push-rhsm-service" title="Link to this heading">¶</a></h2>
 <dl class="option-list">
 <dt><kbd>--rhsm-url</kbd></dt>
 <dd><p>Base URL of the RHSM API</p>
@@ -74,8 +74,8 @@
 </dd>
 </dl>
 </section>
-<section id="pubtools._marketplacesvm.tasks.combined_push-doc_parser-starmap-service">
-<h2>StArMap Service<a class="headerlink" href="#pubtools._marketplacesvm.tasks.combined_push-doc_parser-starmap-service" title="Link to this heading">¶</a></h2>
+<section id="pubtools-marketplacesvm-push-starmap-service">
+<span id="pubtools._marketplacesvm.tasks.combined_push-doc_parser-starmap-service"></span><h2>StArMap Service<a class="headerlink" href="#pubtools-marketplacesvm-push-starmap-service" title="Link to this heading">¶</a></h2>
 <dl class="option-list">
 <dt><kbd>--starmap-url</kbd></dt>
 <dd><p>Base URL for the StArMap server.</p>
@@ -94,8 +94,8 @@
 </dd>
 </dl>
 </section>
-<section id="pubtools._marketplacesvm.tasks.combined_push-doc_parser-cloud-service">
-<h2>Cloud Service<a class="headerlink" href="#pubtools._marketplacesvm.tasks.combined_push-doc_parser-cloud-service" title="Link to this heading">¶</a></h2>
+<section id="pubtools-marketplacesvm-push-cloud-service">
+<span id="pubtools._marketplacesvm.tasks.combined_push-doc_parser-cloud-service"></span><h2>Cloud Service<a class="headerlink" href="#pubtools-marketplacesvm-push-cloud-service" title="Link to this heading">¶</a></h2>
 <dl class="option-list">
 <dt><kbd>--credentials</kbd></dt>
 <dd><p>Path to the credentials files separated by comma or base64 encoded credentials separated by comma (or set CLOUD_CREDENTIALS environment variable)</p>
@@ -107,8 +107,8 @@
 </dd>
 </dl>
 </section>
-<section id="pubtools._marketplacesvm.tasks.combined_push-doc_parser-marketplace-push-options">
-<h2>Marketplace Push Options<a class="headerlink" href="#pubtools._marketplacesvm.tasks.combined_push-doc_parser-marketplace-push-options" title="Link to this heading">¶</a></h2>
+<section id="pubtools-marketplacesvm-push-marketplace-push-options">
+<span id="pubtools._marketplacesvm.tasks.combined_push-doc_parser-marketplace-push-options"></span><h2>Marketplace Push Options<a class="headerlink" href="#pubtools-marketplacesvm-push-marketplace-push-options" title="Link to this heading">¶</a></h2>
 <dl class="option-list">
 <dt><kbd>--skip</kbd></dt>
 <dd><p>skip given comma-separated sub-steps</p>
@@ -123,8 +123,8 @@
 </dd>
 </dl>
 </section>
-<section id="pubtools._marketplacesvm.tasks.combined_push-doc_parser-community-push-options">
-<h2>Community Push options<a class="headerlink" href="#pubtools._marketplacesvm.tasks.combined_push-doc_parser-community-push-options" title="Link to this heading">¶</a></h2>
+<section id="pubtools-marketplacesvm-push-community-push-options">
+<span id="pubtools._marketplacesvm.tasks.combined_push-doc_parser-community-push-options"></span><h2>Community Push options<a class="headerlink" href="#pubtools-marketplacesvm-push-community-push-options" title="Link to this heading">¶</a></h2>
 <dl class="option-list">
 <dt><kbd>--beta</kbd></dt>
 <dd><p>Ship beta images instead of GA</p>
@@ -136,8 +136,8 @@
 </dd>
 </dl>
 </section>
-<section id="pubtools._marketplacesvm.tasks.combined_push-doc_parser-workflow-options">
-<h2>Workflow options<a class="headerlink" href="#pubtools._marketplacesvm.tasks.combined_push-doc_parser-workflow-options" title="Link to this heading">¶</a></h2>
+<section id="pubtools-marketplacesvm-push-workflow-options">
+<span id="pubtools._marketplacesvm.tasks.combined_push-doc_parser-workflow-options"></span><h2>Workflow options<a class="headerlink" href="#pubtools-marketplacesvm-push-workflow-options" title="Link to this heading">¶</a></h2>
 <dl class="option-list">
 <dt><kbd>--workflow, -w</kbd></dt>
 <dd><p>Possible choices: marketplace, community, all</p>
