@@ -134,10 +134,10 @@
 <h5>Overall format<a class="headerlink" href="#overall-format" title="Link to this heading">¶</a></h5>
 <p>Each credential file must be in the following format:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;marketplace_account&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CLOUD_ALIAS&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;auth&quot;</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">"marketplace_account"</span><span class="p">:</span><span class="w"> </span><span class="s2">"CLOUD_ALIAS"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"auth"</span><span class="p">:</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;KEY&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;VALUE&quot;</span><span class="p">,</span><span class="w"> </span><span class="c1">// ...</span>
+<span class="w">      </span><span class="nt">"KEY"</span><span class="p">:</span><span class="w"> </span><span class="s2">"VALUE"</span><span class="p">,</span><span class="w"> </span><span class="c1">// ...</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -181,15 +181,15 @@
 </ul>
 <p>Example:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;AWS_IMAGE_ACCESS_KEY&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;AWS_IMAGE_SECRET_ACCESS&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;***************&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;AWS_MARKETPLACE_ACCESS_KEY&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;AWS_MARKETPLACE_SECRET_ACCESS&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;AWS_ACCESS_ROLE_ARN&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;AWS_GROUPS&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
-<span class="w">  </span><span class="nt">&quot;AWS_SNAPSHOT_ACCOUNTS&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
-<span class="w">  </span><span class="nt">&quot;AWS_REGION&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;us-east-1&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;AWS_S3_BUCKET&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span>
+<span class="w">  </span><span class="nt">"AWS_IMAGE_ACCESS_KEY"</span><span class="p">:</span><span class="w"> </span><span class="s2">"******************"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"AWS_IMAGE_SECRET_ACCESS"</span><span class="p">:</span><span class="w"> </span><span class="s2">"***************"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"AWS_MARKETPLACE_ACCESS_KEY"</span><span class="p">:</span><span class="w"> </span><span class="s2">"******************"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"AWS_MARKETPLACE_SECRET_ACCESS"</span><span class="p">:</span><span class="w"> </span><span class="s2">"******************"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"AWS_ACCESS_ROLE_ARN"</span><span class="p">:</span><span class="w"> </span><span class="s2">"******************"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"AWS_GROUPS"</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">  </span><span class="nt">"AWS_SNAPSHOT_ACCOUNTS"</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">  </span><span class="nt">"AWS_REGION"</span><span class="p">:</span><span class="w"> </span><span class="s2">"us-east-1"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"AWS_S3_BUCKET"</span><span class="p">:</span><span class="w"> </span><span class="s2">"******************"</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -203,11 +203,11 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">AZURE_STORAGE_CONNECTION_STRING</span></code>: The Azure Storage Account connection string to upload VHD images</p></li>
 </ul>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;AZURE_TENANT_ID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;AZURE_PUBLISHER_NAME&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;*************&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;AZURE_API_SECRET&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;AZURE_CLIENT_ID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;*******************&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;AZURE_STORAGE_CONNECTION_STRING&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span>
+<span class="w">  </span><span class="nt">"AZURE_TENANT_ID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"******************"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"AZURE_PUBLISHER_NAME"</span><span class="p">:</span><span class="w"> </span><span class="s2">"*************"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"AZURE_API_SECRET"</span><span class="p">:</span><span class="w"> </span><span class="s2">"******************"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"AZURE_CLIENT_ID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"*******************"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"AZURE_STORAGE_CONNECTION_STRING"</span><span class="p">:</span><span class="w"> </span><span class="s2">"******************"</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -216,31 +216,31 @@
 <h5>Examples<a class="headerlink" href="#examples" title="Link to this heading">¶</a></h5>
 <p><strong>Example for AWS NA:</strong></p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;marketplace_account&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;aws-na&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;auth&quot;</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">"marketplace_account"</span><span class="p">:</span><span class="w"> </span><span class="s2">"aws-na"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"auth"</span><span class="p">:</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;AWS_IMAGE_ACCESS_KEY&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;AWS_IMAGE_SECRET_ACCESS&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;***************&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;AWS_MARKETPLACE_ACCESS_KEY&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;AWS_MARKETPLACE_SECRET_ACCESS&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;AWS_ACCESS_ROLE_ARN&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;AWS_GROUPS&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
-<span class="w">      </span><span class="nt">&quot;AWS_SNAPSHOT_ACCOUNTS&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
-<span class="w">      </span><span class="nt">&quot;AWS_REGION&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;us-east-1&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;AWS_S3_BUCKET&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span>
+<span class="w">      </span><span class="nt">"AWS_IMAGE_ACCESS_KEY"</span><span class="p">:</span><span class="w"> </span><span class="s2">"******************"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"AWS_IMAGE_SECRET_ACCESS"</span><span class="p">:</span><span class="w"> </span><span class="s2">"***************"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"AWS_MARKETPLACE_ACCESS_KEY"</span><span class="p">:</span><span class="w"> </span><span class="s2">"******************"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"AWS_MARKETPLACE_SECRET_ACCESS"</span><span class="p">:</span><span class="w"> </span><span class="s2">"******************"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"AWS_ACCESS_ROLE_ARN"</span><span class="p">:</span><span class="w"> </span><span class="s2">"******************"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"AWS_GROUPS"</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">      </span><span class="nt">"AWS_SNAPSHOT_ACCOUNTS"</span><span class="p">:</span><span class="w"> </span><span class="p">[],</span>
+<span class="w">      </span><span class="nt">"AWS_REGION"</span><span class="p">:</span><span class="w"> </span><span class="s2">"us-east-1"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"AWS_S3_BUCKET"</span><span class="p">:</span><span class="w"> </span><span class="s2">"******************"</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <p><strong>Example for Azure NA:</strong></p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;marketplace_account&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;azure-na&quot;</span><span class="p">,</span>
-<span class="w">  </span><span class="nt">&quot;auth&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;AZURE_TENANT_ID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;AZURE_PUBLISHER_NAME&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;*************&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;AZURE_API_SECRET&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;AZURE_CLIENT_ID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;*******************&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;AZURE_STORAGE_CONNECTION_STRING&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;******************&quot;</span>
+<span class="w">  </span><span class="nt">"marketplace_account"</span><span class="p">:</span><span class="w"> </span><span class="s2">"azure-na"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"auth"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">"AZURE_TENANT_ID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"******************"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"AZURE_PUBLISHER_NAME"</span><span class="p">:</span><span class="w"> </span><span class="s2">"*************"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"AZURE_API_SECRET"</span><span class="p">:</span><span class="w"> </span><span class="s2">"******************"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"AZURE_CLIENT_ID"</span><span class="p">:</span><span class="w"> </span><span class="s2">"*******************"</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">"AZURE_STORAGE_CONNECTION_STRING"</span><span class="p">:</span><span class="w"> </span><span class="s2">"******************"</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
@@ -330,7 +330,7 @@ the mappings for each <a class="reference external" href="https://release-engine
 </pre></div>
 </div>
 <p>The workflow will be executed like this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># For each incoming &quot;VMIPushItem&quot; get its destination data from StArMap
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># For each incoming "VMIPushItem" get its destination data from StArMap
 # using the image name and version
 curl -S https://starmap.base.url/api/v2/query?name=IMG_NAME&amp;version=IMG_VER
 
@@ -349,12 +349,12 @@ it will fail any <a class="reference external" href="https://release-engineering
 any fake url.</p>
 <p>To initiate the tooling into the “offline mode” you must specify the <code class="docutils literal notranslate"><span class="pre">--repo</span></code> mappings as well as the flag <code class="docutils literal notranslate"><span class="pre">--offline</span></code>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">starmap</span><span class="o">-</span><span class="n">url</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">some</span><span class="o">.</span><span class="n">fake</span><span class="o">.</span><span class="n">url</span> \
-<span class="o">--</span><span class="n">repo</span> <span class="s2">&quot;{...}&quot;</span> \
+<span class="o">--</span><span class="n">repo</span> <span class="s2">"{...}"</span> \
 <span class="o">--</span><span class="n">offline</span>
 </pre></div>
 </div>
 <p>The workflow will be executed like this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># For each incoming &quot;VMIPushItem&quot; get its destination data from --repo</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># For each incoming "VMIPushItem" get its destination data from --repo</span>
 <span class="c1"># using the image name and the desired workflow</span>
 <span class="c1"># If mapping not defined =&gt; fail; else</span>
 <span class="c1"># Upload and publish the VMs into the proper destinations</span>
@@ -372,11 +372,11 @@ any fake url.</p>
 <p>To initiate the tooling into the “offline mode” you must specify the <code class="docutils literal notranslate"><span class="pre">--repo</span></code> mappings as well as
 valid StArMap server URL for fallback:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">--</span><span class="n">starmap</span><span class="o">-</span><span class="n">url</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">starmap</span><span class="o">.</span><span class="n">base</span><span class="o">.</span><span class="n">url</span> \
-<span class="o">--</span><span class="n">repo</span> <span class="s2">&quot;{...}&quot;</span>
+<span class="o">--</span><span class="n">repo</span> <span class="s2">"{...}"</span>
 </pre></div>
 </div>
 <p>The workflow will be executed like this:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># For each incoming &quot;VMIPushItem&quot; get its destination data from --repo
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># For each incoming "VMIPushItem" get its destination data from --repo
 # using the image name.
 # If mapping not defined call the StArMap server
 curl -S https://starmap.base.url/api/v2/query?name=IMG_NAME&amp;version=IMG_VER
@@ -394,14 +394,14 @@ more <a class="reference external" href="https://release-engineering.github.io/s
 <p>The StArMap APIv2 <a class="reference external" href="https://release-engineering.github.io/starmap-client/model/models.html#starmap_client.models.QueryResponseContainer">QueryResponseContainer</a> has the following format:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">[</span>
 <span class="w">    </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;str&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;cloud&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;str&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;workflow&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;str&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;mappings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;obj&quot;</span><span class="p">},</span>
-<span class="w">        </span><span class="nt">&quot;billing-code-config&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
-<span class="w">        </span><span class="nt">&quot;meta&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">        </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"str"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"cloud"</span><span class="p">:</span><span class="w"> </span><span class="s2">"str"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"workflow"</span><span class="p">:</span><span class="w"> </span><span class="s2">"str"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"mappings"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="s2">"obj"</span><span class="p">},</span>
+<span class="w">        </span><span class="nt">"billing-code-config"</span><span class="p">:</span><span class="w"> </span><span class="p">{},</span>
+<span class="w">        </span><span class="nt">"meta"</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
 <span class="w">    </span><span class="p">},</span>
-<span class="w">    </span><span class="p">{</span><span class="s2">&quot;...&quot;</span><span class="p">}</span>
+<span class="w">    </span><span class="p">{</span><span class="s2">"..."</span><span class="p">}</span>
 <span class="p">]</span>
 </pre></div>
 </div>
@@ -416,23 +416,23 @@ code configuration to be applied to the AMIs.</p></li>
 </ul>
 <p>The <code class="docutils literal notranslate"><span class="pre">mappings</span></code> object has the following format:</p>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">   </span><span class="nt">&quot;MARKETPLACE_NAME&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">   </span><span class="nt">&quot;destinations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">   </span><span class="nt">"MARKETPLACE_NAME"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="nt">"destinations"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">      </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;architecture&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;str&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;destination&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;str&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;meta&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;obj&quot;</span><span class="p">},</span>
-<span class="w">        </span><span class="nt">&quot;overwrite&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;bool&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;provider&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;str&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;restrict_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;bool&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;restrict_major&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;bool&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;restrict_minor&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;bool&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;tags&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">        </span><span class="nt">"architecture"</span><span class="p">:</span><span class="w"> </span><span class="s2">"str"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"destination"</span><span class="p">:</span><span class="w"> </span><span class="s2">"str"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"meta"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="s2">"obj"</span><span class="p">},</span>
+<span class="w">        </span><span class="nt">"overwrite"</span><span class="p">:</span><span class="w"> </span><span class="s2">"bool"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"provider"</span><span class="p">:</span><span class="w"> </span><span class="s2">"str"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"restrict_version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"bool"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"restrict_major"</span><span class="p">:</span><span class="w"> </span><span class="s2">"bool"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"restrict_minor"</span><span class="p">:</span><span class="w"> </span><span class="s2">"bool"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"tags"</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
 <span class="w">       </span><span class="p">},</span>
-<span class="w">       </span><span class="p">{</span><span class="s2">&quot;...&quot;</span><span class="p">}</span>
+<span class="w">       </span><span class="p">{</span><span class="s2">"..."</span><span class="p">}</span>
 <span class="w">   </span><span class="p">],</span>
-<span class="w">   </span><span class="nt">&quot;provider&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;str&quot;</span><span class="p">,</span>
-<span class="w">   </span><span class="nt">&quot;meta&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">   </span><span class="nt">"provider"</span><span class="p">:</span><span class="w"> </span><span class="s2">"str"</span><span class="p">,</span>
+<span class="w">   </span><span class="nt">"meta"</span><span class="p">:</span><span class="w"> </span><span class="p">{}</span>
 <span class="p">}</span>
 </pre></div>
 </div>
@@ -458,26 +458,26 @@ It’s used the retrieve the proper credentials to upload and publish into the g
 <section id="id2">
 <h5>Examples<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h5>
 <p>An <strong>Azure</strong> mapping for <code class="docutils literal notranslate"><span class="pre">RHEL</span></code> using the architecture <code class="docutils literal notranslate"><span class="pre">x86_64</span></code>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-S<span class="w"> </span><span class="s1">&#39;https://starmap.base.url/api/v2/query?name=rhel-azure&amp;version=8.0&#39;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-S<span class="w"> </span><span class="s1">'https://starmap.base.url/api/v2/query?name=rhel-azure&amp;version=8.0'</span>
 </pre></div>
 </div>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">[</span>
 <span class="w">    </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;rhel-azure&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;cloud&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;azure&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;workflow&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;stratosphere&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;meta&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;generation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;V2&quot;</span><span class="p">}</span>
-<span class="w">        </span><span class="nt">&quot;mappings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;azure-na&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                </span><span class="nt">&quot;destinations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"rhel-azure"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"cloud"</span><span class="p">:</span><span class="w"> </span><span class="s2">"azure"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"workflow"</span><span class="p">:</span><span class="w"> </span><span class="s2">"stratosphere"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"meta"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"generation"</span><span class="p">:</span><span class="w"> </span><span class="s2">"V2"</span><span class="p">}</span>
+<span class="w">        </span><span class="nt">"mappings"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"azure-na"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">"destinations"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">                    </span><span class="p">{</span>
-<span class="w">                        </span><span class="nt">&quot;architecture&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;x86_64&quot;</span><span class="p">,</span>
-<span class="w">                        </span><span class="nt">&quot;destination&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;rh-rhel-test/rh-rhel8-internal&quot;</span><span class="p">,</span>
-<span class="w">                        </span><span class="nt">&quot;overwrite&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-<span class="w">                        </span><span class="nt">&quot;restrict_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">"architecture"</span><span class="p">:</span><span class="w"> </span><span class="s2">"x86_64"</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">"destination"</span><span class="p">:</span><span class="w"> </span><span class="s2">"rh-rhel-test/rh-rhel8-internal"</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">"overwrite"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">"restrict_version"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
 <span class="w">                    </span><span class="p">},</span>
 <span class="w">                </span><span class="p">],</span>
-<span class="w">                </span><span class="nt">&quot;meta&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;support_legacy&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">}</span>
+<span class="w">                </span><span class="nt">"meta"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">"support_legacy"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">}</span>
 <span class="w">            </span><span class="p">},</span>
 <span class="w">        </span><span class="p">}</span>
 <span class="w">    </span><span class="p">}</span>
@@ -485,125 +485,125 @@ It’s used the retrieve the proper credentials to upload and publish into the g
 </pre></div>
 </div>
 <p>An <strong>AWS</strong> mapping for <code class="docutils literal notranslate"><span class="pre">RHEL</span></code> using the architecture <code class="docutils literal notranslate"><span class="pre">x86_64</span></code>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-S<span class="w"> </span><span class="s1">&#39;https://starmap.base.url/api/v2/query?name=rhel-ec2&#39;</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-S<span class="w"> </span><span class="s1">'https://starmap.base.url/api/v2/query?name=rhel-ec2'</span>
 </pre></div>
 </div>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">[</span>
 <span class="w">    </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;rhel-ec2&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;cloud&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;aws&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;workflow&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;stratosphere&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;mappings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;aws-na&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                </span><span class="nt">&quot;destinations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"rhel-ec2"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"cloud"</span><span class="p">:</span><span class="w"> </span><span class="s2">"aws"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"workflow"</span><span class="p">:</span><span class="w"> </span><span class="s2">"stratosphere"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"mappings"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"aws-na"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">"destinations"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">                    </span><span class="p">{</span>
-<span class="w">                        </span><span class="nt">&quot;architecture&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;x86_64&quot;</span><span class="p">,</span>
-<span class="w">                        </span><span class="nt">&quot;destination&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;d87bcebf-9cf4-47f5-9b5b-5470d4490f3d&quot;</span><span class="p">,</span>
-<span class="w">                        </span><span class="nt">&quot;overwrite&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-<span class="w">                        </span><span class="nt">&quot;restrict_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">"architecture"</span><span class="p">:</span><span class="w"> </span><span class="s2">"x86_64"</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">"destination"</span><span class="p">:</span><span class="w"> </span><span class="s2">"d87bcebf-9cf4-47f5-9b5b-5470d4490f3d"</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">"overwrite"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">"restrict_version"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
 <span class="w">                    </span><span class="p">}</span>
 <span class="w">                </span><span class="p">]</span>
 <span class="w">            </span><span class="p">}</span>
 <span class="w">        </span><span class="p">},</span>
-<span class="w">        </span><span class="nt">&quot;meta&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Provided by Red Hat, Inc.&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;ena_support&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;marketplace_entity_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AmiProduct&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;recommended_instance_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;m5dn.2xlarge&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;release&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                </span><span class="nt">&quot;product&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Red Hat Enterprise Linux&quot;</span><span class="p">,</span>
-<span class="w">                </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ga&quot;</span><span class="p">,</span>
-<span class="w">                </span><span class="nt">&quot;variant&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Server&quot;</span>
+<span class="w">        </span><span class="nt">"meta"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Provided by Red Hat, Inc."</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"ena_support"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"marketplace_entity_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"AmiProduct"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"recommended_instance_type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"m5dn.2xlarge"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"release"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">"product"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Red Hat Enterprise Linux"</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ga"</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">"variant"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Server"</span>
 <span class="w">            </span><span class="p">},</span>
-<span class="w">            </span><span class="nt">&quot;release_notes&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/{major_version}/html/{major_minor}_release_notes/index&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;root_device&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/dev/sda1&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;scanning_port&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">22</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;security_groups&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">            </span><span class="nt">"release_notes"</span><span class="p">:</span><span class="w"> </span><span class="s2">"https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/{major_version}/html/{major_minor}_release_notes/index"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"root_device"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/dev/sda1"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"scanning_port"</span><span class="p">:</span><span class="w"> </span><span class="mi">22</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"security_groups"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">                </span><span class="p">{</span>
-<span class="w">                    </span><span class="nt">&quot;from_port&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">22</span><span class="p">,</span>
-<span class="w">                    </span><span class="nt">&quot;ip_protocol&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;tcp&quot;</span><span class="p">,</span>
-<span class="w">                    </span><span class="nt">&quot;ip_ranges&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">                        </span><span class="s2">&quot;0.0.0.0/0&quot;</span>
+<span class="w">                    </span><span class="nt">"from_port"</span><span class="p">:</span><span class="w"> </span><span class="mi">22</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">"ip_protocol"</span><span class="p">:</span><span class="w"> </span><span class="s2">"tcp"</span><span class="p">,</span>
+<span class="w">                    </span><span class="nt">"ip_ranges"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                        </span><span class="s2">"0.0.0.0/0"</span>
 <span class="w">                    </span><span class="p">],</span>
-<span class="w">                    </span><span class="nt">&quot;to_port&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">22</span>
+<span class="w">                    </span><span class="nt">"to_port"</span><span class="p">:</span><span class="w"> </span><span class="mi">22</span>
 <span class="w">                </span><span class="p">}</span>
 <span class="w">            </span><span class="p">],</span>
-<span class="w">            </span><span class="nt">&quot;sriov_net_support&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;simple&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;usage_instructions&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Access your instance via ssh using the default username \&quot;ec2-user\&quot; and the ssh key registered with AWS. This product provides access to multiple versions. When launching with 1-click launch, please pay attention to the version. You have the ability to select another version of the RHEL image (including RHEL 8 and newer) when launching from the full AWS Marketplace website.&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;user_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ec2-user&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;virtualization&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;hvm&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;volume&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;gp2&quot;</span>
+<span class="w">            </span><span class="nt">"sriov_net_support"</span><span class="p">:</span><span class="w"> </span><span class="s2">"simple"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"usage_instructions"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Access your instance via ssh using the default username \"ec2-user\" and the ssh key registered with AWS. This product provides access to multiple versions. When launching with 1-click launch, please pay attention to the version. You have the ability to select another version of the RHEL image (including RHEL 8 and newer) when launching from the full AWS Marketplace website."</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"user_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ec2-user"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"virtualization"</span><span class="p">:</span><span class="w"> </span><span class="s2">"hvm"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"volume"</span><span class="p">:</span><span class="w"> </span><span class="s2">"gp2"</span>
 <span class="w">        </span><span class="p">}</span>
 <span class="w">    </span><span class="p">},</span>
 <span class="w">    </span><span class="p">{</span>
-<span class="w">        </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;rhel-ec2&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;workflow&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;community&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;cloud&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;aws&quot;</span><span class="p">,</span>
-<span class="w">        </span><span class="nt">&quot;billing-code-config&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;rhel-access&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                </span><span class="nt">&quot;codes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">                    </span><span class="s2">&quot;xy-00000000&quot;</span>
+<span class="w">        </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"rhel-ec2"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"workflow"</span><span class="p">:</span><span class="w"> </span><span class="s2">"community"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"cloud"</span><span class="p">:</span><span class="w"> </span><span class="s2">"aws"</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">"billing-code-config"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"rhel-access"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">"codes"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                    </span><span class="s2">"xy-00000000"</span>
 <span class="w">                </span><span class="p">],</span>
-<span class="w">                </span><span class="nt">&quot;image_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;rhel&quot;</span><span class="p">,</span>
-<span class="w">                </span><span class="nt">&quot;image_types&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">                    </span><span class="s2">&quot;access&quot;</span>
+<span class="w">                </span><span class="nt">"image_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"rhel"</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">"image_types"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                    </span><span class="s2">"access"</span>
 <span class="w">                </span><span class="p">],</span>
-<span class="w">                </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Access2&quot;</span>
+<span class="w">                </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Access2"</span>
 <span class="w">            </span><span class="p">},</span>
-<span class="w">            </span><span class="nt">&quot;rhel-hourly&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                </span><span class="nt">&quot;codes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">                    </span><span class="s2">&quot;xy-00000001&quot;</span>
+<span class="w">            </span><span class="nt">"rhel-hourly"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">"codes"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                    </span><span class="s2">"xy-00000001"</span>
 <span class="w">                </span><span class="p">],</span>
-<span class="w">                </span><span class="nt">&quot;image_name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;rhel&quot;</span><span class="p">,</span>
-<span class="w">                </span><span class="nt">&quot;image_types&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-<span class="w">                    </span><span class="s2">&quot;hourly&quot;</span>
+<span class="w">                </span><span class="nt">"image_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"rhel"</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">"image_types"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                    </span><span class="s2">"hourly"</span>
 <span class="w">                </span><span class="p">],</span>
-<span class="w">                </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Hourly2&quot;</span>
+<span class="w">                </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Hourly2"</span>
 <span class="w">            </span><span class="p">}</span>
 <span class="w">        </span><span class="p">},</span>
-<span class="w">        </span><span class="nt">&quot;mappings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;aws-us-storage&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                </span><span class="nt">&quot;destinations&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="nt">"mappings"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"aws-us-storage"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">"destinations"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
 <span class="w">                    </span><span class="p">{</span>
-<span class="w">                        </span><span class="nt">&quot;architecture&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
-<span class="w">                        </span><span class="nt">&quot;destination&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;us-east-1-access&quot;</span><span class="p">,</span>
-<span class="w">                        </span><span class="nt">&quot;overwrite&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-<span class="w">                        </span><span class="nt">&quot;restrict_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">"architecture"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">"destination"</span><span class="p">:</span><span class="w"> </span><span class="s2">"us-east-1-access"</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">"overwrite"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">"restrict_version"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
 <span class="w">                    </span><span class="p">},</span>
 <span class="w">                    </span><span class="p">{</span>
-<span class="w">                        </span><span class="nt">&quot;architecture&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
-<span class="w">                        </span><span class="nt">&quot;destination&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;us-east-2-access&quot;</span><span class="p">,</span>
-<span class="w">                        </span><span class="nt">&quot;overwrite&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-<span class="w">                        </span><span class="nt">&quot;restrict_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">"architecture"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">"destination"</span><span class="p">:</span><span class="w"> </span><span class="s2">"us-east-2-access"</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">"overwrite"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">"restrict_version"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
 <span class="w">                    </span><span class="p">},</span>
 <span class="w">                    </span><span class="p">{</span>
-<span class="w">                        </span><span class="nt">&quot;architecture&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
-<span class="w">                        </span><span class="nt">&quot;destination&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;us-west-1-access&quot;</span><span class="p">,</span>
-<span class="w">                        </span><span class="nt">&quot;overwrite&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-<span class="w">                        </span><span class="nt">&quot;restrict_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">"architecture"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">"destination"</span><span class="p">:</span><span class="w"> </span><span class="s2">"us-west-1-access"</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">"overwrite"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">"restrict_version"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
 <span class="w">                    </span><span class="p">},</span>
 <span class="w">                    </span><span class="p">{</span>
-<span class="w">                        </span><span class="nt">&quot;architecture&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
-<span class="w">                        </span><span class="nt">&quot;destination&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;us-west-2-access&quot;</span><span class="p">,</span>
-<span class="w">                        </span><span class="nt">&quot;overwrite&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
-<span class="w">                        </span><span class="nt">&quot;restrict_version&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">"architecture"</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">"destination"</span><span class="p">:</span><span class="w"> </span><span class="s2">"us-west-2-access"</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">"overwrite"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">                        </span><span class="nt">"restrict_version"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
 <span class="w">                    </span><span class="p">}</span>
 <span class="w">                </span><span class="p">],</span>
-<span class="w">                </span><span class="nt">&quot;provider&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AWS&quot;</span>
+<span class="w">                </span><span class="nt">"provider"</span><span class="p">:</span><span class="w"> </span><span class="s2">"AWS"</span>
 <span class="w">            </span><span class="p">}</span>
 <span class="w">        </span><span class="p">},</span>
-<span class="w">        </span><span class="nt">&quot;meta&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">            </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Provided by Red Hat, Inc.&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;ena_support&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;release&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">                </span><span class="nt">&quot;product&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;RHEL&quot;</span><span class="p">,</span>
-<span class="w">                </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ga&quot;</span><span class="p">,</span>
-<span class="w">                </span><span class="nt">&quot;variant&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;BaseOS&quot;</span>
+<span class="w">        </span><span class="nt">"meta"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Provided by Red Hat, Inc."</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"ena_support"</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"release"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">                </span><span class="nt">"product"</span><span class="p">:</span><span class="w"> </span><span class="s2">"RHEL"</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">"type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"ga"</span><span class="p">,</span>
+<span class="w">                </span><span class="nt">"variant"</span><span class="p">:</span><span class="w"> </span><span class="s2">"BaseOS"</span>
 <span class="w">            </span><span class="p">},</span>
-<span class="w">            </span><span class="nt">&quot;root_device&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/dev/sda1&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;sriov_net_support&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;simple&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;virtualization&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;hvm&quot;</span><span class="p">,</span>
-<span class="w">            </span><span class="nt">&quot;volume&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;gp3&quot;</span>
+<span class="w">            </span><span class="nt">"root_device"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/dev/sda1"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"sriov_net_support"</span><span class="p">:</span><span class="w"> </span><span class="s2">"simple"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"virtualization"</span><span class="p">:</span><span class="w"> </span><span class="s2">"hvm"</span><span class="p">,</span>
+<span class="w">            </span><span class="nt">"volume"</span><span class="p">:</span><span class="w"> </span><span class="s2">"gp3"</span>
 <span class="w">        </span><span class="p">}</span>
 <span class="w">    </span><span class="p">}</span>
 <span class="p">]</span>
