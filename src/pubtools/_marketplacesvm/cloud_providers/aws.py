@@ -407,10 +407,7 @@ class AWSProvider(CloudProvider[AmiPushItem, AWSCredentials]):
             tags.update(custom_tags)
 
         if push_item.src.startswith("ami"):
-            version = (
-                push_item.build.split("-")[2] if push_item.build else push_item.build_info.version
-            )
-            tags["version"] = version
+            tags["version"] = push_item.build.split("-")[2]
             tags["nvra"] = (
                 f"{binfo.name}-{tags['version']}-{binfo.release}.{push_item.release.arch}"  # noqa: E501
             )
