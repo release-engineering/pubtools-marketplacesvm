@@ -104,6 +104,40 @@ def test_mapped_item_fills_missing_attributes(
         assert not getattr(pi, f)
 
 
+def test_get_push_item_for_marketplace_filters_by_architecture(
+    ami_push_item: AmiPushItem, starmap_response_aws: Dict[str, Any]
+) -> None:
+    """Ensure destinations with a mismatching architecture are excluded for a marketplace."""
+    # ami_push_item.release.arch is "x86_64"
+    destinations = starmap_response_aws["mappings"]["aws-na"]["destinations"]
+    destinations.append(
+        {
+            "architecture": "aarch64",
+            "destination": "11111111-1111-1111-1111-111111111111",
+            "overwrite": True,
+            "restrict_version": False,
+        }
+    )
+    destinations.append(
+        {
+            "architecture": None,
+            "destination": "22222222-2222-2222-2222-222222222222",
+            "overwrite": True,
+            "restrict_version": False,
+        }
+    )
+
+    starmap_response = QueryResponseEntity.from_json(starmap_response_aws)
+    mapped_item = MappedVMIPushItemV2(ami_push_item, starmap_response)
+
+    pi = mapped_item.get_push_item_for_marketplace("aws-na")
+    actual_destinations = [d.destination for d in pi.dest]
+
+    assert "ffffffff-ffff-ffff-ffff-ffffffffffff" in actual_destinations
+    assert "22222222-2222-2222-2222-222222222222" in actual_destinations
+    assert "11111111-1111-1111-1111-111111111111" not in actual_destinations
+
+
 def test_get_metadata_for_mapped_item(
     vhd_push_item: VHDPushItem, starmap_query_azure: QueryResponseEntity
 ) -> None:
