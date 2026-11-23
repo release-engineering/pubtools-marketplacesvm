@@ -114,7 +114,14 @@ class MappedVMIPushItemV2:
             pi = evolve(pi, release=rel_obj)
 
         # Update the push item attributes for each type using the attrs hidden annotation
-        ignore_unset_attributes = ["md5sum", "sha256sum", "signing_key", "origin", "opener"]
+        ignore_unset_attributes = [
+            "md5sum",
+            "sha256sum",
+            "signing_key",
+            "origin",
+            "opener",
+            "to_sync",
+        ]
         new_attrs = {}
         for attribute in pi.__attrs_attrs__:
             if (
@@ -163,7 +170,11 @@ class MappedVMIPushItemV2:
             raise ValueError(f"No such marketplace {account}")
 
         if not self._mapped_push_item.get(account):
-            destinations = self.starmap_query_entity.mappings[account].destinations
+            destinations = [
+                dst
+                for dst in self.starmap_query_entity.mappings[account].destinations
+                if not dst.architecture or dst.architecture == self.push_item.release.arch
+            ]
             # We update attributes from meta dictionary only when they were not set previously.
             # Therefore, we need to allow just attributes which are needed just for upload
             # to be updated in this method.
